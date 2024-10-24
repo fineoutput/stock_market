@@ -2,12 +2,15 @@
             namespace App\Http\Controllers\Admin;
             use App\Http\Controllers\Controller;
             use App\adminmodel\FyersModal;
-            
+            use Illuminate\Support\Facades\DB; // Import the DB facade
             use App\Models\Admin\AdminSidebar1;
             use Illuminate\Http\Request;
             use Illuminate\Support\Facades\Hash;
             use Illuminate\Support\Facades\Storage;
             use Illuminate\Support\Facades\Auth;
+            use Illuminate\Support\Facades\Http;
+            
+
 
             class FyersController extends Controller
             {
@@ -159,12 +162,12 @@
                             $bid = $v->bid ?? null; // Get the bid price
                             
                             // Handle NIFTY case
-                            if ($symbol == 'NIFTY') {
+                            if ($isl == 'NIFTY') {
                                 return $v->cmd->c; // Return command c for NIFTY
                             }
                 
                             // Return ask price or bid price if ask is 0
-                            return $ask == 0 ? $bid : $ask;
+                            return $ask == 0 ? "Price - ₹".$bid : "Price - ₹".$ask;
                         }
                 
                         return null; // Return null if no data found
