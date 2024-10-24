@@ -125,6 +125,63 @@
                         return redirect()->back()->with('error', 'Sorry you dont have Permission to delete admin, Only Super admin can change status');
                     }
                     }
+
+                    public function getPrice(Request $request)
+                {
+                    $isl = $request->input('isl');
+                    
+                  
+                        // Get the authorization code (implement this method as needed)
+                        $authCode = $this->authCode(); 
+                
+                        // Prepare the API endpoint
+                        $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $isl;
+                
+                        // Make the GET request
+                        $response = Http::withHeaders([
+                            'Authorization' => 'TB70PSUQ00-100:' . $authCode,
+                        ])->get($url);
+                
+                        // Decode the JSON response
+                        $data = json_decode($response->getBody()->getContents());
+                
+                        // Check for errors in the response
+                        if (isset($data->s) && $data->s == "error") {
+                            return "err"; // Return error if API response indicates an error
+                        }
+                
+                        // Process the response
+                        $quoteData = $data->d[0] ?? null; // Get the first data item
+                
+                        if ($quoteData) {
+                            $v = $quoteData->v; // Access the nested 'v' object
+                            $ask = $v->ask ?? null; // Get the ask price
+                            $bid = $v->bid ?? null; // Get the bid price
+                            
+                            // Handle NIFTY case
+                            if ($symbol == 'NIFTY') {
+                                return $v->cmd->c; // Return command c for NIFTY
+                            }
+                
+                            // Return ask price or bid price if ask is 0
+                            return $ask == 0 ? $bid : $ask;
+                        }
+                
+                        return null; // Return null if no data found
+                    
+                }
+
+                public function authCode()
+                {
+                    // Fetch the latest auth_code from the tbl_config table
+                    $result = DB::table('tbl_config')
+                                ->select('auth_code')
+                                ->orderBy('id', 'DESC')
+                                ->first(); // Get the first record
+                
+                    // Return the auth_code if available, otherwise return null
+                    return $result ? $result->auth_code : null;
+                }
                 
 
                 }

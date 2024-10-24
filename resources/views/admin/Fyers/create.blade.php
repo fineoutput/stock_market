@@ -102,6 +102,7 @@
 <input id='option_ce' type='text' class="form-control @error('option_ce') is-invalid @enderror" name='option_ce' value="{{old('option_ce') ? old('option_ce') : $data->option_ce}}" placeholder="Enter Option CE" required>
  <label for="Option CE">Enter Option CE  <span style="color:red;">*</span></label>
 </div>
+<span id="option_ce_Span"></span>
  @error('option_ce')
 <div style="color:red">{{$message}}</div>
 @enderror
@@ -148,7 +149,42 @@
                                     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
                                     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+<script>
+    $(document).ready(function(){
 
+  	$("#option_ce").change(function(){
+		var vf=$(this).val();
+		if(vf==""){
+			return false;
+
+		}else{
+      // Clear the span text
+      $('#option_ce_Span').text('');
+			$.ajax({
+				url:"{{ url('getPrice') }}?isl=" + vf;
+				data : '',
+				type: "get",
+				success : function(html){
+						if(html!="NA")
+						{
+						 $('#option_ce_Span').text(html); // Using the title from the response
+						}
+						else
+						{
+							alert('No Branch Found');
+							return false;
+						}
+
+					}
+
+				})
+		}
+
+
+	})
+  });
+
+    </script>
 
 @endsection
             

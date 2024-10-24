@@ -40,6 +40,7 @@ Route::group(['prefix' => '/'], function () {
 
 
 Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
+Route::get('/getPrice', [FyersController::class, 'getPrice'])->name('getPrice');
 
 //======================================= ADMIN ===================================================
 Route::group(['prifix' => 'admin'], function () {
