@@ -117,9 +117,10 @@
 </div>
 	   <div class="col-sm-6 my-3">
 <div class='form-group has-float-label'>
-<label for='Trading'>trading_type <span style='color:red'> *</span></label>
-<select id='Trading' name='Trading' required class="form-control @error('password') is-invalid @enderror">
-
+<label for='Trading'>Trading Type <span style='color:red'> *</span></label>
+<select id='Trading' name='Trading' required class="form-control @error('Trading') is-invalid @enderror">
+<option value="1">Testing</option>
+<option value="2">Live</option>
 </select>
 </div>
 </div>
