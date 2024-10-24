@@ -23,10 +23,10 @@ class HomeController extends Controller
     public function redirect(Request $req)
     {
 
-        $s = $request->query('s');
+        $s = $req->query('s');
         if ($s == "ok") {
             // Get IP address
-            $ip = $request->ip();
+            $ip = $req->ip();
 
             // Set timezone and get current date
             date_default_timezone_set("Asia/Calcutta");
