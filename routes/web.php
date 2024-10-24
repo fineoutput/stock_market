@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ContactUsController;
 use App\Http\Controllers\Admin\CrmController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Auth\adminlogincontroller;
+use App\Http\Controllers\Admin\FyersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,6 +71,12 @@ Route::get('/update_settings/{id}', [CrmController::class, 'update_settings'])->
 Route::post('/add_settings_process', [CrmController::class, 'add_settings_process'])->name('add_settings_process');
 Route::post('/update_settings_process/{id}', [CrmController::class, 'update_settings_process'])->name('update_settings_process');
 Route::get('/deletesetting/{id}', [CrmController::class, 'deletesetting'])->name('deletesetting');
+
+
+//---Fyers ----
+Route::resource('Fyers', FyersController::class);
+Route::get('/Fyers/update/{id}', [FyersController::class,'updateStatus'])->name('Fyers.update.status');
+Route::delete('/Fyers/destroy/{id}', [FyersController::class,'destroy'])->name('Fyers.destroy');
 
     });
 
