@@ -32,7 +32,7 @@ class HomeController extends Controller
             date_default_timezone_set("Asia/Calcutta");
             $cur_date = Carbon::now()->format('Y-m-d H:i:s');
 
-            $auth_code = $request->query('auth_code');
+            $auth_code = $req->query('auth_code');
 
             // Make HTTP POST request to validate auth code using Laravel's Http facade
             $response = Http::post('https://api.fyers.in/api/v2/validate-authcode', [
