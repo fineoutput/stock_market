@@ -38,7 +38,7 @@ class HomeController extends Controller
             // Make HTTP POST request to validate auth code using Laravel's Http facade
             $response = Http::post('https://api.fyers.in/api/v2/validate-authcode', [
                 'grant_type' => 'authorization_code',
-                'appIdHash' => '817a02fd7b3085afc60ce4804c8d5aae06c7a754c25dc3a59c94869a06e1f772',
+                'appIdHash' => 'f6cfb62d1fbbd4ce7895b82ffb6c7c779627f46dd189241b1d3e2bb25a79d5b0',
                 'code' => $auth_code
             ]);
 
