@@ -10,8 +10,6 @@ use Laravel\Sanctum\PersonalAccessToken;
 use DateTime;
 use Illuminate\Support\Facades\Http; // For making HTTP requests
 use Illuminate\Support\Facades\DB; // For database operations
-use Carbon\Carbon; // For managing dates and times
-
 
 class HomeController extends Controller
 {
