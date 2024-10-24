@@ -111,7 +111,7 @@
                     
                     $title = "Fyers";
                     $data = FyersModal::where('id', $id)->first();
-                    return view('admin/Fyers.create', compact('data''title'));
+                    return view('admin/Fyers.create', compact('data','title'));
                 }
 
                     public function destroy(Request $req, $idd)
