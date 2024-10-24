@@ -38,6 +38,9 @@ Route::group(['prefix' => '/'], function () {
     Route::get('/', [HomeController::class, 'index'])->name('/');
 });
 
+
+Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
+
 //======================================= ADMIN ===================================================
 Route::group(['prifix' => 'admin'], function () {
     Route::group(['middleware'=>'admin.guest'],function(){
