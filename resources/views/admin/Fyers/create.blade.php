@@ -112,6 +112,7 @@
 <input id='option_pe' type='text' class="form-control @error('option_pe') is-invalid @enderror" name='option_pe' value="{{old('option_pe') ? old('option_pe') : $data->option_pe}}" placeholder="Enter Option PE" required>
  <label for="Option PE">Enter Option PE  <span style="color:red;">*</span></label>
 </div>
+<span id="option_pe_Span"></span>
  @error('option_pe')
 <div style="color:red">{{$message}}</div>
 @enderror
@@ -171,7 +172,44 @@
 						}
 						else
 						{
-							alert('No Branch Found');
+							alert('No Option Found');
+							return false;
+						}
+
+					}
+
+				})
+		}
+
+
+	})
+  });
+
+    </script>
+
+<script>
+    $(document).ready(function(){
+
+  	$("#option_pe").change(function(){
+		var vf=$(this).val();
+		if(vf==""){
+			return false;
+
+		}else{
+      // Clear the span text
+      $('#option_pe_Span').text('');
+			$.ajax({
+				url:"{{ url('getPrice') }}?isl=" + vf;
+				data : '',
+				type: "get",
+				success : function(html){
+						if(html!="NA")
+						{
+						 $('#option_pe_Span').text(html); // Using the title from the response
+						}
+						else
+						{
+							alert('No Option Found');
 							return false;
 						}
 
