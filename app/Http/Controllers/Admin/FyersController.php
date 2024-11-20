@@ -229,7 +229,7 @@ class FyersController extends Controller
 
         $symbol = $symbol;
         $auth_code = $this->authCode();
-        $res = "5";
+        $res = "60";
         $date_format = 0;
         $range_from = $d1;
         $range_to = $d2;
