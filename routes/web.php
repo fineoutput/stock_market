@@ -1,18 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\TeamController; 
 use App\Http\Controllers\Frontend\HomeController;
-use App\Http\Controllers\Admin\SliderController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\ContactUsController;
 use App\Http\Controllers\Admin\CrmController;
-use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Auth\adminlogincontroller;
 use App\Http\Controllers\Admin\FyersController;
+// use App\Http\Controllers\Admin\LoginController;
+// use App\Http\Controllers\Admin\SliderController;
+// use App\Http\Controllers\Admin\UserController;
+// use App\Http\Controllers\Admin\CategoryController;
+// use App\Http\Controllers\Admin\ProductController;
+// use App\Http\Controllers\Admin\ContactUsController;
+// use App\Http\Controllers\Admin\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +83,11 @@ Route::get('/Fyers/update/{id}', [FyersController::class,'updateStatus'])->name(
 Route::delete('/Fyers/destroy/{id}', [FyersController::class,'destroy'])->name('Fyers.destroy');
 
     });
+
+Route::get('/highest-price-sameday/{date1}/{date2}/{symbol}', [FyersController::class, 'highest_price_sameday']);
+
+Route::get('historical-data', [FyersController::class, 'historical_data']);
+Route::get('view-historical-data', [FyersController::class, 'fetchHistoricalData'])->name('view_historical_data');
 
 });
 
