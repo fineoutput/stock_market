@@ -67,7 +67,7 @@
                                     <tbody>
                                         @foreach($historicalData  as $data)
                                         <tr>
-                                            <td>{{ $loop->index }}</td>
+                                            <td>{{ $loop->index+1 }}</td>
                                             <td>{{ $data->date }}</td>
                                             <td>{{ $data->open }}</td>
                                             <td>{{ $data->close }}</td>
