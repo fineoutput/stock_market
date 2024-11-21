@@ -217,54 +217,59 @@ class FyersController extends Controller
         $currentDate = date('Y-m-d'); 
         $startTime = config('constants.time.START_TIME');
         $endTime = config('constants.time.END_TIME');
-    
+        
         $startDateTime = $currentDate . ' ' . $startTime;
         $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
         $endDateTime = $datetime->format('Y-m-d H:i:s');
         // dd($endDateTime );
         $symbol = 'NSE:BSLNIFTY-EQ'; 
-    
+        
         $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol);
-        // dd($response);
+        
         $data = json_decode($response, true);
         $candles = $data['candles'];
     
         // Get the last 2 candles
         $lastTwoCandles = array_slice($candles, -2);
     
-        $status = 0;
-        $previousClose = null;
+        // Extract data for the second last and last candles
+        $secondLastCandle = $lastTwoCandles[0];  // Second last candle data
+        $lastCandle = $lastTwoCandles[1];        // Last candle data
+        
+        // Extract values for the second last candle
+        $secondLastTimestamp = $secondLastCandle[0];
+        $secondLastDateTime = new DateTime("@$secondLastTimestamp"); 
+        $secondLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata')); 
+        $secondLastFormattedTime = $secondLastDateTime->format('Y-m-d H:i:s'); 
     
-        foreach ($lastTwoCandles as $key => $candle) {
-            $timestamp = $candle[0];
-            $dateTime = new DateTime("@$timestamp"); 
-            $dateTime->setTimezone(new DateTimeZone('Asia/Kolkata')); 
-            $formattedTime = $dateTime->format('Y-m-d H:i:s'); 
+        $secondLastOpen = $secondLastCandle[1];
+        $secondLastClose = $secondLastCandle[4];
     
-            $open = $candle[1];
-            $high = $candle[2];
-            $low = $candle[3];
-            $close = $candle[4];
+        // Extract values for the last candle
+        $lastTimestamp = $lastCandle[0];
+        $lastDateTime = new DateTime("@$lastTimestamp"); 
+        $lastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata')); 
+        $lastFormattedTime = $lastDateTime->format('Y-m-d H:i:s'); 
     
-            // Determine status based on previous close
-            if ($previousClose !== null && $close < $previousClose) {
-                $status = 1; 
-            }
+        $lastOpen = $lastCandle[1];
+        $lastClose = $lastCandle[4];
     
-            // Insert the candle data into the database
-            DB::table('historical_data')->insert([
-                'date' => $formattedTime, 
-                'open' => $open,
-                'close' => $close,
-                'high' => $high,
-                'low' => $low,
-                'open_status' => $status, 
-            ]);
-            $previousClose = $close;
-        }
+        // Determine the status: 1 if the second last close is less than the last open
+        $status = ($secondLastClose < $lastOpen) ? 1 : 0;
     
-        return response()->json(['message' => 'Last 2 candles data inserted successfully']);
+        // Insert the second last candle data into the database
+        DB::table('historical_data')->insert([
+            'date' => $secondLastFormattedTime, 
+            'open' => $secondLastOpen,
+            'close' => $secondLastClose,
+            'high' => $secondLastCandle[2],
+            'low' => $secondLastCandle[3],
+            'open_status' => $status, 
+        ]);
+    
+        return response()->json(['message' => 'Second last candle data inserted successfully']);
     }
+    
     
     public function highest_price_sameday($date1,$date2,$symbol){
 
