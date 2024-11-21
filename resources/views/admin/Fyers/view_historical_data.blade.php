@@ -73,7 +73,7 @@
                                             <td>{{ $data->close }}</td>
                                             <td>{{ $data->high }}</td>
                                             <td>{{ $data->low }}</td>
-                                            <td>{{ $data->open_status ? 'Entry' : 'No Entry' }}</td>
+                                            <td>{{ $data->open_status ? 'No Entry' : 'Entry' }}</td>
                                         </tr>  
                                          @endforeach
                                     
