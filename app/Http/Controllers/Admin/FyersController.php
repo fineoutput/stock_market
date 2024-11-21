@@ -256,6 +256,9 @@ class FyersController extends Controller
     
         // Determine the status: 1 if the second last close is less than the last open
         $status = ($secondLastClose < $lastOpen) ? 1 : 0;
+
+        $exists = DB::table('historical_data')->where('date', $secondLastFormattedTime)->exists();
+        if (!$exists) {
     
         // Insert the second last candle data into the database
         DB::table('historical_data')->insert([
@@ -266,8 +269,10 @@ class FyersController extends Controller
             'low' => $secondLastCandle[3],
             'open_status' => $status, 
         ]);
-    
         return response()->json(['message' => 'Second last candle data inserted successfully']);
+        }else {
+            return response()->json(['message' => 'Data for the given date and time already exists']);
+              }
     }
     
     
