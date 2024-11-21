@@ -80,8 +80,16 @@
  	 <td>{{$data->pin }} </td> 
  	 <td>{{$data->amount }} </td> 
  	 <td>{{$data->option_ce }} </td> 
- 	 <td>{{$data->option_pe }} </td> 
- 	 <td>{{$data->trading_type }} </td> 
+ 	 <td>{{$data->option_pe }} </td>
+      @if($data->trading_type == "1")
+      <td>
+          <p class="label  status-inactive">Testing</p>
+     </td>
+     @else
+    <td>
+        <p class="label  status-active">Live</p>
+    </td> 
+    @endif
  
                                             @if($data->is_active == "1")
                                             <td>
