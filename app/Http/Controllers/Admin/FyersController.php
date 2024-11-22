@@ -339,8 +339,15 @@ class FyersController extends Controller
 
     public function fetchHistoricalData()
     {
-        $historicalData = DB::table('historical_data')->get();
-        return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data ']);
+        $currentUrl = request()->url();
+        if (str_contains($currentUrl, 'view-historical-data-PE')) {
+        $historicalData = DB::table('historical_data')->where('tred_option', '=', '1')->get();
+        return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data PE ']);
+        }
+        else {
+            $historicalData = DB::table('historical_data')->where('tred_option', '=', '2')->get();
+            return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data CE ']);
+            }
     }
 }
 

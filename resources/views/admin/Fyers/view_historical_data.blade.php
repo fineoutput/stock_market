@@ -45,9 +45,7 @@
                                 <div class="col-md-10">
                                 <h4 class="mt-0 header-title">View {{$title}} List</h4>
                                 </div>
-                                    @if(session()->get('position') == "Super Admin" || session()->get('position') == "Admin")
-                                    <div class="col-md-2"> <a class="btn btn-info cticket" href="{{route('Fyers.create')}}" role="button" style="margin-left: 20px;"> Add {{$title}}</a></div>
-                                    @endif
+                                    
                                     </div>
                                     <hr style="margin-bottom: 50px;background-color: darkgrey;">
                                     <div class="table-rep-plugin">
@@ -68,13 +66,20 @@
                                         @foreach($historicalData  as $data)
                                         <tr>
                                             <td>{{ $loop->index+1 }}</td>
-                                            <td>{{ $data->date }}</td>
-                                            <td>{{ $data->open }}</td>
-                                            <td>{{ $data->close }}</td>
-                                            <td>{{ $data->high }}</td>
-                                            <td>{{ $data->low }}</td>
-                                            <td>{{ $data->open_status ? 'No Entry' : 'Entry' }}</td>
-                                        </tr>  
+                                            {{-- <td>{{ $data->date }}</td> --}}
+                                            <td>{{ date('d F Y  h:i:s A', strtotime($data->date)) }}</td>
+                                            <td>₹{{ $data->open }}</td>
+                                            <td>₹{{ $data->close }}</td>
+                                            <td>₹{{ $data->high }}</td>
+                                            <td>₹{{ $data->low }}</td>
+                                            @if($data->open_status == "1")
+                                            <td><p class="label  status-inactive">NO Entry</p></td>
+                                            @elseif ($data->open_status == "0")
+                                            <td><p class="label  status-active">Entry</p></td> 
+                                            @else
+                                            <td></td> 
+                                            @endif
+                                            </tr>  
                                          @endforeach
                                     
                                          </tbody>
