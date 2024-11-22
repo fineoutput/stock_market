@@ -164,119 +164,109 @@ class FyersController extends Controller
         return $result ? $result->auth_code : null;
     }
                 
-    // public function historical_data()
-    // {
-    //     $currentDate = date('Y-m-d'); 
-    //     $startTime = config('constants.time.START_TIME');
-    //     $endTime = config('constants.time.END_TIME');
-
-    //     $startDateTime = $currentDate . ' ' . $startTime;
-    //     $endDateTime = $currentDate . ' ' . $endTime;
-    //     $symbol = 'NSE:BSLNIFTY-EQ'; 
-
-
-    //     $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol);
-    //     $data = json_decode($response, true);
-    //     $candles = $data['candles'];
-
-    //     $status = 0;
-    //     $previousClose = null;
-
-    //     foreach ($candles as $key => $candle) {
-    //         $timestamp = $candle[0];
-    //         $dateTime = new DateTime("@$timestamp"); 
-    //         $dateTime->setTimezone(new DateTimeZone('Asia/Kolkata')); 
-    //         $formattedTime = $dateTime->format('Y-m-d H:i:s'); 
-
-        
-    //         $open = $candle[1];
-    //         $high = $candle[2];
-    //         $low = $candle[3];
-    //         $close = $candle[4];
-
-    //         if ($previousClose !== null && $close < $previousClose) {
-    //             $status = 1; 
-    //         }
-
-    //         DB::table('historical_data')->insert([
-    //             'date' => $formattedTime, 
-    //             'open' => $open,
-    //             'close' => $close,
-    //             'high' => $high,
-    //             'low' => $low,
-    //             'open_status' => $status, 
-    //         ]);
-    //         $previousClose = $close;
-    //     }
-
-    //     return response()->json(['message' => 'Data inserted successfully']);
-    // }
-
     public function historical_data()
     {
-        $currentDate = date('Y-m-d'); 
-        $startTime = config('constants.time.START_TIME');
-        $endTime = config('constants.time.END_TIME');
-        
-        $startDateTime = $currentDate . ' ' . $startTime;
-        $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
-        $endDateTime = $datetime->format('Y-m-d H:i:s');
-        // dd($endDateTime );
-        $symbol = 'NSE:BSLNIFTY-EQ'; 
-        
-        $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol);
-        
-        $data = json_decode($response, true);
-        $candles = $data['candles'];
-    
-        // Get the last 2 candles
-        $lastTwoCandles = array_slice($candles, -2);
-    
-        // Extract data for the second last and last candles
-        $secondLastCandle = $lastTwoCandles[0];  // Second last candle data
-        $lastCandle = $lastTwoCandles[1];        // Last candle data
-        
-        // Extract values for the second last candle
-        $secondLastTimestamp = $secondLastCandle[0];
-        $secondLastDateTime = new DateTime("@$secondLastTimestamp"); 
-        $secondLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata')); 
-        $secondLastFormattedTime = $secondLastDateTime->format('Y-m-d H:i:s'); 
-    
-        $secondLastOpen = $secondLastCandle[1];
-        $secondLastClose = $secondLastCandle[4];
-    
-        // Extract values for the last candle
-        $lastTimestamp = $lastCandle[0];
-        $lastDateTime = new DateTime("@$lastTimestamp"); 
-        $lastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata')); 
-        $lastFormattedTime = $lastDateTime->format('Y-m-d H:i:s'); 
-    
-        $lastOpen = $lastCandle[1];
-        $lastClose = $lastCandle[4];
-    
-        // Determine the status: 1 if the second last close is less than the last open
-        $status = ($secondLastClose < $lastOpen) ? 1 : 0;
-
-        $exists = DB::table('historical_data')->where('date', $secondLastFormattedTime)->exists();
-        if (!$exists) {
-    
-        // Insert the second last candle data into the database
-        DB::table('historical_data')->insert([
-            'date' => $secondLastFormattedTime, 
-            'open' => $secondLastOpen,
-            'close' => $secondLastClose,
-            'high' => $secondLastCandle[2],
-            'low' => $secondLastCandle[3],
-            'open_status' => $status, 
+        $response1 = $this->historical_data_option(1); // 1 => PE
+        $response2 = $this->historical_data_option(2); // 2 => CE
+        return response()->json([
+            'response1' => json_decode($response1->getContent(), true),
+            'response2' => json_decode($response2->getContent(), true),
         ]);
-        return response()->json(['message' => 'Second last candle data inserted successfully']);
-        }else {
-            return response()->json(['message' => 'Data for the given date and time already exists']);
-              }
     }
+
+    private function historical_data_option($symbolstatus)
+    {
+        try {
+            $currentDate = date('Y-m-d');
+            $startTime = config('constants.time.START_TIME');
+            $endTime = config('constants.time.END_TIME');
+            $startDateTime = $currentDate . ' ' . $startTime;
+
+            $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+            $endDateTime = $datetime->format('Y-m-d H:i:s');
+
+            $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+            $symbol = $symbolstatus == 1 ? $symbolData->option_pe : $symbolData->option_ce;
+
+           // print_r($symbol);
+            // exit;
+            $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol);
+            // print_r($response);
+            // exit;
+            $data = json_decode($response, true);
+            if (!isset($data['candles']) || empty($data['candles'])) {
+                return response()->json(['message' => 'No candle data found'], 404);
+            }
+
+            $candles = $data['candles'];
+            $lastTwoCandles = array_slice($candles, -2);
+
+            // Extract second last and last candle data
+            $secondLastCandle = $lastTwoCandles[0];
+            $lastCandle = $lastTwoCandles[1];
+
+            // Prepare second last candle details
+            $secondLastTimestamp = $secondLastCandle[0];
+            $secondLastDateTime = new DateTime("@$secondLastTimestamp");
+            $secondLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
+            $secondLastFormattedTime = $secondLastDateTime->format('Y-m-d H:i:s');
+            $secondLastOpen = $secondLastCandle[1];
+            $secondLastClose = $secondLastCandle[4];
+
+            // Prepare last candle details
+            $lastOpen = $lastCandle[1];
+            $lastClose = $lastCandle[4];
+
+            // Fetch the last entry in the database
+            $lastEntry = DB::table('historical_data')->orderBy('id', 'desc')->first();
+
+            // Determine status based on last entry
+            $status = 2; // Default: Continue
+            if ($lastEntry) {
+                if ($lastEntry->tred_option == 1 && $symbolstatus == 2) { // Check for CE
+                    $status = ($lastEntry->close > $lastOpen) ? 1 : 0;
+                }
+                if ($lastEntry->tred_option == 2 && $symbolstatus == 1) { // Check for PE
+                    $status = ($lastEntry->close < $lastOpen) ? 1 : 0;
+                }
+            }
+
+            // Check if data already exists
+            $exists = DB::table('historical_data')
+                ->where('date', $secondLastFormattedTime)
+                ->where('tred_option', $symbolstatus)
+                ->exists();
+
+            if (!$exists) {
+                // Insert data into database
+                DB::table('historical_data')->insert([
+                    'date' => $secondLastFormattedTime,
+                    'open' => $secondLastOpen,
+                    'close' => $secondLastClose,
+                    'high' => $secondLastCandle[2],
+                    'low' => $secondLastCandle[3],
+                    'open_status' => $status,
+                    'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+                ]);
+            }
+
+            return response()->json([
+                'message' => 'Candle data processed successfully',
+                'symbol' => $symbol,
+                'date' => $secondLastFormattedTime,
+                'status' => $status,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error processing candle data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     
     
-    public function highest_price_sameday($date1,$date2,$symbol){
+    private function highest_price_sameday($date1,$date2,$symbol){
 
         $date00 = new DateTime($date1); // Your original date and time
         $date00->setTime($date00->format('H'), $date00->format('i'), 0); // Set seconds to 0
