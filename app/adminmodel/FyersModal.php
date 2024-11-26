@@ -9,7 +9,7 @@
             class FyersModal extends Authenticatable
             {
 
-                protected $table='Fyers';
+                protected $table='fyers';
                 use HasApiTokens, HasFactory, Notifiable;
                 /**
                  * The attributes that are mass assignable.
