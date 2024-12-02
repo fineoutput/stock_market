@@ -18,14 +18,13 @@
                  */
                 protected $fillable = [
                 	 'phone',
-	 'login_id',
-	 'pin',
-	 'amount',
-	 'option_ce',
-	 'option_pe',
-	 'trading_type',
- 
-                'ip', 'added_by', 'is_active'
+	                 'login_id',
+	                 'pin',
+	                 'amount',
+	                 'option_ce',
+	                 'option_pe',
+	                 'trading_type',
+                     'ip', 'added_by', 'is_active'
                 ];
                 use SoftDeletes;
                 protected $del = ['deleted_at'];
