@@ -339,6 +339,42 @@ class FyersController extends Controller
             return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data CE ']);
             }
     }
+
+    public function continue_tred($symbolstatus)
+    {
+        // dd($symbolstatus);
+        
+        for ($i = 1; $i <= 19; $i++) {
+            $currentDate = date('Y-m-d');
+            $startTime = config('constants.time.START_TIME');
+            $endTime = config('constants.time.END_TIME');
+            $startDateTime = $currentDate . ' ' . $startTime;
+
+            $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+            $endDateTime = $datetime->format('Y-m-d H:i:s');
+
+            $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+            $symbol = $symbolstatus == 'PE' ? $symbolData->option_pe : $symbolData->option_ce;
+    
+            $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol);
+            $data = json_decode($response, true);
+            if (!isset($data['candles']) || empty($data['candles'])) {
+                return response()->json(['message' => 'No candle data found'], 404);
+            }
+
+            $candles = $data['candles'];
+            $lastTwoCandles = array_slice($candles, -2);
+
+            // Extract second last and last candle data
+            $secondLastCandle = $lastTwoCandles[0];
+            $lastCandle = $lastTwoCandles[1];
+            $lastOpen = $lastCandle[1];
+            echo $lastOpen;
+            // $open - $lastOpen;
+
+          sleep(3);
+        }
+    }
 }
 
         

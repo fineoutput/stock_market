@@ -81,15 +81,12 @@ Route::get('/deletesetting/{id}', [CrmController::class, 'deletesetting'])->name
 Route::resource('Fyers', FyersController::class);
 Route::get('/Fyers/update/{id}', [FyersController::class,'updateStatus'])->name('Fyers.update.status');
 Route::delete('/Fyers/destroy/{id}', [FyersController::class,'destroy'])->name('Fyers.destroy');
-
-    });
-
+});
 Route::get('/highest-price-sameday/{date1}/{date2}/{symbol}', [FyersController::class, 'highest_price_sameday']);
-
 Route::get('historical-data', [FyersController::class, 'historical_data']);
-
 Route::get('view-historical-data-CE', [FyersController::class, 'fetchHistoricalData'])->name('view_historical_data_CE');
 Route::get('view-historical-data-PE', [FyersController::class, 'fetchHistoricalData'])->name('view_historical_data_PE');
+Route::get('continue-tred-{id}', [FyersController::class, 'continue_tred']) ->where('id', 'CE|PE')->name('continue-tred');
 
 });
 
