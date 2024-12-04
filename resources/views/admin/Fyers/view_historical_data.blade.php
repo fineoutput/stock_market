@@ -64,7 +64,17 @@
                                     </thead>
                                     <tbody>
                                         @foreach($historicalData  as $data)
-                                        <tr>
+                                        @php
+                                         $class="green";
+                                         $btn_class = "red";
+                                        if($data->open_status == "1"){
+                                            $class="red";
+                                         $btn_class = "green";
+
+                                        }
+                                    @endphp
+                                        <tr style="background: @php echo $class; @endphp">
+                                           
                                             <td>{{ $loop->index+1 }}</td>
                                             {{-- <td>{{ $data->date }}</td> --}}
                                             <td>{{ date('d F Y  h:i:s A', strtotime($data->date)) }}</td>
@@ -73,9 +83,9 @@
                                             <td>₹{{ $data->high }}</td>
                                             <td>₹{{ $data->low }}</td>
                                             @if($data->open_status == "1")
-                                            <td><p class="label  status-inactive">NO Entry</p></td>
+                                            <td><p class="label status-active" style="background: @php echo $btn_class; @endphp">NO Entry</p></td>
                                             @elseif ($data->open_status == "0")
-                                            <td><p class="label  status-active">Entry</p></td> 
+                                            <td><p class="label status-active" style="background: @php echo $btn_class; @endphp">Entry</p></td> 
                                             @else
                                             <td></td> 
                                             @endif
