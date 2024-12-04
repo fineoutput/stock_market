@@ -82,6 +82,8 @@ Route::resource('Fyers', FyersController::class);
 Route::get('/Fyers/update/{id}', [FyersController::class,'updateStatus'])->name('Fyers.update.status');
 Route::delete('/Fyers/destroy/{id}', [FyersController::class,'destroy'])->name('Fyers.destroy');
 });
+
+//historical-data
 Route::get('/highest-price-sameday/{date1}/{date2}/{symbol}', [FyersController::class, 'highest_price_sameday']);
 Route::get('historical-data', [FyersController::class, 'historical_data']);
 Route::get('view-historical-data-CE', [FyersController::class, 'fetchHistoricalData'])->name('view_historical_data_CE');

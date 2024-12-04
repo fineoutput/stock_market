@@ -221,13 +221,17 @@ class FyersController extends Controller
             $lastEntry = DB::table('historical_data')->orderBy('id', 'desc')->first();
 
             // Determine status based on last entry
-            $status = 2; // Default: Continue
+           // Default: Continue
             if ($lastEntry) {
                 if ($lastEntry->tred_option == 1 && $symbolstatus == 2) { // Check for CE
                     $status = ($lastEntry->close > $lastOpen) ? 1 : 0;
                 }
                 if ($lastEntry->tred_option == 2 && $symbolstatus == 1) { // Check for PE
                     $status = ($lastEntry->close < $lastOpen) ? 1 : 0;
+                }
+                if($lastEntry->open_status==1 && $status==1)
+                {
+                    $status =2;
                 }
             }
 
