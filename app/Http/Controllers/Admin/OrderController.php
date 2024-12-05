@@ -28,8 +28,8 @@ class OrderController extends Controller
     public function createOrder()
     {
           // Your function logic here
-          \Log::info('Task executed at anay ' . now());
-          exit;
+        //   \Log::info('Task executed at anay ' . now());
+        //   exit;
         //check if order exists or not
         $runningOrder = Order::where('status', 0)->first();
 
@@ -39,7 +39,7 @@ class OrderController extends Controller
         }
         else{
             //CREATE NEW ORDER
-
+            $entry = 0;
             // GET NIFTY VALUE IF NIFTY IS POSITIVE OR NEGATIVE
             $nifty = $this->getPriceData('nifty');
            
@@ -47,20 +47,49 @@ class OrderController extends Controller
                 $nifty_current = $nifty['lp'];
                 $nifty_open = $nifty['open_price'];
                 // print_r($nifty_open);
+
+                $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
                 if($nifty_current > $nifty_open){
                     // NIFTY IS GREEN/POSITIVE
                     $nifty_status = 1;
+                    $symbol = $symbolData->option_ce;
                 }
                 else{
                     // NIFTY IS RED/NEGATIVE
                     $nifty_status = 0;
+                    $symbol = $symbolData->option_pe;
                 }
 
             //CHECK LAST OPEN TO 
             $secondLast = Historical::wherenull('deleted_at')->where('tred_option', $nifty_status)->skip(1)
             ->take(1)->first();
             if($secondLast){
+
                     $last_open = $secondLast->open;
+                    $last_close = $secondLast->close;
+                    $iterations = 18; // Set the number of times the loop should run
+
+                    for ($i = 0; $i < $iterations; $i++) {
+                        $live_price_Stock = $this->getPriceData($symbol);
+
+                        if($live_price_Stock > $last_open){
+                            if($entry == 0){
+                           \Log::info('Entry Created at ' . now());
+                           $entry = 1;
+                            }
+                            //   exit;
+                        }
+                        if($live_price_Stock < $last_close){
+                            \Log::info('Exit Created at ' . now());
+                            $entry; = 0;
+                             //   exit;
+                         }
+                        
+
+
+    // Wait for 3 seconds before the next iteration
+            sleep(3);
+                    }
             }
 
             }
