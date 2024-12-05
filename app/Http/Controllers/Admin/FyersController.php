@@ -120,8 +120,28 @@ class FyersController extends Controller
     public function getPrice(Request $request)
     {
         $isl = $request->input('isl');
-        // Get the authorization code (implement this method as needed)
+        $nifty = $request->input('nifty');
         $authCode = $this->authCode(); 
+        if($nifty){
+            // print_r('jbuh');
+            // exit;
+            $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $nifty;
+            $response = Http::withHeaders(['Authorization' => 'TB70PSUQ00-100:' . $authCode,])->get($url);
+            $data = json_decode($response->getBody()->getContents());
+            $quoteData = $data->d[0] ?? null; 
+            if ($quoteData) {
+                $v = $quoteData->v; 
+                
+                if ($v) {
+                    return response()->json([
+                        'lp' => $v->lp ?? 'N/A',
+                        'open_price' => $v->open_price ?? 'N/A'
+                    ]);
+                }
+                
+        }
+    }
+        // Get the authorization code (implement this method as needed)
         // Prepare the API endpoint
         $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $isl;
         // Make the GET request
@@ -190,7 +210,7 @@ class FyersController extends Controller
 
            // print_r($symbol);
             // exit;
-            $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol);
+            $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,60);
             // print_r($response);
             // exit;
             $data = json_decode($response, true);
@@ -215,6 +235,8 @@ class FyersController extends Controller
 
             // Prepare last candle details
             $lastOpen = $lastCandle[1];
+            $lastHigh = $lastCandle[2];
+            $lastLow = $lastCandle[3];
             $lastClose = $lastCandle[4];
 
             // Fetch the last entry in the database
@@ -224,10 +246,28 @@ class FyersController extends Controller
            // Default: Continue
             if ($lastEntry) {
                 if ($lastEntry->tred_option == 1 && $symbolstatus == 2) { // Check for CE
-                    $status = ($lastEntry->close > $lastOpen) ? 1 : 0;
+                    if (
+                        $secondLastOpen > $lastEntry->open ||
+                        $secondLastHigh > $lastEntry->open ||
+                        $secondLastLow >  $lastEntry->open ||
+                        $secondLastClose > $lastEntry->open
+                    ) {
+                        $status = 0; // CE condition met
+                    } else {
+                        $status = 1; // CE condition not met
+                    }
                 }
                 if ($lastEntry->tred_option == 2 && $symbolstatus == 1) { // Check for PE
-                    $status = ($lastEntry->close < $lastOpen) ? 1 : 0;
+                    if (
+                        $secondLastOpen < $lastEntry->open ||
+                        $secondLastHigh < $lastEntry->open ||
+                        $secondLastLow  < $lastEntry->open ||
+                        $secondLastClose < $lastEntry->open
+                    ) {
+                        $status = 0; // CE condition met
+                    } else {
+                        $status = 1; // CE condition not met
+                    }
                 }
                 if($lastEntry->open_status==1 && $status==1)
                 {
@@ -268,9 +308,8 @@ class FyersController extends Controller
         }
     }
 
-    
-    
-    private function highest_price_sameday($date1,$date2,$symbol){
+    private function highest_price_sameday($date1,$date2,$symbol,$time)
+    {
 
         $date00 = new DateTime($date1); // Your original date and time
         $date00->setTime($date00->format('H'), $date00->format('i'), 0); // Set seconds to 0
@@ -286,7 +325,7 @@ class FyersController extends Controller
 
         $symbol = $symbol;
         $auth_code = $this->authCode();
-        $res = "60";
+        $res = $time;
         $date_format = 0;
         $range_from = $d1;
         $range_to = $d2;
@@ -347,38 +386,84 @@ class FyersController extends Controller
     public function continue_tred($symbolstatus)
     {
         // dd($symbolstatus);
+        $previous_ord = DB::table('tbl_order')->where('stock',$symbolstatus)->orderBy('id', 'desc')->first();
+        $historical_data = DB::table('historical_data')->where('tred_option',$symbolstatus)->orderBy('id', 'desc')->first();
+        $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
         
-        for ($i = 1; $i <= 19; $i++) {
-            $currentDate = date('Y-m-d');
-            $startTime = config('constants.time.START_TIME');
-            $endTime = config('constants.time.END_TIME');
-            $startDateTime = $currentDate . ' ' . $startTime;
+        $currentDate = date('Y-m-d');
+        $startTime = config('constants.time.START_TIME');
+        $endTime = config('constants.time.END_TIME');
+        $startDateTime = $currentDate . ' ' . $startTime;
+        $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+        $endDateTime = $datetime->format('Y-m-d H:i:s');
 
-            $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
-            $endDateTime = $datetime->format('Y-m-d H:i:s');
+        for ($i = 1; $i <= 17; $i++) {
 
-            $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
-            $symbol = $symbolstatus == 'PE' ? $symbolData->option_pe : $symbolData->option_ce;
-    
-            $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol);
+            if(empty($previous_ord) || !isset($previous_ord->status)){
+
+                $main_symbol = 'NSE:NIFTY50-INDEX';
+                $price = $this->getPriceData($main_symbol, 'nifty');
+                $price['open_price']-$price['lp'];
+                if ($price < 0) {
+                    $symbol = $symbolData->option_ce;
+                    $price = $this->getPriceData($symbol, 'isl');
+                    echo  $price;
+                    exit;
+
+                }
+                else{
+                    $symbol = $symbolData->option_pe;
+
+                }
+                
+
+                $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,1);
+                $data = json_decode($response, true);
+                $candles = $data['candles'];
+                $lastTwoCandles = array_slice($candles, -2);
+                $lastCandle = $lastTwoCandles[1];
+                $lastOpen = $lastCandle[1];
+                $historical_data->open;
+
+                echo $lastOpen, '<br>';
+                // $historical_data->close 
+                echo 'okay';
+                exit;
+            }
+            if($previous_ord->status==0){
+                echo 'order kiya huaa hai';exit;
+            }
+            else{
+                echo 'order nhi huaa hai';exit;
+            }
+            $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,1);
+            // print_r($response);
+            // exit;
             $data = json_decode($response, true);
             if (!isset($data['candles']) || empty($data['candles'])) {
                 return response()->json(['message' => 'No candle data found'], 404);
             }
-
             $candles = $data['candles'];
             $lastTwoCandles = array_slice($candles, -2);
-
-            // Extract second last and last candle data
-            $secondLastCandle = $lastTwoCandles[0];
             $lastCandle = $lastTwoCandles[1];
             $lastOpen = $lastCandle[1];
-            echo $lastOpen;
-            // $open - $lastOpen;
-
+            echo $lastOpen, '<br>';
           sleep(3);
         }
     }
+    private function getPriceData($symbol, $inputName = 'nifty')
+    {
+        $request = new \Illuminate\Http\Request();
+        $request->merge([$inputName => $symbol]);
+        $price = $this->getPrice($request);
+        $priceData = json_decode($price->getContent(), true);
+        if ($priceData !== null) {
+            return $priceData;
+        }
+        return $price->getContent();
+    }
+    
+
 }
 
         
