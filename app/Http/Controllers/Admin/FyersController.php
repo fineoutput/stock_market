@@ -140,7 +140,7 @@ class FyersController extends Controller
                 }
                 
         }
-    }
+        }
         // Get the authorization code (implement this method as needed)
         // Prepare the API endpoint
         $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $isl;
@@ -231,7 +231,10 @@ class FyersController extends Controller
             $secondLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
             $secondLastFormattedTime = $secondLastDateTime->format('Y-m-d H:i:s');
             $secondLastOpen = $secondLastCandle[1];
+            $secondLastHigh = $secondLastCandle[2];
+            $secondLastLow = $secondLastCandle[3];
             $secondLastClose = $secondLastCandle[4];
+           
 
             // Prepare last candle details
             $lastOpen = $lastCandle[1];
@@ -406,29 +409,16 @@ class FyersController extends Controller
                 $price['open_price']-$price['lp'];
                 if ($price < 0) {
                     $symbol = $symbolData->option_ce;
-                    $price = $this->getPriceData($symbol, 'isl');
-                    echo  $price;
-                    exit;
-
+                    $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,1);
+                    // print_r($response);
+                    // exit;
                 }
                 else{
                     $symbol = $symbolData->option_pe;
+                    $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,1);
 
                 }
                 
-
-                $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,1);
-                $data = json_decode($response, true);
-                $candles = $data['candles'];
-                $lastTwoCandles = array_slice($candles, -2);
-                $lastCandle = $lastTwoCandles[1];
-                $lastOpen = $lastCandle[1];
-                $historical_data->open;
-
-                echo $lastOpen, '<br>';
-                // $historical_data->close 
-                echo 'okay';
-                exit;
             }
             if($previous_ord->status==0){
                 echo 'order kiya huaa hai';exit;
