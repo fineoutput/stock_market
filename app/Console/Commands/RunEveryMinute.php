@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-se App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\OrderController;
 
 class RunEveryMinute extends Command
 {
