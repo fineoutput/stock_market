@@ -81,7 +81,7 @@ class OrderController extends Controller
                         }
                         if($live_price_Stock < $last_close){
                             \Log::info('Exit Created at ' . now());
-                            $entry; = 0;
+                         $entry= 0;
                              //   exit;
                          }
                         
