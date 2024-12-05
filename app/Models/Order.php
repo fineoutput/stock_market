@@ -10,8 +10,10 @@ class Order extends Model
     use HasFactory;
     protected $table = 'tbl_order';
     protected $fillable = [
+        'stock_name',
         'stock',
         'buy_price',
+        'order_price',
         'sl',
         'exit_price',
         'status',

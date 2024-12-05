@@ -1,11 +1,13 @@
 <?php
 
+use App\Models\Order;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\TeamController; 
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Admin\CrmController;
 use App\Http\Controllers\Auth\adminlogincontroller;
 use App\Http\Controllers\Admin\FyersController;
+use App\Http\Controllers\Admin\OrderController;
 // use App\Http\Controllers\Admin\LoginController;
 // use App\Http\Controllers\Admin\SliderController;
 // use App\Http\Controllers\Admin\UserController;
@@ -81,6 +83,14 @@ Route::get('/deletesetting/{id}', [CrmController::class, 'deletesetting'])->name
 Route::resource('Fyers', FyersController::class);
 Route::get('/Fyers/update/{id}', [FyersController::class,'updateStatus'])->name('Fyers.update.status');
 Route::delete('/Fyers/destroy/{id}', [FyersController::class,'destroy'])->name('Fyers.destroy');
+
+
+//---Orders ----
+// Route::resource('Order', OrderController::class);
+Route::get('/Order/viewOrder', [OrderController::class,'viewOrder'])->name('viewOrder');
+Route::get('/Order/createOrder', [OrderController::class,'createOrder'])->name('createOrder');
+// Route::get('/Order/getPriceData/{id}', [OrderController::class,'getPriceData'])->name('getPriceData');
+// Route::delete('/Fyers/destroy/{id}', [FyersController::class,'destroy'])->name('Fyers.destroy');
 });
 
 //historical-data

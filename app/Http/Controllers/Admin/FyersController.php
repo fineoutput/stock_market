@@ -187,8 +187,8 @@ class FyersController extends Controller
                 
     public function historical_data()
     {
-        $response1 = $this->historical_data_option(1); // 1 => PE
-        $response2 = $this->historical_data_option(2); // 2 => CE
+        $response1 = $this->historical_data_option(1); // 1 => CE
+        $response2 = $this->historical_data_option(2); // 2 => PE
         return response()->json([
             'response1' => json_decode($response1->getContent(), true),
             'response2' => json_decode($response2->getContent(), true),
@@ -207,7 +207,7 @@ class FyersController extends Controller
             $endDateTime = $datetime->format('Y-m-d H:i:s');
 
             $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
-            $symbol = $symbolstatus == 1 ? $symbolData->option_pe : $symbolData->option_ce;
+            $symbol = $symbolstatus == 1 ? $symbolData->option_ce : $symbolData->option_pe;
 
            // print_r($symbol);
             // exit;
@@ -256,13 +256,14 @@ class FyersController extends Controller
             if (!$existsSecondLast) {
                 // Insert data into database
                 DB::table('historical_data')->insert([
+                    'stock' => $symbol,
                     'date' => $secondLastFormattedTime,
                     'open' => $secondLastOpen,
                     'close' => $secondLastClose,
                     'high' => $secondLastCandle[2],
                     'low' => $secondLastCandle[3],
                     'open_status' => '',
-                    'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+                    'tred_option' => $symbolstatus, // 1 => CE, 2 => PE
                 ]);
             }
             else{
@@ -270,6 +271,7 @@ class FyersController extends Controller
                   DB::table('historical_data')
                   ->where('date', $secondLastFormattedTime) 
                   ->update([
+                    'stock' => $symbol,
                     'date' => $secondLastFormattedTime,
                     'open' => $secondLastOpen,
                     'close' => $secondLastClose,
@@ -289,6 +291,7 @@ class FyersController extends Controller
            if (!$existsLastData) {
                // Insert data into database
                DB::table('historical_data')->insert([
+                    'stock' => $symbol,
                    'date' => $lastLastFormattedTime,
                    'open' => $lastOpen,
                    'close' => $lastClose,
@@ -303,6 +306,7 @@ class FyersController extends Controller
                  DB::table('historical_data')
                  ->where('date', $lastLastFormattedTime) 
                  ->update([
+                    'stock' => $symbol,
                    'date' => $lastLastFormattedTime,
                    'open' => $lastOpen,
                    'close' => $lastClose,
