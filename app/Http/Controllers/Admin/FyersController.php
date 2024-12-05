@@ -135,7 +135,8 @@ class FyersController extends Controller
                 if ($v) {
                     return response()->json([
                         'lp' => $v->lp ?? 'N/A',
-                        'open_price' => $v->open_price ?? 'N/A'
+                        'open_price' => $v->open_price ?? 'N/A',
+                        'bid' => $v->bid ?? 'N/A'
                     ]);
                 }
                 
@@ -386,73 +387,107 @@ class FyersController extends Controller
             }
     }
 
-    public function continue_tred($symbolstatus)
+    public function continue_tred()
     {
-        // dd($symbolstatus);
-        $previous_ord = DB::table('tbl_order')->where('stock',$symbolstatus)->orderBy('id', 'desc')->first();
-        $historical_data = DB::table('historical_data')->where('tred_option',$symbolstatus)->orderBy('id', 'desc')->first();
         $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+        $main_symbol = 'NSE:NIFTY50-INDEX';
+        $price = $this->getPriceData($main_symbol);
+        $price = $price['open_price']-$price['lp'];
+        if ($price < 0) 
+        {
+         $symbol = $symbolData->option_ce;
+         $stock = 2;
+        }
+        else
+        {
+            $symbol = $symbolData->option_pe;
+            $stock = 1;      
+        }
+        $historical_data = DB::table('historical_data')->where('tred_option',$stock)->orderBy('id', 'desc')->first();
+        $previous_ord = DB::table('tbl_order')->where('stock',$stock)->orderBy('id', 'desc')->first();
         
-        $currentDate = date('Y-m-d');
-        $startTime = config('constants.time.START_TIME');
-        $endTime = config('constants.time.END_TIME');
-        $startDateTime = $currentDate . ' ' . $startTime;
-        $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
-        $endDateTime = $datetime->format('Y-m-d H:i:s');
+        date_default_timezone_set('Asia/Kolkata');
+        $currentDateTime = date('Y-m-d H:i:s');
 
         for ($i = 1; $i <= 17; $i++) {
-
-            if(empty($previous_ord) || !isset($previous_ord->status)){
-
-                $main_symbol = 'NSE:NIFTY50-INDEX';
-                $price = $this->getPriceData($main_symbol, 'nifty');
-                $price['open_price']-$price['lp'];
-                if ($price < 0) {
-                    $symbol = $symbolData->option_ce;
-                    $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,1);
-                    // print_r($response);
-                    // exit;
+                $price = $this->getPriceData($symbol);
+                $stock_price = $price['bid'];
+            if(empty($previous_ord) || !isset($previous_ord->status) || $previous_ord->status==1)
+            {
+                if ($stock == 2 && $stock_price > $historical_data->open) {
+                    $status = 0;
                 }
-                else{
-                    $symbol = $symbolData->option_pe;
-                    $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,1);
-
+                if ($stock == 1 && $stock_price < $historical_data->open) {
+                    $status = 0;
                 }
-                
+            
+             if($status == 0){
+                $lot_price = $stock * 50;
+                  if($lot_price >= $symbolData->amount){
+                    $quantity = round($lot_price / $symbolData->amount, 2);
+                    DB::table('tbl_order')->insert([
+                    'stock' => $stock, 
+                    'buy_price' => $stock_price, 
+                    'sl' => $historical_data->close, 
+                    'status' => $status, 
+                    'start_time' => $currentDateTime,  
+                    'qty' => $quantity,
+                    'profit_loss_status' => 0,  
+                    ]);    
+               }
             }
+            }
+        $previous_ord = DB::table('tbl_order')->where('stock',$stock)->orderBy('id', 'desc')->first();
             if($previous_ord->status==0){
-                echo 'order kiya huaa hai';exit;
+                if ($stock == 2 && $stock_price < $previous_ord->sl) {
+                    $status = 1;
+                }
+                if ($stock == 1 && $stock_price > $previous_ord->sl) {
+                    $status = 1;
+                }  
+                if($status == 1){
+                    $profitLossAmount = $previous_ord->buy_price - $stock_price * $previous_ord->buy_price;
+                    if ($profitLossAmount <= 0) {
+                        $profitLossStatus = 1;
+                    } else {
+                        $profitLossStatus = 0;
+                    }
+                DB::table('tbl_order')
+                    ->where('id', $previous_ord->id)
+                    ->update([
+                        'exit_price' => $stock_price,
+                        'status' => $status,
+                        'end_time' => $currentDateTime,
+                        'profit_loss_status' => $profitLossStatus,
+                        'profit_loss_amt' => $profitLossAmount,
+                    ]);
+                }
+
+                // echo 'order kiya huaa hai';exit;
             }
-            else{
-                echo 'order nhi huaa hai';exit;
-            }
-            $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,1);
-            // print_r($response);
-            // exit;
-            $data = json_decode($response, true);
-            if (!isset($data['candles']) || empty($data['candles'])) {
-                return response()->json(['message' => 'No candle data found'], 404);
-            }
-            $candles = $data['candles'];
-            $lastTwoCandles = array_slice($candles, -2);
-            $lastCandle = $lastTwoCandles[1];
-            $lastOpen = $lastCandle[1];
-            echo $lastOpen, '<br>';
           sleep(3);
         }
     }
+
     private function getPriceData($symbol, $inputName = 'nifty')
     {
         $request = new \Illuminate\Http\Request();
         $request->merge([$inputName => $symbol]);
         $price = $this->getPrice($request);
-        $priceData = json_decode($price->getContent(), true);
-        if ($priceData !== null) {
+        if ($price instanceof \Illuminate\Http\JsonResponse) {
+            $priceData = json_decode($price->getContent(), true);
+            if (is_array($priceData)) {
+                return $priceData;
+            }
+        }
+        $priceData = json_decode($price, true);
+        if (is_array($priceData)) {
             return $priceData;
         }
-        return $price->getContent();
+        return [
+            'error' => 'Unexpected response format or invalid data.',
+        ];
     }
-    
 
 }
 
