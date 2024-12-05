@@ -435,10 +435,18 @@ class FyersController extends Controller
                     'profit_loss_status' => 0,  
                     ]);    
                }
+               else{
+                return response()->json([
+                    'message' => 'You have less amount',
+                    'status' => 'success'
+                ]);
+                
+               }
             }
             }
         $previous_ord = DB::table('tbl_order')->where('stock',$stock)->orderBy('id', 'desc')->first();
             if($previous_ord->status==0){
+                $status = 0;
                 if ($stock == 2 && $stock_price < $previous_ord->sl) {
                     $status = 1;
                 }
@@ -467,6 +475,11 @@ class FyersController extends Controller
             }
           sleep(3);
         }
+        return response()->json([
+            'message' => 'Work complete',
+            'status' => 'success'
+        ]);
+        
     }
 
     private function getPriceData($symbol, $inputName = 'nifty')
