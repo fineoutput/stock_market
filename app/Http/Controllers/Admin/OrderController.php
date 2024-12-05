@@ -54,7 +54,11 @@ class OrderController extends Controller
                 }
 
             //CHECK LAST OPEN TO 
-            $Historical = Historical::wherenull('deleted_at')->where('tred_option', $nifty_status)->first();
+            $secondLast = Historical::wherenull('deleted_at')->where('tred_option', $nifty_status)->skip(1)
+            ->take(1)->first();
+            if($secondLast){
+                    $last_open = $secondLast->open;
+            }
 
             }
         }

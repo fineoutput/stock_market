@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+se App\Http\Controllers\Admin\OrderController;
 
 class RunEveryMinute extends Command
 {
@@ -38,7 +39,11 @@ class RunEveryMinute extends Command
     public function handle()
     {
          // Place the function you want to execute here
-         \Log::info('Running the task every minute!');
-         return 0;
+          // Instantiate the controller or use dependency injection
+              $controller = new OrderController();
+
+          // Call the function in the controller
+             $response = $controller->createOrder();
+             return 0;
     }
 }
