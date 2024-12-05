@@ -27,6 +27,9 @@ class OrderController extends Controller
 
     public function createOrder()
     {
+          // Your function logic here
+          \Log::info('Task executed at ' . now());
+          exit;
         //check if order exists or not
         $runningOrder = Order::where('status', 0)->first();
 
