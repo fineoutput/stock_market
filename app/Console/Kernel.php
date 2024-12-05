@@ -20,8 +20,8 @@ class Kernel extends ConsoleKernel
         ->everyMinute()
         ->when(function () {
             $currentTime = now(); // Current time
-            $startTime = now()->setTime(02, 00); // 9:15 AM
-            $endTime = now()->setTime(03, 00); // 3:30 PM
+            $startTime = now()->setTime(09, 15); // 9:15 AM
+            $endTime = now()->setTime(15, 30); // 3:30 PM
 
             return $currentTime->between($startTime, $endTime);
         });
