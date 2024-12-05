@@ -64,31 +64,28 @@
                                     </thead>
                                     <tbody>
                                         @foreach($historicalData  as $data)
-                                        @php
-                                         $class="green";
-                                         $btn_class = "red";
-                                        if($data->open_status == "1"){
+                                        <tr style="background: @php 
+                                        if($data->open - $data->close > 0){
                                             $class="red";
-                                         $btn_class = "green";
-
+                                            $btn_class = "green";
                                         }
-                                    @endphp
-                                        <tr style="background: @php echo $class; @endphp">
+                                        else{
+                                            $class="green";
+                                            $btn_class = "red";
+                                        }
+                                        echo $class;
+                                        
+                                         @endphp">
                                            
-                                            <td>{{ $loop->index+1 }}</td>
+                                            <td style="color:white;">{{ $loop->index+1 }}</td>
                                             {{-- <td>{{ $data->date }}</td> --}}
-                                            <td>{{ date('d F Y  h:i:s A', strtotime($data->date)) }}</td>
-                                            <td>₹{{ $data->open }}</td>
-                                            <td>₹{{ $data->close }}</td>
-                                            <td>₹{{ $data->high }}</td>
-                                            <td>₹{{ $data->low }}</td>
-                                            @if($data->open_status == "1")
-                                            <td><p class="label status-active" style="background: @php echo $btn_class; @endphp">NO Entry</p></td>
-                                            @elseif ($data->open_status == "0")
-                                            <td><p class="label status-active" style="background: @php echo $btn_class; @endphp">Entry</p></td> 
-                                            @else
+                                            <td style="color:white;">{{ date('d F Y  h:i:s A', strtotime($data->date)) }}</td>
+                                            <td style="color:white;">₹{{ $data->open }}</td>
+                                            <td style="color:white;">₹{{ $data->close }}</td>
+                                            <td style="color:white;">₹{{ $data->high }}</td>
+                                            <td style="color:white;">₹{{ $data->low }}</td>
                                             <td></td> 
-                                            @endif
+                                           
                                             </tr>  
                                          @endforeach
                                     
