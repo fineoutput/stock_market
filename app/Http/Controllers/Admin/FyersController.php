@@ -420,10 +420,10 @@ class FyersController extends Controller
                 if ($stock == 1 && $stock_price < $historical_data->open) {
                     $status = 0;
                 }
-            
+               
              if($status == 0){
                 $lot_price = $stock * 50;
-                  if($lot_price >= $symbolData->amount){
+                  if($lot_price <= $symbolData->amount){
                     $quantity = round($lot_price / $symbolData->amount, 2);
                     DB::table('tbl_order')->insert([
                     'stock' => $stock, 
