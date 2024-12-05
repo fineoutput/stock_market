@@ -238,7 +238,7 @@ class FyersController extends Controller
            
 
             // Prepare last candle details
-            $lastcandleLastTimestamp = $lastCandle[1];
+            $lastcandleLastTimestamp = $lastCandle[0];
             $lastLastDateTime = new DateTime("@$lastcandleLastTimestamp");
             $lastLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
             $lastLastFormattedTime = $lastLastDateTime->format('Y-m-d H:i:s');
