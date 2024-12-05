@@ -16,6 +16,15 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('run:every-minute')
+        ->everyMinute()
+        ->when(function () {
+            $currentTime = now(); // Current time
+            $startTime = now()->setTime(21, 00); // 9:15 AM
+            $endTime = now()->setTime(22, 00); // 3:30 PM
+
+            return $currentTime->between($startTime, $endTime);
+        });
     }
 
     /**
