@@ -238,54 +238,22 @@ class FyersController extends Controller
            
 
             // Prepare last candle details
+            $lastcandleLastTimestamp = $lastCandle[1];
+            $lastLastDateTime = new DateTime("@$lastcandleLastTimestamp");
+            $lastLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
+            $lastLastFormattedTime = $lastLastDateTime->format('Y-m-d H:i:s');
             $lastOpen = $lastCandle[1];
             $lastHigh = $lastCandle[2];
             $lastLow = $lastCandle[3];
             $lastClose = $lastCandle[4];
 
-            // Fetch the last entry in the database
-            $lastEntry = DB::table('historical_data')->orderBy('id', 'desc')->first();
-
-            // Determine status based on last entry
-           // Default: Continue
-            if ($lastEntry) {
-                if ($lastEntry->tred_option == 1 && $symbolstatus == 2) { // Check for CE
-                    if (
-                        $secondLastOpen > $lastEntry->open ||
-                        $secondLastHigh > $lastEntry->open ||
-                        $secondLastLow >  $lastEntry->open ||
-                        $secondLastClose > $lastEntry->open
-                    ) {
-                        $status = 0; // CE condition met
-                    } else {
-                        $status = 1; // CE condition not met
-                    }
-                }
-                if ($lastEntry->tred_option == 2 && $symbolstatus == 1) { // Check for PE
-                    if (
-                        $secondLastOpen < $lastEntry->open ||
-                        $secondLastHigh < $lastEntry->open ||
-                        $secondLastLow  < $lastEntry->open ||
-                        $secondLastClose < $lastEntry->open
-                    ) {
-                        $status = 0; // CE condition met
-                    } else {
-                        $status = 1; // CE condition not met
-                    }
-                }
-                if($lastEntry->open_status==1 && $status==1)
-                {
-                    $status =2;
-                }
-            }
-
-            // Check if data already exists
-            $exists = DB::table('historical_data')
+            // Check if Second last data already exists
+            $existsSecondLast = DB::table('historical_data')
                 ->where('date', $secondLastFormattedTime)
                 ->where('tred_option', $symbolstatus)
                 ->exists();
 
-            if (!$exists) {
+            if (!$existsSecondLast) {
                 // Insert data into database
                 DB::table('historical_data')->insert([
                     'date' => $secondLastFormattedTime,
@@ -293,16 +261,64 @@ class FyersController extends Controller
                     'close' => $secondLastClose,
                     'high' => $secondLastCandle[2],
                     'low' => $secondLastCandle[3],
-                    'open_status' => $status,
+                    'open_status' => '',
                     'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
                 ]);
             }
+            else{
+                  // Update data into database
+                  DB::table('historical_data')
+                  ->where('date', $secondLastFormattedTime) 
+                  ->update([
+                    'date' => $secondLastFormattedTime,
+                    'open' => $secondLastOpen,
+                    'close' => $secondLastClose,
+                    'high' => $secondLastCandle[2],
+                    'low' => $secondLastCandle[3],
+                    'open_status' => '',
+                    'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+                ]);
+            }
+
+        // Check if last data already exists
+               $existsLastData = DB::table('historical_data')
+               ->where('date', $lastLastFormattedTime)
+               ->where('tred_option', $symbolstatus)
+               ->exists();
+
+           if (!$existsLastData) {
+               // Insert data into database
+               DB::table('historical_data')->insert([
+                   'date' => $lastLastFormattedTime,
+                   'open' => $lastOpen,
+                   'close' => $lastClose,
+                   'high' => $lastHigh,
+                   'low' => $lastLow,
+                   'open_status' => '',
+                   'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+               ]);
+           }
+           else{
+                 // Update data into database
+                 DB::table('historical_data')
+                 ->where('date', $lastLastFormattedTime) 
+                 ->update([
+                   'date' => $lastLastFormattedTime,
+                   'open' => $lastOpen,
+                   'close' => $lastClose,
+                   'high' => $lastHigh,
+                   'low' => $lastLow,
+                   'open_status' => '',
+                   'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+               ]);
+           }
+
 
             return response()->json([
                 'message' => 'Candle data processed successfully',
                 'symbol' => $symbol,
                 'date' => $secondLastFormattedTime,
-                'status' => $status,
+                'status' => "Success",
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -327,7 +343,6 @@ class FyersController extends Controller
         $date22 = new DateTime($date200, new DateTimeZone('Asia/Kolkata')); // Your date and timezone
         $d2 = $date22->getTimestamp();
 
-        $symbol = $symbol;
         $auth_code = $this->authCode();
         $res = $time;
         $date_format = 0;
