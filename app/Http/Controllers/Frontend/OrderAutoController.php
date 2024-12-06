@@ -49,7 +49,7 @@ public function createOrder()
                 }
                 else{
                     // NIFTY IS RED/NEGATIVE
-                    $nifty_status = 0;
+                    $nifty_status = 2;
                     $symbol = $symbolData->option_pe;
                 }
 
@@ -67,7 +67,22 @@ public function createOrder()
 
                         if($live_price_Stock > $last_open){
                             if($entry == 0){
-                           \Log::info('Entry Created at ' . now());
+                        //    \Log::info('Entry Created at ' . now());
+                        Order::create([
+                            'stock_name' => $symbol,
+                            'stock' => $nifty_status,
+                            'buy_price' => $last_open,
+                            'order_price' => $live_price_Stock,
+                            'sl' => $last_close,
+                            'exit_price' => "",
+                            'status' => 0,
+                            'start_time' => now(),
+                            'end_time' => "",
+                            'qty' => 100,
+                            'profit_loss_status' => "",
+                            'profit_loss_amt' => "",
+                            'created_at' => now()
+                        ]);
                            $entry = 1;
                             }
                             //   exit;
