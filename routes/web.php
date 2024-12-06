@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CrmController;
 use App\Http\Controllers\Auth\adminlogincontroller;
 use App\Http\Controllers\Admin\FyersController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Frontend\OrderController;
 // use App\Http\Controllers\Admin\LoginController;
 // use App\Http\Controllers\Admin\SliderController;
 // use App\Http\Controllers\Admin\UserController;
@@ -88,7 +89,7 @@ Route::delete('/Fyers/destroy/{id}', [FyersController::class,'destroy'])->name('
 //---Orders ----
 // Route::resource('Order', OrderController::class);
 Route::get('/Order/viewOrder', [OrderController::class,'viewOrder'])->name('viewOrder');
-Route::get('/Order/createOrder', [OrderController::class,'createOrder'])->name('createOrder');
+// Route::get('/Order/createOrder', [OrderController::class,'createOrder'])->name('createOrder');
 // Route::get('/Order/getPriceData/{id}', [OrderController::class,'getPriceData'])->name('getPriceData');
 // Route::delete('/Fyers/destroy/{id}', [FyersController::class,'destroy'])->name('Fyers.destroy');
 });
@@ -100,6 +101,9 @@ Route::get('view-historical-data-CE', [FyersController::class, 'fetchHistoricalD
 Route::get('view-historical-data-PE', [FyersController::class, 'fetchHistoricalData'])->name('view_historical_data_PE');
 Route::get('continue-tred', [FyersController::class, 'continue_tred'])->name('continue-tred');
 Route::get('historical-data-1m', [FyersController::class, 'historical_data_1m']);
+
+
+Route::get('/Order/createOrder', [OrderController::class,'createOrder'])->name('createOrder');
 
 });
 
