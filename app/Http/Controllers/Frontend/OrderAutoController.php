@@ -10,6 +10,9 @@ use Laravel\Sanctum\PersonalAccessToken;
 use DateTime;
 use Illuminate\Support\Facades\Http; // For making HTTP requests
 use Illuminate\Support\Facades\DB; // For database operations
+use App\adminmodel\FyersModal;
+use App\Models\Order;
+use App\Models\Historical;
 
 class OrderAutoController extends Controller
 {
