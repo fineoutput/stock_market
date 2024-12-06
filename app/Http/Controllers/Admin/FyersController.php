@@ -235,6 +235,13 @@ class FyersController extends Controller
             $secondLastHigh = $secondLastCandle[2];
             $secondLastLow = $secondLastCandle[3];
             $secondLastClose = $secondLastCandle[4];
+
+            if($secondLastOpen - $secondLastClose > 0){
+                $op = 1; //RED CANDLE
+            }
+            else{
+                $op = 0;
+            }
            
 
             // Prepare last candle details
@@ -247,6 +254,13 @@ class FyersController extends Controller
             $lastLow = $lastCandle[3];
             $lastClose = $lastCandle[4];
 
+            if($lastOpen - $lastClose > 0){
+                $opc = 1; //RED CANDLE
+            }
+            else{
+                $opc = 0; //GREEN CANDLE
+            }
+
             // Check if Second last data already exists
             $existsSecondLast = DB::table('historical_data')
                 ->where('date', $secondLastFormattedTime)
@@ -254,6 +268,7 @@ class FyersController extends Controller
                 ->exists();
 
             if (!$existsSecondLast) {
+              
                 // Insert data into database
                 DB::table('historical_data')->insert([
                     'stock' => $symbol,
@@ -262,7 +277,7 @@ class FyersController extends Controller
                     'close' => $secondLastClose,
                     'high' => $secondLastCandle[2],
                     'low' => $secondLastCandle[3],
-                    'open_status' => '',
+                    'open_status' => $op,
                     'tred_option' => $symbolstatus, // 1 => CE, 2 => PE
                 ]);
             }
@@ -277,7 +292,7 @@ class FyersController extends Controller
                     'close' => $secondLastClose,
                     'high' => $secondLastCandle[2],
                     'low' => $secondLastCandle[3],
-                    'open_status' => '',
+                    'open_status' => $op,
                     'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
                 ]);
             }
@@ -297,7 +312,7 @@ class FyersController extends Controller
                    'close' => $lastClose,
                    'high' => $lastHigh,
                    'low' => $lastLow,
-                   'open_status' => '',
+                   'open_status' => $opc,
                    'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
                ]);
            }
@@ -312,7 +327,7 @@ class FyersController extends Controller
                    'close' => $lastClose,
                    'high' => $lastHigh,
                    'low' => $lastLow,
-                   'open_status' => '',
+                   'open_status' => $opc,
                    'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
                ]);
            }

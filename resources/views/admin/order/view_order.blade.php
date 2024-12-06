@@ -81,7 +81,7 @@
                                             <td >{{ $data1->profit_loss_status }}</td>
                                             <td >{{ $data1->qty }}</td>
                                             <td >₹{{ $data1->profit_loss_amt }}</td>
-                                            <td></td> 
+                                          
                                            
                                             </tr>  
                                          @endforeach
