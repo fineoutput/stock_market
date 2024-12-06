@@ -67,7 +67,7 @@ public function createOrder()
 
                         if($live_price_Stock > $last_open){
                             if($entry == 0){
-                        //    \Log::info('Entry Created at ' . now());
+                           \Log::info('d1 ' . symbol);
                         Order::create([
                             'stock_name' => $symbol,
                             'stock' => $nifty_status,
@@ -111,8 +111,8 @@ public function createOrder()
     private function getPriceData($symbol, $inputName = 'nifty')
     {
         $request = new \Illuminate\Http\Request();
+        if($symbol == "nifty"){
         $request->merge([$inputName => $symbol]);
-       
         $price = $this->getPrice($request);
         if ($price instanceof \Illuminate\Http\JsonResponse) {
             $priceData = json_decode($price->getContent(), true);
@@ -124,6 +124,14 @@ public function createOrder()
         if (is_array($priceData)) {
             return $priceData;
         }
+        }
+        else{
+             $request->merge(['isl' => $symbol]);
+              $price = $this->getPrice($request);
+              return $price;
+        }
+       
+        
         return [
             'error' => 'Unexpected response format or invalid data.',
         ];
@@ -183,7 +191,7 @@ public function createOrder()
             }
                 
                 // Return ask price or bid price if ask is 0
-                return $ask == 0 ? "Price - ₹".$bid : "Price - ₹".$ask;
+                return $ask == 0 ? "Price - ₹".$bid :$ask;
             }
                 
             return null; // Return null if no data found
