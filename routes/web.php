@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\CrmController;
 use App\Http\Controllers\Auth\adminlogincontroller;
 use App\Http\Controllers\Admin\FyersController;
 use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\Frontend\OrderController;
+use App\Http\Controllers\Frontend\OrderAutoController;
 // use App\Http\Controllers\Admin\LoginController;
 // use App\Http\Controllers\Admin\SliderController;
 // use App\Http\Controllers\Admin\UserController;
@@ -103,7 +103,7 @@ Route::get('continue-tred', [FyersController::class, 'continue_tred'])->name('co
 Route::get('historical-data-1m', [FyersController::class, 'historical_data_1m']);
 
 
-Route::get('/Order/createOrder', [OrderController::class,'createOrder'])->name('createOrder');
+Route::get('/Order/createOrder', [OrderAutoController::class,'createOrder'])->name('createOrder');
 
 });
 

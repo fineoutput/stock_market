@@ -11,7 +11,7 @@ use DateTime;
 use Illuminate\Support\Facades\Http; // For making HTTP requests
 use Illuminate\Support\Facades\DB; // For database operations
 
-class OrderController extends Controller
+class OrderAutoController extends Controller
 {
 
 
