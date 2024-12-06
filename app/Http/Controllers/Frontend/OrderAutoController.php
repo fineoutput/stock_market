@@ -54,7 +54,7 @@ public function createOrder()
                 }
 
             //CHECK LAST OPEN TO 
-            $secondLast = Historical::wherenull('deleted_at')->where('tred_option', $nifty_status)->skip(1)
+            $secondLast = Historical::wherenull('deleted_at')->where('tred_option', $nifty_status)->orderBy('id', 'DESC')->skip(1)
             ->take(1)->first();
             if($secondLast){
 
@@ -64,7 +64,7 @@ public function createOrder()
 
                     for ($i = 0; $i < $iterations; $i++) {
                         $live_price_Stock = $this->getPriceData($symbol);
-
+                        \Log::info('Live - Open ' . $live_price_Stock.','.$last_open);
                         if($live_price_Stock > $last_open){
                             if($entry == 0){
                            \Log::info('d1 ' . symbol);
@@ -74,7 +74,7 @@ public function createOrder()
                             'buy_price' => $last_open,
                             'order_price' => $live_price_Stock,
                             'sl' => $last_close,
-                            'exit_price' => "",
+                            'exit_price' => 0,
                             'status' => 0,
                             'start_time' => now(),
                             'end_time' => "",
