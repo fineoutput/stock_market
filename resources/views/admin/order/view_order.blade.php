@@ -70,17 +70,17 @@
                                         <tr>
                                            
                                             <td >{{ $loop->index+1 }}</td>
-                                            <td >₹{{ $data->stock_name }}</td>
-                                            <td >₹{{ $data->buy_price }}</td>
-                                            <td >₹{{ $data->order_price }}</td>
-                                            <td >₹{{ $data->sl }}</td>
-                                            <td >₹{{ $data->exit_price }}</td>
-                                            <td >{{ date('d F Y  h:i:s A', strtotime($data->start_time)) }}</td>
-                                            <td >{{ date('d F Y  h:i:s A', strtotime($data->end_time)) }}</td>
-                                            <td >₹{{ $data->status }}</td>
-                                            <td >₹{{ $data->profit_loss_status }}</td>
-                                            <td >₹{{ $data->qty }}</td>
-                                            <td >₹{{ $data->profit_loss_amt }}</td>
+                                            <td >{{ $data1->stock_name }}</td>
+                                            <td >₹{{ $data1->buy_price }}</td>
+                                            <td >₹{{ $data1->order_price }}</td>
+                                            <td >₹{{ $data1->sl }}</td>
+                                            <td >₹{{ $data1->exit_price }}</td>
+                                            <td >{{ date('d F Y  h:i:s A', strtotime($data1->start_time)) }}</td>
+                                            <td >{{ date('d F Y  h:i:s A', strtotime($data1->end_time)) }}</td>
+                                            <td >{{ $data1->status }}</td>
+                                            <td >{{ $data1->profit_loss_status }}</td>
+                                            <td >{{ $data1->qty }}</td>
+                                            <td >₹{{ $data1->profit_loss_amt }}</td>
                                             <td></td> 
                                            
                                             </tr>  

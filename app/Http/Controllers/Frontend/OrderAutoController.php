@@ -79,8 +79,8 @@ public function createOrder()
                             'start_time' => now(),
                             'end_time' => "",
                             'qty' => 100,
-                            'profit_loss_status' => "",
-                            'profit_loss_amt' => "",
+                            'profit_loss_status' => 0,
+                            'profit_loss_amt' => 0,
                             'created_at' => now()
                         ]);
                            $entry = 1;
