@@ -397,11 +397,11 @@ class FyersController extends Controller
     {
         $currentUrl = request()->url();
         if (str_contains($currentUrl, 'view-historical-data-PE')) {
-        $historicalData = DB::table('historical_data')->where('tred_option', '=', '1')->orderBy('id', 'desc')->get();
+        $historicalData = DB::table('historical_data')->where('tred_option', '=', '2')->orderBy('id', 'desc')->get();
         return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data PE ']);
         }
         else {
-            $historicalData = DB::table('historical_data')->where('tred_option', '=', '2')->orderBy('id', 'desc')->get();
+            $historicalData = DB::table('historical_data')->where('tred_option', '=', '1')->orderBy('id', 'desc')->get();
             return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data CE ']);
             }
     }
