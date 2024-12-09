@@ -34,10 +34,12 @@ public function createOrder()
 
             if($secondLast){
                 if($secondLast->id == $runningOrder->historic_id){
+                    \Log::info('SAME HISTORIC ID');
                     //NO UPDATE TO BE DONE IN ORDER
                     $iterations = 18;
                     for ($i = 0; $i < $iterations; $i++) {
                         $live_price_Stock = $this->getPriceData($runningOrder->stock_name);
+                        \Log::info('Live - SL ' . $live_price_Stock.','.$$runningOrder->sl);
                         if($live_price_Stock < $runningOrder->sl){
                                 //  CLOSED THE TRADE
                            $pl = $runningOrder->order_price-$live_price_Stock;
