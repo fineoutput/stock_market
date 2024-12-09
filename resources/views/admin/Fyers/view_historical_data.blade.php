@@ -79,7 +79,7 @@
                                          @endphp">
                                            
                                             <td style="color:white;">{{ $loop->index+1 }}</td>
-                                             <td style="color:white;">₹{{ $data->stock }}</td>
+                                             <td style="color:white;">{{ $data->stock }}</td>
                                             <td style="color:white;">{{ date('d F Y  h:i:s A', strtotime($data->date)) }}</td>
                                             <td style="color:white;">₹{{ $data->open }}</td>
                                             <td style="color:white;">₹{{ $data->close }}</td>

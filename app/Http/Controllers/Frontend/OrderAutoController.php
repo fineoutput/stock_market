@@ -42,10 +42,10 @@ public function createOrder()
                                 //  CLOSED THE TRADE
                            $pl = $runningOrder->order_price-$live_price_Stock;
                            if($pl >0){
-                            $profit_loss_status = 0;
+                            $profit_loss_status = 1;
                            }
                            else{
-                            $profit_loss_status = 1;
+                            $profit_loss_status = 0;
                            }         
                                 DB::table('tbl_order')
                                 ->where('id', $runningOrder->id) 
