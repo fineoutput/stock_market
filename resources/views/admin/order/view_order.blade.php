@@ -78,7 +78,7 @@
                                             <td >{{ date('d F Y  h:i:s A', strtotime($data1->start_time)) }}</td>
                                             <td >{{ date('d F Y  h:i:s A', strtotime($data1->end_time)) }}</td>
                                             <td style="color: {{ $data1->status == 1 ? 'green' : 'red' }}">
-                                                {{ $data1->status == 1 ? 'In Process' : 'Completed' }}
+                                                {{ $data1->status == 1 ? 'Completed' : 'In Process' }}
                                             </td>
                                             <td style="color: {{ $data1->profit_loss_status == 1 ? 'red' : 'green' }}">
                                                 {{ $data1->status == 1 ? 'Loss' : 'Profit' }}
