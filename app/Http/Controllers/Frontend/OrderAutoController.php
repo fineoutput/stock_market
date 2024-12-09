@@ -39,7 +39,7 @@ public function createOrder()
                     $iterations = 18;
                     for ($i = 0; $i < $iterations; $i++) {
                         $live_price_Stock = $this->getPriceData($runningOrder->stock_name);
-                        \Log::info('Live - SL ' . $live_price_Stock.','.$$runningOrder->sl);
+                        \Log::info('Live - SL ' . $live_price_Stock.','.$runningOrder->sl);
                         if($live_price_Stock < $runningOrder->sl){
                                 //  CLOSED THE TRADE
                            $pl = $runningOrder->order_price-$live_price_Stock;
