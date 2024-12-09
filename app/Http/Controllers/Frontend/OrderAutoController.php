@@ -129,11 +129,13 @@ public function createOrder()
                     // NIFTY IS GREEN/POSITIVE
                     $nifty_status = 1;
                     $symbol = $symbolData->option_ce;
+                    \Log::info('NIFTY TRADING GREEN _ CE SIDE');
                 }
                 else{
                     // NIFTY IS RED/NEGATIVE
                     $nifty_status = 2;
                     $symbol = $symbolData->option_pe;
+                    \Log::info('NIFTY TRADING RED _ PE SIDE');
                 }
 
             //CHECK LAST OPEN TO 
@@ -203,6 +205,9 @@ public function createOrder()
     // Wait for 3 seconds before the next iteration
             sleep(3);
                     }
+            } // SECOND LAST CANDLE NOT RED
+            else{
+                \Log::info('SECOND LAST CANDLE NOT RED');
             }
 
             }
