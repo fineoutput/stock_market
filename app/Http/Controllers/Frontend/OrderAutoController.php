@@ -106,7 +106,8 @@ public function createOrder()
 
                         }
 
-
+ // Wait for 3 seconds before the next iteration
+ sleep(3);
                     } //FOR END
 
                 } //ELSE END
