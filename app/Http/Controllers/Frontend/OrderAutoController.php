@@ -62,7 +62,8 @@ public function createOrder()
 
                         } // IF END 
 
-
+                    // Wait for 3 seconds before the next iteration
+                    sleep(3);
                     } //FOR LOOP END
 
                 }
