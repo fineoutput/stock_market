@@ -80,7 +80,8 @@
                                             <td style="color: {{ $data1->status == 1 ? 'green' : 'red' }}">
                                                 {{ $data1->status == 1 ? 'Completed' : 'In Process' }}
                                             </td>
-                                            <td style="color: {{ $data1->profit_loss_status == 1 ? 'red' : 'green' }}">
+                                            <td style="color: {{ 
+                                            $data1->profit_loss_status == 1 ? 'red' : 'green' }}">
                                                 {{ $data1->status == 1 ? 'Loss' : 'Profit' }}
                                             </td>
                                             <td >{{ $data1->qty }}</td>

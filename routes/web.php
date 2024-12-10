@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\adminlogincontroller;
 use App\Http\Controllers\Admin\FyersController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Frontend\OrderAutoController;
+use App\Http\Controllers\Frontend\CronJobController;
 // use App\Http\Controllers\Admin\LoginController;
 // use App\Http\Controllers\Admin\SliderController;
 // use App\Http\Controllers\Admin\UserController;
@@ -104,6 +105,9 @@ Route::get('historical-data-1m', [FyersController::class, 'historical_data_1m'])
 
 
 Route::get('/Order/createOrder', [OrderAutoController::class,'createOrder'])->name('createOrder');
+
+Route::get('/CronJobController/morning_job', [CronJobController::class,'morning_job'])->name('morning_job');
+Route::get('/CronJobController/evening_job', [CronJobController::class,'evening_job'])->name('evening_job');
 
 });
 
