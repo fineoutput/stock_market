@@ -34,15 +34,15 @@ class CronJobController extends Controller
         $job1= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_CE';
         $job2= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE';
 
-        deleteCronJob($job1);    
-        deleteCronJob($job2);    
+        $this->deleteCronJob($job1);    
+        $this->deleteCronJob($job2);    
 
       
 
 
     }
 
-    function deleteCronJob($jobToDelete) {
+    private function deleteCronJob($jobToDelete) {
         // Get current crontab
         $current_crontab = shell_exec('crontab -l 2>/dev/null');
         
