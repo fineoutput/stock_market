@@ -592,10 +592,12 @@ public function createOrder_CE()
                 $secondLastCandle = $lastTwoCandles[0];
                 $lastCandle = $lastTwoCandles[1];
                 $lastOpen = $lastCandle[1];
-                \Log::info('NIFTY CURRENT - '.$nifty);
+                $nifty_now = $nifty['lp'];
+                \Log::info('NIFTY CURRENT - '.$nifty_now);
+                
                 \Log::info('NIFTY LAST OPEN - '.$lastOpen);
                 
-                if($nifty >= $lastOpen){
+                if($nifty_now >= $lastOpen){
                     return 1;
                 }
                 else{
