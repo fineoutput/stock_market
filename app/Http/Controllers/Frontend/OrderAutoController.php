@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB; // For database operations
 use App\adminmodel\FyersModal;
 use App\Models\Order;
 use App\Models\Historical;
+use DateTime;
+use DateTimeZone;
 
 class OrderAutoController extends Controller
 {
@@ -56,8 +58,7 @@ public function createOrder_CE()
                                     'status' => 1, //complete
                                     'end_time' => now(),
                                     'profit_loss_status' => $profit_loss_status,
-                                    'profit_loss_amt' => $pl*$runningOrder->qty,
-                                    'created_at' => now()
+                                    'profit_loss_amt' => $pl*$runningOrder->qty
                                 ]);
 
                         } // IF END 
