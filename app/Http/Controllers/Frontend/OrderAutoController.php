@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\DB; // For database operations
 use App\adminmodel\FyersModal;
 use App\Models\Order;
 use App\Models\Historical;
-use DateTime;
 use DateTimeZone;
 
 class OrderAutoController extends Controller
