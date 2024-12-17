@@ -25,18 +25,22 @@ class OrderController extends Controller
         $count['todayOrdersCount'] = Order::whereDate('created_at', Carbon::today())->count();
 
         // Calculate total profit or loss for today's orders
-$count['todayProfitLoss'] = Order::whereDate('created_at', Carbon::today())
-->selectRaw("
-    SUM(CASE 
-        WHEN profit_loss_status = 0 THEN profit_loss_amt 
-        WHEN profit_loss_status = 1 THEN -profit_loss_amt 
-        ELSE 0 
-    END) as total_profit_loss
-")
-->value('total_profit_loss'); // Retrieve the single value
+$cc= Order::whereDate('created_at', Carbon::today())->get();
+$p_amount = 0;
+foreach($cc  as $cc2){
+$pl = $cc2->profit_loss_status;
+if($pl == 0){
+    $p_amount = $p_amount + $cc2->profit_loss_amt;
+}
+if($pl == 1){
+    $p_amount = $p_amount - $cc2->profit_loss_amt;
+}
+}
 
+$count['todayProfitLoss'] = $p_amount;
 // Assign profit or loss status
-$count['profitOrLoss'] = $count['todayProfitLoss'] > 0 ? 'Profit' : ($count['todayProfitLoss'] < 0 ? 'Loss' : 'Neutral');
+$count['profitOrLoss'] = $p_amount > 0 ? 'Profit' : ($p_amount < 0 ? 'Loss' : 'Neutral');
+// Assign profit or loss status
         
 
 
