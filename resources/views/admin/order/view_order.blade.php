@@ -40,6 +40,72 @@
                                 @endif
                                 <!-- End show success and error messages -->
                                 <div class="row">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-danger mini-stat position-relative">
+                        <a href="#">
+                            <div class="card-body">
+                                <div class="mini-stat-desc">
+                                    <h6 class="text-uppercase verti-label text-white-50">Today Orders</h6>
+                                    <div class="text-white">
+                                        <h6 class="text-uppercase mt-0 text-white-50">Today Orders</h6>
+                                        <h3 class="mb-3 mt-0">{{$count['todayOrdersCount']}}</h3>
+                                        <div class="">
+                                            <span class="ml-2">Today Orders</span>
+                                        </div>
+                                    </div>
+                                    <div class="mini-stat-icon">
+                                        <i class="mdi mdi-shopping display-2"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-warning mini-stat position-relative">
+                        <a href="#">
+                            <div class="card-body">
+                                <div class="mini-stat-desc">
+                                    <h6 class="text-uppercase verti-label text-white-50">Today P/L Status</h6>
+                                    <div class="text-white">
+                                        <h6 class="text-uppercase mt-0 text-white-50">Today P/L Status</h6>
+                                        <h3 class="mb-3 mt-0">{{$count['profitOrLoss']}}</h3>
+                                        <div class="">
+                                            <span class="ml-2">Today P/L Status</span>
+                                        </div>
+                                    </div>
+                                    <div class="mini-stat-icon">
+                                        <i class="mdi mdi-shopping display-2"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-success mini-stat position-relative">
+                        <a href="#">
+                            <div class="card-body">
+                                <div class="mini-stat-desc">
+                                    <h6 class="text-uppercase verti-label text-white-50">Today P/L</h6>
+                                    <div class="text-white">
+                                        <h6 class="text-uppercase mt-0 text-white-50">Today P/L</h6>
+                                        <h3 class="mb-3 mt-0">{{$count['todayProfitLoss']}}</h3>
+                                        <div class="">
+                                            <span class="ml-2">Today P/L</span>
+                                        </div>
+                                    </div>
+                                    <div class="mini-stat-icon">
+                                        <i class="mdi mdi-shopping display-2"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+                                <div class="row">
                                 <div class="col-md-10">
                                 <h4 class="mt-0 header-title">View {{$title}} List</h4>
                                 </div>
