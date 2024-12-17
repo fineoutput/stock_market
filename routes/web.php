@@ -107,7 +107,8 @@ Route::get('continue-tred', [FyersController::class, 'continue_tred'])->name('co
 Route::get('historical-data-1m', [FyersController::class, 'historical_data_1m']);
 
 
-Route::get('/Order/createOrder', [OrderAutoController::class,'createOrder'])->name('createOrder');
+Route::get('/Order/createOrder_CE', [OrderAutoController::class,'createOrder_CE'])->name('createOrder_CE');
+Route::get('/Order/createOrder_PE', [OrderAutoController::class,'createOrder_PE'])->name('createOrder_PE');
 
 Route::get('/CronJobController/morning_job', [CronJobController::class,'morning_job'])->name('morning_job');
 Route::get('/CronJobController/evening_job', [CronJobController::class,'evening_job'])->name('evening_job');

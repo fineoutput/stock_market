@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB; // For database operations
 use App\adminmodel\FyersModal;
 use App\Models\Order;
 use App\Models\Historical;
+use DateTimeZone;
 
 class OrderAutoController extends Controller
 {
@@ -56,8 +57,7 @@ public function createOrder_CE()
                                     'status' => 1, //complete
                                     'end_time' => now(),
                                     'profit_loss_status' => $profit_loss_status,
-                                    'profit_loss_amt' => $pl*$runningOrder->qty,
-                                    'created_at' => now()
+                                    'profit_loss_amt' => $pl*$runningOrder->qty
                                 ]);
 
                         } // IF END 
@@ -592,8 +592,12 @@ public function createOrder_CE()
                 $secondLastCandle = $lastTwoCandles[0];
                 $lastCandle = $lastTwoCandles[1];
                 $lastOpen = $lastCandle[1];
-
-                if($nifty >= $lastOpen){
+                $nifty_now = $nifty['lp'];
+                \Log::info('NIFTY CURRENT - '.$nifty_now);
+                
+                \Log::info('NIFTY LAST OPEN - '.$lastOpen);
+                
+                if($nifty_now >= $lastOpen){
                     return 1;
                 }
                 else{
