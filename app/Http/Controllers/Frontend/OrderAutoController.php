@@ -43,6 +43,7 @@ public function createOrder_CE()
                         \Log::info('CE- Live - SL ' . $live_price_Stock.','.$runningOrder->sl);
                         if($live_price_Stock < $runningOrder->sl){
                                 //  CLOSED THE TRADE
+                           $pl2 = abs($runningOrder->order_price-$live_price_Stock);
                            $pl = $runningOrder->order_price-$live_price_Stock;
                            if($pl >0){
                             $profit_loss_status = 1;
@@ -57,7 +58,7 @@ public function createOrder_CE()
                                     'status' => 1, //complete
                                     'end_time' => now(),
                                     'profit_loss_status' => $profit_loss_status,
-                                    'profit_loss_amt' => $pl*$runningOrder->qty
+                                    'profit_loss_amt' => $pl2*$runningOrder->qty
                                 ]);
 
                         } // IF END 
@@ -89,6 +90,7 @@ public function createOrder_CE()
                         if($live_price_Stock < $runningOrder->sl){
                                 //  CLOSED THE TRADE
                            $pl = $runningOrder->order_price-$live_price_Stock;
+                           $pl2 = abs($runningOrder->order_price-$live_price_Stock);
                            if($pl >0){
                             $profit_loss_status = 0;
                            }
@@ -102,7 +104,7 @@ public function createOrder_CE()
                                     'status' => 1, //complete
                                     'end_time' => now(),
                                     'profit_loss_status' => $profit_loss_status,
-                                    'profit_loss_amt' => $pl*$runningOrder->qty,
+                                    'profit_loss_amt' => $pl2*$runningOrder->qty,
                                 ]);
 
                         }
@@ -188,6 +190,7 @@ public function createOrder_CE()
                          if($entry == 1){
                                         // Update data into database
                            $pl = $original_buy_price-$live_price_Stock;
+                           $pl2 = abs($original_buy_price-$live_price_Stock);
                            if($pl >0){
                             $profit_loss_status = 0;
                            }
@@ -201,7 +204,7 @@ public function createOrder_CE()
                                     'status' => 1, //complete
                                     'end_time' => now(),
                                     'profit_loss_status' => $profit_loss_status,
-                                    'profit_loss_amt' => $pl*$original_qty
+                                    'profit_loss_amt' => $pl2*$original_qty
                                 ]);
                          }
                              //   exit;
