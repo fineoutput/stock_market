@@ -82,7 +82,7 @@
                                             </td>
                                             <td style="color: {{ 
                                             $data1->profit_loss_status == 1 ? 'red' : 'green' }}">
-                                                {{ $data1->status == 1 ? 'Loss' : 'Profit' }}
+                                                {{ $data1->profit_loss_status == 1 ? 'Loss' : 'Profit' }}
                                             </td>
                                             <td >{{ $data1->qty }}</td>
                                             <td >₹{{ $data1->profit_loss_amt }}</td>

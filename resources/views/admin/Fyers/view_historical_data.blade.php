@@ -60,7 +60,7 @@
                                         <th>Close</th>
                                         <th>High</th>
                                         <th>Low</th>
-                                        <th>Status</th>
+                                       
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -85,7 +85,7 @@
                                             <td style="color:white;">₹{{ $data->close }}</td>
                                             <td style="color:white;">₹{{ $data->high }}</td>
                                             <td style="color:white;">₹{{ $data->low }}</td>
-                                            <td></td> 
+                                          
                                            
                                             </tr>  
                                          @endforeach
