@@ -28,8 +28,8 @@ class OrderController extends Controller
 $count['todayProfitLoss'] = Order::whereDate('created_at', Carbon::today())
 ->selectRaw("
     SUM(CASE 
-        WHEN profit_loss_status = 1 THEN profit_loss_amt 
-        WHEN profit_loss_status = 0 THEN -profit_loss_amt 
+        WHEN profit_loss_status = 0 THEN profit_loss_amt 
+        WHEN profit_loss_status = 1 THEN -profit_loss_amt 
         ELSE 0 
     END) as total_profit_loss
 ")
