@@ -25,6 +25,9 @@ class CronJobController extends Controller
                 $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE';
 				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
+                $cron_command = '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data-5min';
+				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+
 
     }
 
@@ -33,9 +36,11 @@ class CronJobController extends Controller
     {
         $job1= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_CE';
         $job2= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE';
+        $job3= '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data-5min';
 
         $this->deleteCronJob($job1);    
         $this->deleteCronJob($job2);    
+        $this->deleteCronJob($job3);    
 
       
 
