@@ -195,6 +195,7 @@ class FyersController extends Controller
         ]);
     }
 
+   
     private function historical_data_option($symbolstatus)
     {
         try {
@@ -347,6 +348,169 @@ class FyersController extends Controller
         }
     }
 
+    public function historical_data_5min()
+    {
+        $response1 = $this->historical_data_option_5min(1); // 1 => CE
+        $response2 = $this->historical_data_option_5min(2); // 2 => PE
+        return response()->json([
+            'response1' => json_decode($response1->getContent(), true),
+            'response2' => json_decode($response2->getContent(), true),
+        ]);
+    }
+
+    private function historical_data_option_5min($symbolstatus)
+    {
+        try {
+            $currentDate = date('Y-m-d');
+            $startTime = config('constants.time.START_TIME');
+            $endTime = config('constants.time.END_TIME');
+            $startDateTime = $currentDate . ' ' . $startTime;
+
+            $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+            $endDateTime = $datetime->format('Y-m-d H:i:s');
+
+            $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+            $symbol = $symbolstatus == 1 ? $symbolData->option_ce : $symbolData->option_pe;
+
+           // print_r($symbol);
+            // exit;
+            $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,5);
+            // print_r($response);
+            // exit;
+            $data = json_decode($response, true);
+            if (!isset($data['candles']) || empty($data['candles'])) {
+                return response()->json(['message' => 'No candle data found'], 404);
+            }
+
+            $candles = $data['candles'];
+            $lastTwoCandles = array_slice($candles, -2);
+
+            // Extract second last and last candle data
+            $secondLastCandle = $lastTwoCandles[0];
+            $lastCandle = $lastTwoCandles[1];
+
+            // Prepare second last candle details
+            $secondLastTimestamp = $secondLastCandle[0];
+            $secondLastDateTime = new DateTime("@$secondLastTimestamp");
+            $secondLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
+            $secondLastFormattedTime = $secondLastDateTime->format('Y-m-d H:i:s');
+            $secondLastOpen = $secondLastCandle[1];
+            $secondLastHigh = $secondLastCandle[2];
+            $secondLastLow = $secondLastCandle[3];
+            $secondLastClose = $secondLastCandle[4];
+
+            if($secondLastOpen - $secondLastClose > 0){
+                $op = 1; //RED CANDLE
+            }
+            else{
+                $op = 0;
+            }
+           
+
+            // Prepare last candle details
+            $lastcandleLastTimestamp = $lastCandle[0];
+            $lastLastDateTime = new DateTime("@$lastcandleLastTimestamp");
+            $lastLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
+            $lastLastFormattedTime = $lastLastDateTime->format('Y-m-d H:i:s');
+            $lastOpen = $lastCandle[1];
+            $lastHigh = $lastCandle[2];
+            $lastLow = $lastCandle[3];
+            $lastClose = $lastCandle[4];
+
+            if($lastOpen - $lastClose > 0){
+                $opc = 1; //RED CANDLE
+            }
+            else{
+                $opc = 0; //GREEN CANDLE
+            }
+
+            // Check if Second last data already exists
+            $existsSecondLast = DB::table('historical_data_5min')
+                ->where('date', $secondLastFormattedTime)
+                ->where('tred_option', $symbolstatus)
+                ->exists();
+
+            if (!$existsSecondLast) {
+              
+                // Insert data into database
+                DB::table('historical_data')->insert([
+                    'stock' => $symbol,
+                    'date' => $secondLastFormattedTime,
+                    'open' => $secondLastOpen,
+                    'close' => $secondLastClose,
+                    'high' => $secondLastCandle[2],
+                    'low' => $secondLastCandle[3],
+                    'open_status' => $op,
+                    'tred_option' => $symbolstatus, // 1 => CE, 2 => PE
+                ]);
+            }
+            else{
+                  // Update data into database
+                  DB::table('historical_data_5min')
+                  ->where('date', $secondLastFormattedTime) 
+                  ->update([
+                    'stock' => $symbol,
+                    'date' => $secondLastFormattedTime,
+                    'open' => $secondLastOpen,
+                    'close' => $secondLastClose,
+                    'high' => $secondLastCandle[2],
+                    'low' => $secondLastCandle[3],
+                    'open_status' => $op,
+                    'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+                ]);
+            }
+
+        // Check if last data already exists
+               $existsLastData = DB::table('historical_data_5min')
+               ->where('date', $lastLastFormattedTime)
+               ->where('tred_option', $symbolstatus)
+               ->exists();
+
+           if (!$existsLastData) {
+               // Insert data into database
+               DB::table('historical_data_5min')->insert([
+                    'stock' => $symbol,
+                   'date' => $lastLastFormattedTime,
+                   'open' => $lastOpen,
+                   'close' => $lastClose,
+                   'high' => $lastHigh,
+                   'low' => $lastLow,
+                   'open_status' => $opc,
+                   'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+               ]);
+           }
+           else{
+                 // Update data into database
+                 DB::table('historical_data_5min')
+                 ->where('date', $lastLastFormattedTime) 
+                 ->update([
+                    'stock' => $symbol,
+                   'date' => $lastLastFormattedTime,
+                   'open' => $lastOpen,
+                   'close' => $lastClose,
+                   'high' => $lastHigh,
+                   'low' => $lastLow,
+                   'open_status' => $opc,
+                   'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+               ]);
+           }
+
+
+            return response()->json([
+                'message' => 'Candle data processed successfully',
+                'symbol' => $symbol,
+                'date' => $secondLastFormattedTime,
+                'status' => "Success",
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error processing candle data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
     private function highest_price_sameday($date1,$date2,$symbol,$time)
     {
 
@@ -418,6 +582,19 @@ class FyersController extends Controller
         else {
             $historicalData = DB::table('historical_data')->where('tred_option', '=', '1')->orderBy('id', 'desc')->get();
             return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data CE ']);
+            }
+    }
+
+    public function fetchHistoricalData_5min()
+    {
+        $currentUrl = request()->url();
+        if (str_contains($currentUrl, 'view-historical-data-PE_5min')) {
+        $historicalData = DB::table('historical_data_5min')->where('tred_option', '=', '2')->orderBy('id', 'desc')->get();
+        return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data PE 5 Min ']);
+        }
+        else {
+            $historicalData = DB::table('historical_data_5min')->where('tred_option', '=', '1')->orderBy('id', 'desc')->get();
+            return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data CE 5 Min ']);
             }
     }
 

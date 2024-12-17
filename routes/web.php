@@ -98,8 +98,11 @@ Route::get('/Order/viewOrder', [OrderController::class,'viewOrder'])->name('view
 //historical-data
 Route::get('/highest-price-sameday/{date1}/{date2}/{symbol}/{time}', [FyersController::class, 'highest_price_sameday']);
 Route::get('historical-data', [FyersController::class, 'historical_data']);
+Route::get('historical-data-5min', [FyersController::class, 'historical_data_5min']);
 Route::get('view-historical-data-CE', [FyersController::class, 'fetchHistoricalData'])->name('view_historical_data_CE');
 Route::get('view-historical-data-PE', [FyersController::class, 'fetchHistoricalData'])->name('view_historical_data_PE');
+Route::get('view-historical-data-CE_5min', [FyersController::class, 'fetchHistoricalData_5min'])->name('view_historical_data_CE_5min');
+Route::get('view-historical-data-PE_5min', [FyersController::class, 'fetchHistoricalData_5min'])->name('view_historical_data_PE_5min');
 Route::get('continue-tred', [FyersController::class, 'continue_tred'])->name('continue-tred');
 Route::get('historical-data-1m', [FyersController::class, 'historical_data_1m']);
 
