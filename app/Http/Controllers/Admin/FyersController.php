@@ -444,6 +444,7 @@ class FyersController extends Controller
                     'low' => $secondLastCandle[3],
                     'open_status' => $op,
                     'tred_option' => $symbolstatus, // 1 => CE, 2 => PE
+                    'lastorsecondlast' => 2, // 1 for last 2 for second last
                 ]);
             }
             else{
@@ -479,6 +480,7 @@ class FyersController extends Controller
                    'low' => $lastLow,
                    'open_status' => $opc,
                    'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+                   'lastorsecondlast' => 1, // 1 for last 2 for second last
                ]);
            }
            else{
