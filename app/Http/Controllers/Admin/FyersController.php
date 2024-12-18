@@ -428,7 +428,7 @@ class FyersController extends Controller
 
             // Check if Second last data already exists
             $existsSecondLast = DB::table('historical_data_5min')
-                ->where('date', $secondLastFormattedTime)
+                ->where('timeepoch', $secondLastTimestamp)
                 ->where('tred_option', $symbolstatus)
                 ->exists();
 
@@ -466,7 +466,7 @@ class FyersController extends Controller
 
         // Check if last data already exists
                $existsLastData = DB::table('historical_data_5min')
-               ->where('date', $lastLastFormattedTime)
+               ->where('timeepoch', $lastcandleLastTimestamp)
                ->where('tred_option', $symbolstatus)
                ->exists();
 
