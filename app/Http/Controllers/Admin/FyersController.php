@@ -287,6 +287,7 @@ class FyersController extends Controller
                   // Update data into database
                   DB::table('historical_data')
                   ->where('date', $secondLastFormattedTime) 
+                  ->where('tred_option', $symbolstatus)
                   ->update([
                     'stock' => $symbol,
                     'date' => $secondLastFormattedTime,
@@ -322,6 +323,7 @@ class FyersController extends Controller
                  // Update data into database
                  DB::table('historical_data')
                  ->where('date', $lastLastFormattedTime) 
+                 ->where('tred_option', $symbolstatus)
                  ->update([
                     'stock' => $symbol,
                    'date' => $lastLastFormattedTime,
