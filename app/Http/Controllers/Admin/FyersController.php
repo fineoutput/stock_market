@@ -451,7 +451,8 @@ class FyersController extends Controller
             else{
                   // Update data into database
                   DB::table('historical_data_5min')
-                  ->where('date', $secondLastFormattedTime) 
+                  ->where('timeepoch', $secondLastTimestamp) 
+                  ->where('tred_option', $symbolstatus)
                   ->update([
                     'stock' => $symbol,
                     'date' => $secondLastFormattedTime,
@@ -488,7 +489,8 @@ class FyersController extends Controller
            else{
                  // Update data into database
                  DB::table('historical_data_5min')
-                 ->where('date', $lastLastFormattedTime) 
+                 ->where('timeepoch', $lastcandleLastTimestamp) 
+                 ->where('tred_option', $symbolstatus)
                  ->update([
                     'stock' => $symbol,
                    'date' => $lastLastFormattedTime,
