@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB; // For database operations
 use App\adminmodel\FyersModal;
 use App\Models\Order;
 use App\Models\Historical;
+use App\Models\Historical5min;
 use DateTimeZone;
 
 class OrderAutoController extends Controller
@@ -25,7 +26,7 @@ public function createOrder_CE()
           \Log::info('Task executed at anay CE ' . now());
         //   exit;
         //check if order exists or not
-        $runningOrder = Order::where('status', 0)->where('stock', 1)->first();
+        $runningOrder = Order::where('status', 0)->where('stock', 1)->where('timeframe', 2)->first();
 
         if($runningOrder){
             // ORDER IS IS PROCESS
@@ -124,7 +125,7 @@ public function createOrder_CE()
             $entry = 0;
             // GET NIFTY VALUE IF NIFTY IS POSITIVE OR NEGATIVE
             $nifty = $this->getPriceData('nifty');
-            $nifty_current_type = $this->nifty_current();
+            $nifty_current_type = $this->nifty_current(60);
            
             if($nifty_current_type){
                 $nifty_current = $nifty['lp'];
@@ -165,6 +166,7 @@ public function createOrder_CE()
                            $order = Order::create([
                             'stock_name' => $symbol,
                             'stock' => $nifty_status,
+                            'timeframe' => 2,
                             'buy_price' => $last_open,
                             'order_price' => $live_price_Stock,
                             'sl' => $last_close,
@@ -232,7 +234,7 @@ public function createOrder_CE()
           \Log::info('Task executed at anay PE' . now());
         //   exit;
         //check if order exists or not
-        $runningOrder = Order::where('status', 0)->where('stock', 2)->first();
+        $runningOrder = Order::where('status', 0)->where('stock', 2)->where('timeframe', 2)->first();
     
 
         if($runningOrder){
@@ -331,7 +333,7 @@ public function createOrder_CE()
             $entry = 0;
             // GET NIFTY VALUE IF NIFTY IS POSITIVE OR NEGATIVE
             $nifty = $this->getPriceData('nifty');
-            $nifty_current_type = $this->nifty_current();
+            $nifty_current_type = $this->nifty_current(60);
            
             if($nifty_current_type){
                 $nifty_current = $nifty['lp'];
@@ -372,6 +374,7 @@ public function createOrder_CE()
                            $order = Order::create([
                             'stock_name' => $symbol,
                             'stock' => $nifty_status,
+                            'timeframe' => 2,
                             'buy_price' => $last_open,
                             'order_price' => $live_price_Stock,
                             'sl' => $last_close,
@@ -432,7 +435,424 @@ public function createOrder_CE()
 
     }
 
+// 5min ORDER PLACING START
 
+public function createOrder_CE_5min()
+    {
+          // Your function logic here
+        //   \Log::info('Task executed at anay CE ' . now());
+        //   exit;
+        //check if order exists or not
+        $runningOrder = Order::where('status', 0)->where('stock', 1)->where('timeframe', 1)->first();
+
+        if($runningOrder){
+            // ORDER IS IS PROCESS
+            //CHECK LAST OPEN TO 
+            $secondLast = Historical5min::wherenull('deleted_at')->where('tred_option', $runningOrder->stock)->orderBy('id', 'DESC')->skip(1)
+            ->take(1)->first();
+
+            if($secondLast){
+                if($secondLast->id == $runningOrder->historic_id){
+                    \Log::info('CE- SAME HISTORIC ID');
+                    //NO UPDATE TO BE DONE IN ORDER
+                    $iterations = 18;
+                    for ($i = 0; $i < $iterations; $i++) {
+                        $live_price_Stock = $this->getPriceData($runningOrder->stock_name);
+                        \Log::info('CE- Live - SL ' . $live_price_Stock.','.$runningOrder->sl);
+                        if($live_price_Stock < $runningOrder->sl){
+                                //  CLOSED THE TRADE
+                           $pl2 = abs($runningOrder->order_price-$live_price_Stock);
+                           $pl = $runningOrder->order_price-$live_price_Stock;
+                           if($pl >0){
+                            $profit_loss_status = 1;
+                           }
+                           else{
+                            $profit_loss_status = 0;
+                           }         
+                                DB::table('tbl_order')
+                                ->where('id', $runningOrder->id) 
+                                ->update([
+                                    'exit_price' => $live_price_Stock,
+                                    'status' => 1, //complete
+                                    'end_time' => now(),
+                                    'profit_loss_status' => $profit_loss_status,
+                                    'profit_loss_amt' => $pl2*$runningOrder->qty
+                                ]);
+
+                        } // IF END 
+
+                    // Wait for 3 seconds before the next iteration
+                    sleep(3);
+                    } //FOR LOOP END
+
+                }
+                else{
+                    //UPDATE SL AS HISTORIC ID IS CHANGED
+                    if($secondLast->open_status == 1){
+                        $sl = $secondLast->close;
+                    }
+                    else{
+                        $sl = $secondLast->open;
+                    }
+                    DB::table('tbl_order')
+                    ->where('id', $runningOrder->id) 
+                    ->update([
+                        'historic_id' => $secondLast->id,
+                        'sl' => $sl,
+                    ]);
+
+                    //CHECK CURRENT PRICE AND EXIT THE TRADE
+                    $iterations = 18;
+                    for ($i = 0; $i < $iterations; $i++) {
+                        $live_price_Stock = $this->getPriceData($runningOrder->stock_name);
+                        if($live_price_Stock < $runningOrder->sl){
+                                //  CLOSED THE TRADE
+                           $pl = $runningOrder->order_price-$live_price_Stock;
+                           $pl2 = abs($runningOrder->order_price-$live_price_Stock);
+                           if($pl >0){
+                            $profit_loss_status = 0;
+                           }
+                           else{
+                            $profit_loss_status = 1;
+                           }         
+                                DB::table('tbl_order')
+                                ->where('id', $runningOrder->id) 
+                                ->update([
+                                    'exit_price' => $live_price_Stock,
+                                    'status' => 1, //complete
+                                    'end_time' => now(),
+                                    'profit_loss_status' => $profit_loss_status,
+                                    'profit_loss_amt' => $pl2*$runningOrder->qty,
+                                ]);
+
+                        }
+
+ // Wait for 3 seconds before the next iteration
+ sleep(3);
+                    } //FOR END
+
+                } //ELSE END
+
+            } // IF NO SECOND LAST DATA
+
+
+        } //ORDER NOT RUNNING
+        else{
+            //CREATE NEW ORDER
+            $entry = 0;
+            // GET NIFTY VALUE IF NIFTY IS POSITIVE OR NEGATIVE
+            $nifty = $this->getPriceData('nifty');
+            $nifty_current_type = $this->nifty_current(5);
+           
+            if($nifty_current_type){
+                $nifty_current = $nifty['lp'];
+                $nifty_open = $nifty['open_price'];
+                \Log::info('CE-NIFTY CURRENTLY -' .$nifty_current_type);
+                // print_r($nifty_open);
+
+                $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+                if($nifty_current_type == 1){
+                    // NIFTY IS GREEN/POSITIVE
+                    $nifty_status = 1;
+                    $symbol = $symbolData->option_ce;
+                    // \Log::info('NIFTY TRADING GREEN _ CE SIDE');
+                }
+                else{
+                    // NIFTY IS RED/NEGATIVE
+                    $nifty_status = 2;
+                    $symbol = $symbolData->option_pe;
+                    exit;
+                    // \Log::info('NIFTY TRADING RED _ PE SIDE');
+                }
+
+            //CHECK LAST OPEN TO 
+            $secondLast = Historical5min::wherenull('deleted_at')->where('tred_option', $nifty_status)->orderBy('id', 'DESC')->skip(1)
+            ->take(1)->first();
+            if($secondLast->open_status == 1){
+
+                    $last_open = $secondLast->open;
+                    $last_close = $secondLast->close;
+                    $iterations = 18; // Set the number of times the loop should run
+
+                    for ($i = 0; $i < $iterations; $i++) {
+                        $live_price_Stock = $this->getPriceData($symbol);
+                        \Log::info('CE- Live - Open ' . $live_price_Stock.','.$last_open);
+                        if($live_price_Stock > $last_open){
+                            if($entry == 0){
+                           \Log::info('CE- d1 ' . $symbol);
+                           $order = Order::create([
+                            'stock_name' => $symbol,
+                            'stock' => $nifty_status,
+                            'timeframe' => 1,
+                            'buy_price' => $last_open,
+                            'order_price' => $live_price_Stock,
+                            'sl' => $last_close,
+                            'exit_price' => 0,
+                            'status' => 0, //pending
+                            'start_time' => now(),
+                            'end_time' => "",
+                            'qty' => 100,
+                            'profit_loss_status' => 0,
+                            'profit_loss_amt' => 0,
+                            'historic_id' => $secondLast->id,
+                            'created_at' => now()
+                        ]);
+                        $OrderId = $order->id; // Retrieve the insert ID
+                        $original_buy_price = $order->order_price;
+                        $original_qty = $order->qty;
+                           $entry = 1;
+                            }
+                            //   exit;
+                        }
+                        if($live_price_Stock < $last_close){
+                            \Log::info('CE- Exit Created at ' . now());
+                         if($entry == 1){
+                                        // Update data into database
+                           $pl = $original_buy_price-$live_price_Stock;
+                           $pl2 = abs($original_buy_price-$live_price_Stock);
+                           if($pl >0){
+                            $profit_loss_status = 0;
+                           }
+                           else{
+                            $profit_loss_status = 1;
+                           }         
+                                DB::table('tbl_order')
+                                ->where('id', $OrderId) 
+                                ->update([
+                                    'exit_price' => $live_price_Stock,
+                                    'status' => 1, //complete
+                                    'end_time' => now(),
+                                    'profit_loss_status' => $profit_loss_status,
+                                    'profit_loss_amt' => $pl2*$original_qty
+                                ]);
+                         }
+                             //   exit;
+                         }
+                        
+
+
+    // Wait for 3 seconds before the next iteration
+            sleep(3);
+                    }
+            } // SECOND LAST CANDLE NOT RED
+            else{
+                \Log::info('CE -SECOND LAST CANDLE NOT RED');
+            }
+
+            }
+        }
+
+
+    }
+
+    public function createOrder_PE_5min()
+    {
+          // Your function logic here
+          \Log::info('Task executed at anay PE' . now());
+        //   exit;
+        //check if order exists or not
+        $runningOrder = Order::where('status', 0)->where('stock', 2)->where('timeframe', 1)->first();
+    
+
+        if($runningOrder){
+            // ORDER IS IS PROCESS
+            //CHECK LAST OPEN TO 
+            $secondLast = Historical5min::wherenull('deleted_at')->where('tred_option', $runningOrder->stock)->orderBy('id', 'DESC')->skip(1)
+            ->take(1)->first();
+
+            if($secondLast){
+                if($secondLast->id == $runningOrder->historic_id){
+                    \Log::info('PE- SAME HISTORIC ID');
+                    //NO UPDATE TO BE DONE IN ORDER
+                    $iterations = 18;
+                    for ($i = 0; $i < $iterations; $i++) {
+                        $live_price_Stock = $this->getPriceData($runningOrder->stock_name);
+                        \Log::info('PE- Live - SL ' . $live_price_Stock.','.$runningOrder->sl);
+                        if($live_price_Stock < $runningOrder->sl){
+                                //  CLOSED THE TRADE
+                           $pl = $runningOrder->order_price-$live_price_Stock;
+                           if($pl >0){
+                            $profit_loss_status = 1;
+                           }
+                           else{
+                            $profit_loss_status = 0;
+                           }         
+                                DB::table('tbl_order')
+                                ->where('id', $runningOrder->id) 
+                                ->update([
+                                    'exit_price' => $live_price_Stock,
+                                    'status' => 1, //complete
+                                    'end_time' => now(),
+                                    'profit_loss_status' => $profit_loss_status,
+                                    'profit_loss_amt' => $pl*$runningOrder->qty,
+                                    'created_at' => now()
+                                ]);
+
+                        } // IF END 
+
+                    // Wait for 3 seconds before the next iteration
+                    sleep(3);
+                    } //FOR LOOP END
+
+                }
+                else{
+                    //UPDATE SL AS HISTORIC ID IS CHANGED
+                    if($secondLast->open_status == 1){
+                        $sl = $secondLast->close;
+                    }
+                    else{
+                        $sl = $secondLast->open;
+                    }
+                    DB::table('tbl_order')
+                    ->where('id', $runningOrder->id) 
+                    ->update([
+                        'historic_id' => $secondLast->id,
+                        'sl' => $sl,
+                    ]);
+
+                    //CHECK CURRENT PRICE AND EXIT THE TRADE
+                    $iterations = 18;
+                    for ($i = 0; $i < $iterations; $i++) {
+                        $live_price_Stock = $this->getPriceData($runningOrder->stock_name);
+                        if($live_price_Stock < $runningOrder->sl){
+                                //  CLOSED THE TRADE
+                           $pl = $runningOrder->order_price-$live_price_Stock;
+                           if($pl >0){
+                            $profit_loss_status = 0;
+                           }
+                           else{
+                            $profit_loss_status = 1;
+                           }         
+                                DB::table('tbl_order')
+                                ->where('id', $runningOrder->id) 
+                                ->update([
+                                    'exit_price' => $live_price_Stock,
+                                    'status' => 1, //complete
+                                    'end_time' => now(),
+                                    'profit_loss_status' => $profit_loss_status,
+                                    'profit_loss_amt' => $pl*$runningOrder->qty,
+                                ]);
+
+                        }
+
+ // Wait for 3 seconds before the next iteration
+ sleep(3);
+                    } //FOR END
+
+                } //ELSE END
+
+            } // IF NO SECOND LAST DATA
+
+
+        } //ORDER NOT RUNNING
+        else{
+            //CREATE NEW ORDER
+            $entry = 0;
+            // GET NIFTY VALUE IF NIFTY IS POSITIVE OR NEGATIVE
+            $nifty = $this->getPriceData('nifty');
+            $nifty_current_type = $this->nifty_current(5);
+           
+            if($nifty_current_type){
+                $nifty_current = $nifty['lp'];
+                $nifty_open = $nifty['open_price'];
+                \Log::info('PE- NIFTY CURRENTLY -' .$nifty_current_type);
+                // print_r($nifty_open);
+
+                $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+                if($nifty_current_type == 1){
+                    // NIFTY IS GREEN/POSITIVE
+                    $nifty_status = 1;
+                    $symbol = $symbolData->option_ce;
+                    // \Log::info('NIFTY TRADING GREEN _ CE SIDE');
+                    exit;
+                }
+                else{
+                    // NIFTY IS RED/NEGATIVE
+                    $nifty_status = 2;
+                    $symbol = $symbolData->option_pe;
+                    // \Log::info('NIFTY TRADING RED _ PE SIDE');
+                }
+
+            //CHECK LAST OPEN TO 
+            $secondLast = Historical::wherenull('deleted_at')->where('tred_option', $nifty_status)->orderBy('id', 'DESC')->skip(1)
+            ->take(1)->first();
+            if($secondLast->open_status == 1){
+
+                    $last_open = $secondLast->open;
+                    $last_close = $secondLast->close;
+                    $iterations = 18; // Set the number of times the loop should run
+
+                    for ($i = 0; $i < $iterations; $i++) {
+                        $live_price_Stock = $this->getPriceData($symbol);
+                        \Log::info('PE- Live - Open ' . $live_price_Stock.','.$last_open);
+                        if($live_price_Stock > $last_open){
+                            if($entry == 0){
+                           \Log::info('PE- d1 ' . $symbol);
+                           $order = Order::create([
+                            'stock_name' => $symbol,
+                            'stock' => $nifty_status,
+                            'timeframe' => 1,
+                            'buy_price' => $last_open,
+                            'order_price' => $live_price_Stock,
+                            'sl' => $last_close,
+                            'exit_price' => 0,
+                            'status' => 0, //pending
+                            'start_time' => now(),
+                            'end_time' => "",
+                            'qty' => 100,
+                            'profit_loss_status' => 0,
+                            'profit_loss_amt' => 0,
+                            'historic_id' => $secondLast->id,
+                            'created_at' => now()
+                        ]);
+                        $OrderId = $order->id; // Retrieve the insert ID
+                        $original_buy_price = $order->order_price;
+                        $original_qty = $order->qty;
+                           $entry = 1;
+                            }
+                            //   exit;
+                        }
+                        if($live_price_Stock < $last_close){
+                            \Log::info('PE- Exit Created at ' . now());
+                         if($entry == 1){
+                                        // Update data into database
+                           $pl = $original_buy_price-$live_price_Stock;
+                           if($pl >0){
+                            $profit_loss_status = 0;
+                           }
+                           else{
+                            $profit_loss_status = 1;
+                           }         
+                                DB::table('tbl_order')
+                                ->where('id', $OrderId) 
+                                ->update([
+                                    'exit_price' => $live_price_Stock,
+                                    'status' => 1, //complete
+                                    'end_time' => now(),
+                                    'profit_loss_status' => $profit_loss_status,
+                                    'profit_loss_amt' => $pl*$original_qty
+                                ]);
+                         }
+                             //   exit;
+                         }
+                        
+
+
+    // Wait for 3 seconds before the next iteration
+            sleep(3);
+                    }
+            } // SECOND LAST CANDLE NOT RED
+            else{
+                \Log::info('PE- SECOND LAST CANDLE NOT RED');
+            }
+
+            }
+        }
+
+
+    }
+
+// 5min ORDER PLACING ENDS HERE
 
     private function getPriceData($symbol, $inputName = 'nifty')
     {
@@ -532,7 +952,7 @@ public function createOrder_CE()
         return $result ? $result->auth_code : null;
     }
 
-    private function nifty_current()
+    private function nifty_current($time)
     {
         $symbol = "NSE:NIFTY50-INDEX";
         $currentDate = date('Y-m-d');
@@ -545,7 +965,6 @@ public function createOrder_CE()
 
         $date1 =$startDateTime;
         $date2 =$endDateTime;
-        $time = 60;
 
         $date00 = new DateTime($date1); // Your original date and time
         $date00->setTime($date00->format('H'), $date00->format('i'), 0); // Set seconds to 0
@@ -596,9 +1015,9 @@ public function createOrder_CE()
                 $lastCandle = $lastTwoCandles[1];
                 $lastOpen = $lastCandle[1];
                 $nifty_now = $nifty['lp'];
-                \Log::info('NIFTY CURRENT - '.$nifty_now);
+                // \Log::info('NIFTY CURRENT - '.$nifty_now);
                 
-                \Log::info('NIFTY LAST OPEN - '.$lastOpen);
+                // \Log::info('NIFTY LAST OPEN - '.$lastOpen);
                 
                 if($nifty_now >= $lastOpen){
                     return 1;
