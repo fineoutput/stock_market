@@ -538,27 +538,30 @@ public function createOrder_CE_5min()
 
         } //ORDER NOT RUNNING
         else{
+            \Log::info('CE-NO ORDER RUNNING');
             //CREATE NEW ORDER
             $entry = 0;
             // GET NIFTY VALUE IF NIFTY IS POSITIVE OR NEGATIVE
             $nifty = $this->getPriceData('nifty');
-            $nifty_current_type = $this->nifty_current(5);
+            $nifty_current_type = $this->nifty_current(60);
            
             if($nifty_current_type){
                 $nifty_current = $nifty['lp'];
                 $nifty_open = $nifty['open_price'];
-                \Log::info('CE-NIFTY CURRENTLY -' .$nifty_current_type);
+                
                 // print_r($nifty_open);
 
                 $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
                 if($nifty_current_type == 1){
                     // NIFTY IS GREEN/POSITIVE
+                    \Log::info('CE-NIFTY CURRENTLY GREEN ');
                     $nifty_status = 1;
                     $symbol = $symbolData->option_ce;
                     // \Log::info('NIFTY TRADING GREEN _ CE SIDE');
                 }
                 else{
                     // NIFTY IS RED/NEGATIVE
+                    \Log::info('CE-NIFTY CURRENTLY RED SO EXIT');
                     $nifty_status = 2;
                     $symbol = $symbolData->option_pe;
                     exit;
@@ -605,7 +608,7 @@ public function createOrder_CE_5min()
                             //   exit;
                         }
                         if($live_price_Stock < $last_close){
-                            \Log::info('CE- Exit Created at ' . now());
+                            \Log::info('CE- CURRENT PRICE LOWER THAN LAST CLOSE, Exit Created at ' . now());
                          if($entry == 1){
                                         // Update data into database
                            $pl = $original_buy_price-$live_price_Stock;
@@ -746,20 +749,22 @@ public function createOrder_CE_5min()
 
         } //ORDER NOT RUNNING
         else{
+            \Log::info('PE-NO ORDER RUNNING');
             //CREATE NEW ORDER
             $entry = 0;
             // GET NIFTY VALUE IF NIFTY IS POSITIVE OR NEGATIVE
             $nifty = $this->getPriceData('nifty');
-            $nifty_current_type = $this->nifty_current(5);
+            $nifty_current_type = $this->nifty_current(60);
            
             if($nifty_current_type){
                 $nifty_current = $nifty['lp'];
                 $nifty_open = $nifty['open_price'];
-                \Log::info('PE- NIFTY CURRENTLY -' .$nifty_current_type);
+              
                 // print_r($nifty_open);
 
                 $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
                 if($nifty_current_type == 1){
+                    \Log::info('PE- NIFTY CURRENTLY GREEN SO EXIT');
                     // NIFTY IS GREEN/POSITIVE
                     $nifty_status = 1;
                     $symbol = $symbolData->option_ce;
@@ -768,6 +773,7 @@ public function createOrder_CE_5min()
                 }
                 else{
                     // NIFTY IS RED/NEGATIVE
+                    \Log::info('PE- NIFTY CURRENTLY RED - ENTRY');
                     $nifty_status = 2;
                     $symbol = $symbolData->option_pe;
                     // \Log::info('NIFTY TRADING RED _ PE SIDE');
@@ -813,7 +819,7 @@ public function createOrder_CE_5min()
                             //   exit;
                         }
                         if($live_price_Stock < $last_close){
-                            \Log::info('PE- Exit Created at ' . now());
+                            \Log::info('PE- CURRENT PRICE LOWER THAN LAST CLOSE, Exit Created at ' . now());
                          if($entry == 1){
                                         // Update data into database
                            $pl = $original_buy_price-$live_price_Stock;
@@ -1015,9 +1021,9 @@ public function createOrder_CE_5min()
                 $lastCandle = $lastTwoCandles[1];
                 $lastOpen = $lastCandle[1];
                 $nifty_now = $nifty['lp'];
-                // \Log::info('NIFTY CURRENT - '.$nifty_now);
+                \Log::info('NIFTY CURRENT - '.$nifty_now);
                 
-                // \Log::info('NIFTY LAST OPEN - '.$lastOpen);
+                \Log::info('NIFTY LAST OPEN - '.$lastOpen);
                 
                 if($nifty_now >= $lastOpen){
                     return 1;
