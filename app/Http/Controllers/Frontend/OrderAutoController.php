@@ -643,6 +643,9 @@ public function createOrder_CE_5min()
             }
 
             }
+            else{
+                \Log::info('CE- NOT GETTING nifty_current_type');
+            }
         }
 
 
@@ -852,6 +855,9 @@ public function createOrder_CE_5min()
                 \Log::info('PE- SECOND LAST CANDLE NOT RED');
             }
 
+            }
+            else{
+                \Log::info('PE- NOT GETTING nifty_current_type');
             }
         }
 
