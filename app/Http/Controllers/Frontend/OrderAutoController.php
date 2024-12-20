@@ -783,7 +783,7 @@ public function createOrder_CE_5min()
                 }
 
             //CHECK LAST OPEN TO 
-            $secondLast = Historical::wherenull('deleted_at')->where('tred_option', $nifty_status)->orderBy('id', 'DESC')->skip(1)
+            $secondLast = Historical5min::wherenull('deleted_at')->where('tred_option', $nifty_status)->orderBy('id', 'DESC')->skip(1)
             ->take(1)->first();
             if($secondLast->open_status == 1){
 
