@@ -456,10 +456,12 @@ public function createOrder_CE_5min()
                     \Log::info('CE- SAME HISTORIC ID');
                     //NO UPDATE TO BE DONE IN ORDER
                     $iterations = 18;
+                    $exit_created = 0;
                     for ($i = 0; $i < $iterations; $i++) {
                         $live_price_Stock = $this->getPriceData($runningOrder->stock_name);
                         \Log::info('CE- Live - SL ' . $live_price_Stock.','.$runningOrder->sl);
                         if($live_price_Stock < $runningOrder->sl){
+                            if($exit_created == 0){
                                 //  CLOSED THE TRADE
                            $pl2 = abs($runningOrder->order_price-$live_price_Stock);
                            $pl = $runningOrder->order_price-$live_price_Stock;
@@ -478,7 +480,8 @@ public function createOrder_CE_5min()
                                     'profit_loss_status' => $profit_loss_status,
                                     'profit_loss_amt' => $pl2*$runningOrder->qty
                                 ]);
-
+                                $exit_created = 1;
+                         } 
                         } // IF END 
 
                     // Wait for 3 seconds before the next iteration
@@ -503,9 +506,11 @@ public function createOrder_CE_5min()
 
                     //CHECK CURRENT PRICE AND EXIT THE TRADE
                     $iterations = 18;
+                    $exit_created = 0;
                     for ($i = 0; $i < $iterations; $i++) {
                         $live_price_Stock = $this->getPriceData($runningOrder->stock_name);
                         if($live_price_Stock < $runningOrder->sl){
+                            if($exit_created == 0){
                                 //  CLOSED THE TRADE
                            $pl = $runningOrder->order_price-$live_price_Stock;
                            $pl2 = abs($runningOrder->order_price-$live_price_Stock);
@@ -524,11 +529,12 @@ public function createOrder_CE_5min()
                                     'profit_loss_status' => $profit_loss_status,
                                     'profit_loss_amt' => $pl2*$runningOrder->qty,
                                 ]);
-
+                                $exit_created = 1;
+                            }
                         }
 
- // Wait for 3 seconds before the next iteration
- sleep(3);
+                                // Wait for 3 seconds before the next iteration
+                                sleep(3);
                     } //FOR END
 
                 } //ELSE END
@@ -721,9 +727,11 @@ public function createOrder_CE_5min()
 
                     //CHECK CURRENT PRICE AND EXIT THE TRADE
                     $iterations = 18;
+                    $exit_created = 0;
                     for ($i = 0; $i < $iterations; $i++) {
                         $live_price_Stock = $this->getPriceData($runningOrder->stock_name);
                         if($live_price_Stock < $runningOrder->sl){
+                            if($exit_created == 0){
                                 //  CLOSED THE TRADE
                            $pl = $runningOrder->order_price-$live_price_Stock;
                            if($pl >0){
@@ -741,7 +749,8 @@ public function createOrder_CE_5min()
                                     'profit_loss_status' => $profit_loss_status,
                                     'profit_loss_amt' => $pl*$runningOrder->qty,
                                 ]);
-
+                                $exit_created = 1;
+                            }
                         }
 
  // Wait for 3 seconds before the next iteration
@@ -793,7 +802,7 @@ public function createOrder_CE_5min()
                     $last_open = $secondLast->open;
                     $last_close = $secondLast->close;
                     $iterations = 18; // Set the number of times the loop should run
-
+                    $exit_created = 0;
                     for ($i = 0; $i < $iterations; $i++) {
                         $live_price_Stock = $this->getPriceData($symbol);
                         \Log::info('PE- Live - Open ' . $live_price_Stock.','.$last_open);
@@ -826,7 +835,7 @@ public function createOrder_CE_5min()
                         }
                         if($live_price_Stock < $last_close){
                             \Log::info('PE- CURRENT PRICE LOWER THAN LAST CLOSE, Exit Created at ' . now());
-                         if($entry == 1){
+                         if($entry == 1 && $exit_created == 0){
                                         // Update data into database
                            $pl = $original_buy_price-$live_price_Stock;
                            if($pl >0){
@@ -844,6 +853,7 @@ public function createOrder_CE_5min()
                                     'profit_loss_status' => $profit_loss_status,
                                     'profit_loss_amt' => $pl*$original_qty
                                 ]);
+                                $exit_created = 1;
                          }
                              //   exit;
                          }
