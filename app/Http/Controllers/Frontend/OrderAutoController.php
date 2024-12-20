@@ -1035,7 +1035,7 @@ public function createOrder_CE_5min()
                     return 1;
                 }
                 else{
-                    return 0;
+                    return 2;
                 }
             }
            
