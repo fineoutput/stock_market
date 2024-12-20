@@ -671,11 +671,13 @@ public function createOrder_CE_5min()
                     \Log::info('PE- SAME HISTORIC ID');
                     //NO UPDATE TO BE DONE IN ORDER
                     $iterations = 18;
+                    $exit_created = 0;
                     for ($i = 0; $i < $iterations; $i++) {
                         $live_price_Stock = $this->getPriceData($runningOrder->stock_name);
                         \Log::info('PE- Live - SL ' . $live_price_Stock.','.$runningOrder->sl);
                         if($live_price_Stock < $runningOrder->sl){
-                                //  CLOSED THE TRADE
+                            if($exit_created == 0)  { 
+                            //  CLOSED THE TRADE
                            $pl = $runningOrder->order_price-$live_price_Stock;
                            if($pl >0){
                             $profit_loss_status = 1;
@@ -683,6 +685,7 @@ public function createOrder_CE_5min()
                            else{
                             $profit_loss_status = 0;
                            }         
+                           \Log::info('PE TRADE EXITED' . $live_price_Stock);
                                 DB::table('tbl_order')
                                 ->where('id', $runningOrder->id) 
                                 ->update([
@@ -690,10 +693,10 @@ public function createOrder_CE_5min()
                                     'status' => 1, //complete
                                     'end_time' => now(),
                                     'profit_loss_status' => $profit_loss_status,
-                                    'profit_loss_amt' => $pl*$runningOrder->qty,
-                                    'created_at' => now()
+                                    'profit_loss_amt' => $pl*$runningOrder->qty
                                 ]);
-
+                                $exit_created = 1;
+                            }
                         } // IF END 
 
                     // Wait for 3 seconds before the next iteration
@@ -1027,9 +1030,9 @@ public function createOrder_CE_5min()
                 $lastCandle = $lastTwoCandles[1];
                 $lastOpen = $lastCandle[1];
                 $nifty_now = $nifty['lp'];
-                \Log::info('NIFTY CURRENT - '.$nifty_now);
+                // \Log::info('NIFTY CURRENT - '.$nifty_now);
                 
-                \Log::info('NIFTY LAST OPEN - '.$lastOpen);
+                // \Log::info('NIFTY LAST OPEN - '.$lastOpen);
                 
                 if($nifty_now >= $lastOpen){
                     return 1;
