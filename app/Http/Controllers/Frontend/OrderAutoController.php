@@ -685,6 +685,7 @@ public function createOrder_CE_5min()
                             if($exit_created == 0)  { 
                             //  CLOSED THE TRADE
                            $pl = $runningOrder->order_price-$live_price_Stock;
+                           $pl2 = abs($runningOrder->order_price-$live_price_Stock);
                            if($pl >0){
                             $profit_loss_status = 1;
                            }
@@ -699,7 +700,7 @@ public function createOrder_CE_5min()
                                     'status' => 1, //complete
                                     'end_time' => now(),
                                     'profit_loss_status' => $profit_loss_status,
-                                    'profit_loss_amt' => $pl*$runningOrder->qty
+                                    'profit_loss_amt' => $pl2*$runningOrder->qty
                                 ]);
                                 $exit_created = 1;
                             }
@@ -734,6 +735,7 @@ public function createOrder_CE_5min()
                             if($exit_created == 0){
                                 //  CLOSED THE TRADE
                            $pl = $runningOrder->order_price-$live_price_Stock;
+                           $pl2 = abs($runningOrder->order_price-$live_price_Stock);
                            if($pl >0){
                             $profit_loss_status = 0;
                            }
@@ -747,7 +749,7 @@ public function createOrder_CE_5min()
                                     'status' => 1, //complete
                                     'end_time' => now(),
                                     'profit_loss_status' => $profit_loss_status,
-                                    'profit_loss_amt' => $pl*$runningOrder->qty,
+                                    'profit_loss_amt' => $pl2*$runningOrder->qty,
                                 ]);
                                 $exit_created = 1;
                             }
@@ -838,6 +840,7 @@ public function createOrder_CE_5min()
                          if($entry == 1 && $exit_created == 0){
                                         // Update data into database
                            $pl = $original_buy_price-$live_price_Stock;
+                           $pl2 = abs($runningOrder->order_price-$live_price_Stock);
                            if($pl >0){
                             $profit_loss_status = 0;
                            }
@@ -851,7 +854,7 @@ public function createOrder_CE_5min()
                                     'status' => 1, //complete
                                     'end_time' => now(),
                                     'profit_loss_status' => $profit_loss_status,
-                                    'profit_loss_amt' => $pl*$original_qty
+                                    'profit_loss_amt' => $pl2*$original_qty
                                 ]);
                                 $exit_created = 1;
                          }
