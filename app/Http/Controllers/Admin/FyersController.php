@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\adminmodel\FyersModal;
+use App\Models\Order;
 use Illuminate\Support\Facades\DB; // Import the DB facade
 // use App\Models\Admin\AdminSidebar1;
 use Illuminate\Http\Request;
@@ -463,8 +464,28 @@ class FyersController extends Controller
                     'high' => $secondLastCandle[2],
                     'low' => $secondLastCandle[3],
                     'open_status' => $op,
-                    'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+                    'tred_option' => $symbolstatus, //  1 => CE, 2 => PE
                 ]);
+
+                //check if order exist in table if yes then update SL
+                $liveorder = Order::wherenull('deleted_at')->where('stock_name', $symbol)->where('status', 0)->where('stock', $symbolstatus)->first();
+                if($liveorder != null){
+                    if($op == 1){
+                        $sl = $secondLastClose;
+                    }
+                    else{
+                        $sl = $secondLastOpen;
+                    }
+                    DB::table('tbl_order')
+                    ->where('id', $liveorder->id) 
+                    ->update([
+                      'sl' => $sl //  1 => CE, 2 => PE
+                  ]);
+  
+
+                } // if end of order exist or not
+
+
             }
 
         // Check if last data already exists
