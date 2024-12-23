@@ -60,6 +60,7 @@
                                         <th>Close</th>
                                         <th>High</th>
                                         <th>Low</th>
+                                        <th>Date</th>
                                        
                                     </tr>
                                     </thead>
@@ -85,6 +86,7 @@
                                             <td style="color:white;">₹{{ $data->close }}</td>
                                             <td style="color:white;">₹{{ $data->high }}</td>
                                             <td style="color:white;">₹{{ $data->low }}</td>
+                                            <td style="color:white;">₹{{ $data->date }}</td>
                                           
                                            
                                             </tr>  
