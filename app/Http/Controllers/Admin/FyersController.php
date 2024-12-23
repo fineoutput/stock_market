@@ -476,6 +476,7 @@ class FyersController extends Controller
                     else{
                         $sl = $secondLastOpen;
                     }
+                    Log::info("SL UPDATED BY NEW CANDLE" . $sl);
                     DB::table('tbl_order')
                     ->where('id', $liveorder->id) 
                     ->update([
