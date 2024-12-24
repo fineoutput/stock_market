@@ -436,9 +436,9 @@ class FyersController extends Controller
                 ->where('timeepoch', $secondLastTimestamp)
                 ->where('tred_option', $symbolstatus)
                 ->exists();
-                \Log::info('HISTORY DATA SAVE TABLE ' . $existsSecondLast);
+                \Log::info('HISTORY DATA SAVE TABLE ' . $secondLastTimestamp.','.$symbolstatus);
             if (!$existsSecondLast) {
-              
+                \Log::info('ENTERED 1');
                 // Insert data into database
                 DB::table('historical_data_5min')->insert([
                     'stock' => $symbol,
@@ -454,6 +454,7 @@ class FyersController extends Controller
                 ]);
             }
             else{
+                \Log::info('ENTERED 2');
                   // Update data into database
                   DB::table('historical_data_5min')
                   ->where('timeepoch', $secondLastTimestamp) 
@@ -496,8 +497,9 @@ class FyersController extends Controller
                ->where('timeepoch', $lastcandleLastTimestamp)
                ->where('tred_option', $symbolstatus)
                ->exists();
-               \Log::info('HISTORY DATA SAVE TABLE ' . $existsLastData);
+               \Log::info('HISTORY DATA SAVE TABLE ' . $lastcandleLastTimestamp.','.$symbolstatus);
            if (!$existsLastData) {
+            \Log::info('ENTERED 3');
                // Insert data into database
                \Log::info('HISTORY DATA SAVE INSERTED ' . $symbol.','.$lastcandleLastTimestamp);
                DB::table('historical_data_5min')->insert([
@@ -514,6 +516,7 @@ class FyersController extends Controller
                ]);
            }
            else{
+            \Log::info('ENTERED 4');
                  // Update data into database
                  DB::table('historical_data_5min')
                  ->where('timeepoch', $lastcandleLastTimestamp) 
