@@ -471,7 +471,8 @@ class FyersController extends Controller
                 ]);
 
                 //check if order exist in table if yes then update SL
-                // $liveorder = Order::wherenull('deleted_at')->where('stock_name', $symbol)->where('status', 0)->where('stock', $symbolstatus)->first();
+                $liveorder = Order::where('stock_name', $symbol)->where('status', 0)->where('stock', $symbolstatus)->first();
+                \Log::info('ENTERED 2 -- {{$liveorder}}');
                 // if($liveorder != null){
                 //     if($op == 1){
                 //         $sl = $secondLastClose;
