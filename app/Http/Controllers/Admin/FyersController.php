@@ -497,7 +497,7 @@ class FyersController extends Controller
                ->where('timeepoch', $lastcandleLastTimestamp)
                ->where('tred_option', $symbolstatus)
                ->exists();
-               \Log::info('HISTORY DATA SAVE TABLE ' . $lastcandleLastTimestamp.','.$symbolstatus);
+               \Log::info('HISTORY DATA SAVE TABLE22 ' . $lastcandleLastTimestamp.','.$symbolstatus);
            if (!$existsLastData) {
             \Log::info('ENTERED 3');
                // Insert data into database
