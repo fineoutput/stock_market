@@ -379,6 +379,7 @@ class FyersController extends Controller
            // print_r($symbol);
             // exit;
             $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,5);
+            \Log::info('HISTORY DATA SAVE' . $symbol.','.$endDateTime);
             // print_r($response);
             // exit;
             $data = json_decode($response, true);
@@ -497,6 +498,7 @@ class FyersController extends Controller
 
            if (!$existsLastData) {
                // Insert data into database
+               \Log::info('HISTORY DATA SAVE INSERTED' . $symbol.','.$lastcandleLastTimestamp);
                DB::table('historical_data_5min')->insert([
                     'stock' => $symbol,
                    'date' => $lastLastFormattedTime,
