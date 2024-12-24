@@ -473,22 +473,22 @@ class FyersController extends Controller
                 //check if order exist in table if yes then update SL
                 $liveorder = Order::where('stock_name', $symbol)->where('status', 0)->where('stock', $symbolstatus)->first();
                 \Log::info('ENTERED 2 --'.$liveorder);
-                // if($liveorder != null){
-                //     if($op == 1){
-                //         $sl = $secondLastClose;
-                //     }
-                //     else{
-                //         $sl = $secondLastOpen;
-                //     }
-                //     Log::info("SL UPDATED BY NEW CANDLE" . $sl);
-                //     DB::table('tbl_order')
-                //     ->where('id', $liveorder->id) 
-                //     ->update([
-                //       'sl' => $sl //  1 => CE, 2 => PE
-                //   ]);
+                if($liveorder){
+                    if($op == 1){
+                        $sl = $secondLastClose;
+                    }
+                    else{
+                        $sl = $secondLastOpen;
+                    }
+                    Log::info("SL UPDATED BY NEW CANDLE" . $sl);
+                    DB::table('tbl_order')
+                    ->where('id', $liveorder->id) 
+                    ->update([
+                      'sl' => $sl //  1 => CE, 2 => PE
+                  ]);
   
 
-                // } // if end of order exist or not
+                } // if end of order exist or not
 
 
             }
