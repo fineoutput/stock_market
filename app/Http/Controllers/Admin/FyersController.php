@@ -472,8 +472,8 @@ class FyersController extends Controller
 
                 //check if order exist in table if yes then update SL
                 $liveorder = Order::where('stock_name', $symbol)->where('status', 0)->where('stock', $symbolstatus)->first();
-                \Log::info('ENTERED 2 --'.$liveorder);
                 if($liveorder){
+                    
                     if($op == 1){
                         $sl = $secondLastClose;
                     }
@@ -489,6 +489,9 @@ class FyersController extends Controller
   
 
                 } // if end of order exist or not
+                else{
+                    \Log::info('SL NOT UPDATED NO ORDER RUNNING');
+                }
 
 
             }
