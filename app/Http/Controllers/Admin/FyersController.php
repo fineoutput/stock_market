@@ -430,6 +430,7 @@ class FyersController extends Controller
                 $opc = 0; //GREEN CANDLE
             }
 
+            \Log::info('HISTORY DATA SAVE EPOCH ' . $secondLastTimestamp.','.$lastcandleLastTimestamp);
             // Check if Second last data already exists
             $existsSecondLast = DB::table('historical_data_5min')
                 ->where('timeepoch', $secondLastTimestamp)
