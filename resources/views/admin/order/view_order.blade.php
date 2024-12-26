@@ -126,14 +126,14 @@
                                         @foreach($data  as $data1)
                                         <tr>
                                            
-                                            <td >{{ $loop->index+1 }}</td>
-                                            <td >{{ $data1->stock_name }}</td>
+                                            <td >{{ $loop->index+1 }}</td>                                            
+                                            <td ><small>{{ $data1->stock_name }}</small></td>
                                             <td >₹{{ $data1->buy_price }}</td>
                                             <td >₹{{ $data1->order_price }}</td>
                                             <td >₹{{ $data1->sl }}</td>
                                             <td >₹{{ $data1->exit_price }}</td>
                                             <td ><small>{{ date('d/m/y,h:i:s A', strtotime($data1->start_time)) }}</small></td>
-                                            <td >{{ date('d/m/y,h:i:s A', strtotime($data1->end_time)) }}</td>
+                                            <td ><small>{{ date('d/m/y,h:i:s A', strtotime($data1->end_time)) }}</small></td>
                                             <td style="color: {{ $data1->status == 1 ? 'green' : 'red' }}">
                                                 {{ $data1->status == 1 ? 'Completed' : 'In Process' }}
                                             </td>
