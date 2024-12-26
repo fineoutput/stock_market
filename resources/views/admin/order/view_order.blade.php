@@ -40,7 +40,7 @@
                                 @endif
                                 <!-- End show success and error messages -->
                                 <div class="row">
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-2 col-md-2">
                     <div class="card bg-danger mini-stat position-relative">
                         <a href="#">
                             <div class="card-body">
@@ -61,7 +61,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-2 col-md-2">
                     <div class="card bg-warning mini-stat position-relative">
                         <a href="#">
                             <div class="card-body">
@@ -83,7 +83,7 @@
                     </div>
                 </div>
 
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-2 col-md-2">
                     <div class="card bg-success mini-stat position-relative">
                         <a href="#">
                             <div class="card-body">
