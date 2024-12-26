@@ -66,13 +66,10 @@
                         <a href="#">
                             <div class="card-body">
                                 <div class="mini-stat-desc">
-                                    <h6 class="text-uppercase verti-label text-white-50">Today P/L Status</h6>
+        
                                     <div class="text-white">
                                         <h6 class="text-uppercase mt-0 text-white-50">Today P/L Status</h6>
                                         <h3 class="mb-3 mt-0">{{$count['profitOrLoss']}}</h3>
-                                        <div class="">
-                                            <span class="ml-2">Today P/L Status</span>
-                                        </div>
                                     </div>
                                     <div class="mini-stat-icon">
                                         <i class="mdi mdi-shopping display-2"></i>
