@@ -1043,7 +1043,7 @@ public function createOrder_CE_5min()
                 $lastCandle = $lastTwoCandles[1];
                 $lastOpen = $lastCandle[1];
                 $nifty_now = $nifty['lp'];
-                // \Log::info('NIFTY CURRENT - '.$nifty_now);
+                \Log::info('NIFTY LAST CANDLE - '.$response);
                 
                 // \Log::info('NIFTY LAST OPEN - '.$lastOpen);
                 
