@@ -24,14 +24,7 @@
 <script type="text/javascript">
   $(document).ready(function() {
     $('#userTable').DataTable({
-      responsive: true,
-      dom: 'Bfrtip',
-      buttons: [
-        'copyHtml5',
-        'excelHtml5',
-        'csvHtml5',
-        'pdfHtml5'
-      ]
+      responsive: true
     });
     $(document.body).on('click', '.dCnf', function() {
       var i = $(this).attr("mydata");
