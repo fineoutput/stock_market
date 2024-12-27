@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -26,6 +28,24 @@ class Handler extends ExceptionHandler
         'password',
         'password_confirmation',
     ];
+
+     /**
+     * Report or log an exception.
+     *
+     * @param Throwable $exception
+     * @return void
+     */
+    public function report(Throwable $exception)
+    {
+        if ($this->shouldReport($exception)) {
+            // Log the exception along with the URL
+            Log::error('Error occurred on URL: ' . Request::fullUrl(), [
+                'exception' => $exception,
+            ]);
+        }
+
+        parent::report($exception);
+    }
 
     /**
      * Register the exception handling callbacks for the application.
