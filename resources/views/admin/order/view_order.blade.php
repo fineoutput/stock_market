@@ -124,7 +124,7 @@
                                     </thead>
                                     <tbody>
                                         @foreach($data  as $data1)
-                                        <tr <? if($data1->status == 1){ if($data1->profit_loss_status == 1){ echo "style='background-color:green;color:white'";} else{ echo "style='background-color:red;color:white'";} }  ?>>
+                                        <tr <? if($data1->status == 1){ if($data1->profit_loss_status == 1){ echo "style='background-color:green;--bs-table-striped-color:white'";} else{ echo "style='background-color:red;--bs-table-striped-color:white'";} }  ?>>
                                            
                                             <td >{{ $loop->index+1 }}</td>                                            
                                             <td ><small>{{ $data1->stock_name }}</small></td>
