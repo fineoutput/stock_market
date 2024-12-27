@@ -124,7 +124,7 @@
                                     </thead>
                                     <tbody>
                                         @foreach($data  as $data1)
-                                        <tr <? if($data1->status == 1){ if($data1->profit_loss_status == 1){ echo "style='background-color:green;--bs-table-striped-color:white'";} else{ echo "style='background-color:red;--bs-table-striped-color:white'";} }  ?>>
+                                        <tr <? if($data1->status == 1){ if($data1->profit_loss_status == 1){ echo "style='background-color:green;--bs-table-striped-color:white'";} else{ echo "style='background-color:red;color:white'";} }  ?>>
                                            
                                             <td >{{ $loop->index+1 }}</td>                                            
                                             <td ><small>{{ $data1->stock_name }}</small></td>
@@ -134,11 +134,10 @@
                                             <td >₹{{ $data1->exit_price }}</td>
                                             <td ><small>{{ date('d/m/y,h:i:s A', strtotime($data1->start_time)) }}</small></td>
                                             <td ><small>{{ date('d/m/y,h:i:s A', strtotime($data1->end_time)) }}</small></td>
-                                            <td style="color: {{ $data1->status == 1 ? 'green' : 'red' }}">
+                                            <td>
                                                 {{ $data1->status == 1 ? 'Completed' : 'In Process' }}
                                             </td>
-                                            <td style="color: {{ 
-                                            $data1->profit_loss_status == 1 ? 'green' : 'red' }}">
+                                            <td>
                                                 {{ $data1->profit_loss_status == 1 ? 'Profit' : 'Loss' }}
                                             </td>
                                             <td >{{ $data1->qty }}</td>
