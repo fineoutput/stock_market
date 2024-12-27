@@ -29,10 +29,10 @@ $cc= Order::whereDate('created_at', Carbon::today())->get();
 $p_amount = 0;
 foreach($cc  as $cc2){
 $pl = $cc2->profit_loss_status;
-if($pl == 0){
+if($pl == 1){
     $p_amount = $p_amount + $cc2->profit_loss_amt;
 }
-if($pl == 1){
+if($pl == 0){
     $p_amount = $p_amount - $cc2->profit_loss_amt;
 }
 }
