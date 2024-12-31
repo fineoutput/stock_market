@@ -465,11 +465,11 @@ public function createOrder_CE_5min()
                                 //  CLOSED THE TRADE
                            $pl2 = abs($runningOrder->order_price-$live_price_Stock);
                            $pl = $runningOrder->order_price-$live_price_Stock;
-                           if($pl >0){
-                            $profit_loss_status = 1;
+                           if($pl>0){
+                            $profit_loss_status = 0;
                            }
                            else{
-                            $profit_loss_status = 0;
+                            $profit_loss_status = 1;
                            }         
                                 DB::table('tbl_order')
                                 ->where('id', $runningOrder->id) 
@@ -687,10 +687,10 @@ public function createOrder_CE_5min()
                            $pl = $runningOrder->order_price-$live_price_Stock;
                            $pl2 = abs($runningOrder->order_price-$live_price_Stock);
                            if($pl >0){
-                            $profit_loss_status = 1;
+                            $profit_loss_status = 0;
                            }
                            else{
-                            $profit_loss_status = 0;
+                            $profit_loss_status = 1;
                            }         
                            \Log::info('PE TRADE EXITED' . $live_price_Stock);
                                 DB::table('tbl_order')
