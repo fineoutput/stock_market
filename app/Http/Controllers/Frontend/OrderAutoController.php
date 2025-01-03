@@ -1034,9 +1034,19 @@ public function createOrder_CE_5min()
             curl_close($curl);
             
             if($response){
-                $data = json_decode($response, true);
+                                    $now = new DateTime(); // Current time
+                    $start = new DateTime('09:15');
+                    $end = new DateTime('10:15');
+
+                    // Check if the current time falls between 9:15 and 10:15
+                    if ($now >= $start && $now <= $end) {
+                        $offset = -1;
+                    } else {
+                        $offset = -2; // Or any other value for offset
+                    }
+                $data = json_decode($response, associative: true);
                 $candles = $data['candles'];
-                $lastTwoCandles = array_slice($candles, -2);
+                $lastTwoCandles = array_slice($candles, $offset);
     
                 // Extract second last and last candle data
                 $secondLastCandle = $lastTwoCandles[0];
