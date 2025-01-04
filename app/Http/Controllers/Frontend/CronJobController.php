@@ -25,14 +25,35 @@ class CronJobController extends Controller
                 // $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE';
 				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
+                //nifty historic data cron job
+                $cron_command = '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data';
+				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+
+                $cron_command = '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data-5min';
+				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+
+                 //Bank nifty historic data cron job
+                $cron_command = '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/bank-historical-data';
+				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+
+                $cron_command = '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/bank-historical-data-5min';
+				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+
+                //stock historic data cron job
+                $cron_command = '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data';
+				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+
+                $cron_command = '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data-5min';
+				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+
+                 //order placing and checking cron job
                 $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_CE_5min';
 				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                 $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE_5min';
 				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
-                $cron_command = '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data-5min';
-				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+               
 
 
     }

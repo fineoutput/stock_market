@@ -46,7 +46,7 @@
                                 <h4 class="mt-0 header-title">View {{$title}} List</h4>
                                 </div>
                                     @if(session()->get('position') == "Super Admin" || session()->get('position') == "Admin")
-                                    <div class="col-md-2"> <a class="btn btn-info cticket" href="{{route('Fyers.create')}}" role="button" style="margin-left: 20px;"> Add {{$title}}</a></div>
+                                    
                                     @endif
                                     </div>
                                     <hr style="margin-bottom: 50px;background-color: darkgrey;">
@@ -57,12 +57,16 @@
                                     <tr>
                                     <th>#</th>
                                              	 <th>Phone Number</th> 
- 	 <th>Login Id</th> 
- 	 <th>Pin</th> 
- 	 <th>Amount</th> 
- 	 <th>Option CE</th> 
- 	 <th>Option PE</th> 
- 	 <th>Trading</th> 
+                                                <th>Login Id</th> 
+                                                <th>Pin</th> 
+                                                <th>Lots</th> 
+                                                <th>NIFTY Option CE</th> 
+                                                <th>NIFTY Option PE</th> 
+                                                <th>BANKNIFTYNIFTY Option CE</th> 
+                                                <th>BANKNIFTYNIFTY Option PE</th> 
+                                                <th>STOCK Option CE</th> 
+                                                <th>STOCK Option PE</th> 
+                                                <th>Trading</th> 
 
                                             <th>Status</th>
                                             @if(session()->get('position') == "Super Admin" || session()->get('position') == "Admin")
@@ -78,9 +82,13 @@
                                             	 <td>{{$data->phone }} </td> 
  	 <td>{{$data->login_id }} </td> 
  	 <td>{{$data->pin }} </td> 
- 	 <td>{{$data->amount }} </td> 
+ 	 <td>{{$data->lots }} </td> 
  	 <td>{{$data->option_ce }} </td> 
  	 <td>{{$data->option_pe }} </td>
+      <td>{{$data->bankoption_ce }} </td> 
+ 	 <td>{{$data->bankoption_pe }} </td>
+      <td>{{$data->stockoption_ce }} </td> 
+ 	 <td>{{$data->stockoption_pe }} </td>
       @if($data->trading_type == "1")
       <td>
           <p class="label  status-inactive">Testing</p>
@@ -103,15 +111,9 @@
                                             @if(session()->get('position') == "Super Admin" || session()->get('position') == "Admin")
                                             <td>
                                             <div class="btn-group" id="btns{{$loop->iteration}}">
-                                                    @if($data->is_active == 0)
-                                                    <a href="{{route('Fyers.show',base64_encode($data->id))}}"><i class="fas fa-check success-icon" data-toggle="tooltip" data-placement="top" title="Active"></i></a>
-                                                    @else
-                                                    <a href="{{route('Fyers.show',base64_encode($data->id))}}"><i class="fas fa-times danger-icon" data-toggle="tooltip" data-placement="top" title="Inactive"></i></a>
-                                                    @endif
+                                                
                                                     <a href="{{route('Fyers.edit',base64_encode($data->id))}}"><i class="fas fa-pencil-alt info-icon" data-toggle="tooltip" data-placement="top" title="Edit"></i></a>
-                                                    @if(session()->get('position') == "Super Admin")
-                                                    <a href="javascript:();" class="dCnf" mydata="{{$loop->iteration}}" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash danger-icon"></i></a>
-                                                    @endif
+                                                
                                                     </div>
                                                     <div style="display:none" id="cnfbox{{$loop->iteration}}">
                                                     <p> Are you sure delete this </p>

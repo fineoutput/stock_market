@@ -34,23 +34,32 @@ class FyersController extends Controller
 
     public function store(Request $request)
     {
+
         if ($request->id === null) 
         {
                 $this->validate($request, ['phone' =>'string|required',
                                            'login_id' =>'string|required',
 	                                       'pin' =>'string|required',
-	                                       'amount' =>'string|required',
+	                                       'lots' =>'string|required',
 	                                       'option_ce' =>'string|required',
 	                                       'option_pe' =>'string|required',
+                                           'bankoption_ce' =>'string|required',
+	                                       'bankoption_pe' =>'string|required',
+                                           'stockoption_ce' =>'string|required',
+	                                       'stockoption_pe' =>'string|required',
                                            'trading_type' =>'string|required',
                                             ]);
         } else {
                $this->validate($request, ['phone' =>'string|required',
 	                                      'login_id' =>'string|required',
 	                                      'pin' =>'string|required',
-	                                      'amount' =>'string|required',
+	                                      'lots' =>'string|required',
 	                                      'option_ce' =>'string|required',
 	                                      'option_pe' =>'string|required',
+                                          'bankoption_ce' =>'string|required',
+                                          'bankoption_pe' =>'string|required',
+                                          'stockoption_ce' =>'string|required',
+                                          'stockoption_pe' =>'string|required',
 	                                      'trading_type' =>'string|required',
                                           ]);
                     }
@@ -64,9 +73,13 @@ class FyersController extends Controller
         $Fyers->phone= $request->phone; 
  	    $Fyers->login_id= $request->login_id; 
  	    $Fyers->pin= $request->pin; 
- 	    $Fyers->amount= $request->amount; 
+ 	    $Fyers->lots= $request->lots; 
  	    $Fyers->option_ce= $request->option_ce; 
  	    $Fyers->option_pe= $request->option_pe; 
+         $Fyers->bankoption_ce= $request->bankoption_ce; 
+ 	    $Fyers->bankoption_pe= $request->bankoption_pe; 
+         $Fyers->stockoption_ce= $request->stockoption_ce; 
+ 	    $Fyers->stockoption_pe= $request->stockoption_pe; 
  	    $Fyers->trading_type= $request->trading_type; 
 
         $Fyers->ip = $request->ip();
@@ -552,6 +565,739 @@ class FyersController extends Controller
         }
     }
 
+    //bank nifty
+    public function bank_historical_data()
+    {
+        $response1 = $this->bank_historical_data_option(1); // 1 => CE
+        $response2 = $this->bank_historical_data_option(2); // 2 => PE
+        return response()->json([
+            'response1' => json_decode($response1->getContent(), true),
+            'response2' => json_decode($response2->getContent(), true),
+        ]);
+    }
+
+   
+    private function bank_historical_data_option($symbolstatus)
+    {
+        try {
+            $currentDate = date('Y-m-d');
+            $startTime = config('constants.time.START_TIME');
+            $endTime = config('constants.time.END_TIME');
+            $startDateTime = $currentDate . ' ' . $startTime;
+
+            $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+            $endDateTime = $datetime->format('Y-m-d H:i:s');
+
+            $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+            $symbol = $symbolstatus == 1 ? $symbolData->bankoption_ce : $symbolData->bankoption_pe;
+
+           // print_r($symbol);
+            // exit;
+            $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,60);
+            // print_r($response);
+            // exit;
+            $data = json_decode($response, true);
+            if (!isset($data['candles']) || empty($data['candles'])) {
+                return response()->json(['message' => 'No candle data found'], 404);
+            }
+
+            $candles = $data['candles'];
+            $lastTwoCandles = array_slice($candles, -2);
+
+            // Extract second last and last candle data
+            $secondLastCandle = $lastTwoCandles[0];
+            $lastCandle = $lastTwoCandles[1];
+
+            // Prepare second last candle details
+            $secondLastTimestamp = $secondLastCandle[0];
+            $secondLastDateTime = new DateTime("@$secondLastTimestamp");
+            $secondLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
+            $secondLastFormattedTime = $secondLastDateTime->format('Y-m-d H:i:s');
+            $secondLastOpen = $secondLastCandle[1];
+            $secondLastHigh = $secondLastCandle[2];
+            $secondLastLow = $secondLastCandle[3];
+            $secondLastClose = $secondLastCandle[4];
+
+            if($secondLastOpen - $secondLastClose > 0){
+                $op = 1; //RED CANDLE
+            }
+            else{
+                $op = 0;
+            }
+           
+
+            // Prepare last candle details
+            $lastcandleLastTimestamp = $lastCandle[0];
+            $lastLastDateTime = new DateTime("@$lastcandleLastTimestamp");
+            $lastLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
+            $lastLastFormattedTime = $lastLastDateTime->format('Y-m-d H:i:s');
+            $lastOpen = $lastCandle[1];
+            $lastHigh = $lastCandle[2];
+            $lastLow = $lastCandle[3];
+            $lastClose = $lastCandle[4];
+
+            if($lastOpen - $lastClose > 0){
+                $opc = 1; //RED CANDLE
+            }
+            else{
+                $opc = 0; //GREEN CANDLE
+            }
+
+            // Check if Second last data already exists
+            $existsSecondLast = DB::table('bank_historical_data')
+                ->where('date', $secondLastFormattedTime)
+                ->where('tred_option', $symbolstatus)
+                ->exists();
+
+            if (!$existsSecondLast) {
+              
+                // Insert data into database
+                DB::table('bank_historical_data')->insert([
+                    'stock' => $symbol,
+                    'date' => $secondLastFormattedTime,
+                    'open' => $secondLastOpen,
+                    'close' => $secondLastClose,
+                    'high' => $secondLastCandle[2],
+                    'low' => $secondLastCandle[3],
+                    'open_status' => $op,
+                    'tred_option' => $symbolstatus, // 1 => CE, 2 => PE
+                ]);
+            }
+            else{
+                  // Update data into database
+                  DB::table('bank_historical_data')
+                  ->where('date', $secondLastFormattedTime) 
+                  ->where('tred_option', $symbolstatus)
+                  ->update([
+                    'stock' => $symbol,
+                    'date' => $secondLastFormattedTime,
+                    'open' => $secondLastOpen,
+                    'close' => $secondLastClose,
+                    'high' => $secondLastCandle[2],
+                    'low' => $secondLastCandle[3],
+                    'open_status' => $op,
+                    'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+                ]);
+            }
+
+        // Check if last data already exists
+               $existsLastData = DB::table('bank_historical_data')
+               ->where('date', $lastLastFormattedTime)
+               ->where('tred_option', $symbolstatus)
+               ->exists();
+
+           if (!$existsLastData) {
+               // Insert data into database
+               DB::table('bank_historical_data')->insert([
+                    'stock' => $symbol,
+                   'date' => $lastLastFormattedTime,
+                   'open' => $lastOpen,
+                   'close' => $lastClose,
+                   'high' => $lastHigh,
+                   'low' => $lastLow,
+                   'open_status' => $opc,
+                   'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+               ]);
+           }
+           else{
+                 // Update data into database
+                 DB::table('bank_historical_data')
+                 ->where('date', $lastLastFormattedTime) 
+                 ->where('tred_option', $symbolstatus)
+                 ->update([
+                    'stock' => $symbol,
+                   'date' => $lastLastFormattedTime,
+                   'open' => $lastOpen,
+                   'close' => $lastClose,
+                   'high' => $lastHigh,
+                   'low' => $lastLow,
+                   'open_status' => $opc,
+                   'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+               ]);
+           }
+
+
+            return response()->json([
+                'message' => 'Candle data processed successfully',
+                'symbol' => $symbol,
+                'date' => $secondLastFormattedTime,
+                'status' => "Success",
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error processing candle data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function bank_historical_data_5min()
+    {
+        $response1 = $this->bank_historical_data_option_5min(1); // 1 => CE
+        $response2 = $this->bank_historical_data_option_5min(2); // 2 => PE
+        return response()->json([
+            'response1' => json_decode($response1->getContent(), true),
+            'response2' => json_decode($response2->getContent(), true),
+        ]);
+    }
+
+    private function bank_historical_data_option_5min($symbolstatus)
+    {
+        try {
+            $currentDate = date('Y-m-d');
+            $startTime = config('constants.time.START_TIME');
+            $endTime = config('constants.time.END_TIME');
+            $startDateTime = $currentDate . ' ' . $startTime;
+
+            $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+            $endDateTime = $datetime->format('Y-m-d H:i:s');
+
+            $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+            $symbol = $symbolstatus == 1 ? $symbolData->bankoption_ce : $symbolData->bankoption_pe;
+
+           // print_r($symbol);
+            // exit;
+            $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,5);
+            \Log::info('HISTORY DATA SAVE ' . $symbol.','.$endDateTime);
+            // print_r($response);
+            // exit;
+            $data = json_decode($response, true);
+            if (!isset($data['candles']) || empty($data['candles'])) {
+                Log::error("No candle data found in ".$symbol);
+                return response()->json(['message' => 'No candle data found'], 404);
+            }
+
+            $candles = $data['candles'];
+            $lastTwoCandles = array_slice($candles, -2);
+
+            // Extract second last and last candle data
+            $secondLastCandle = $lastTwoCandles[0];
+            $lastCandle = $lastTwoCandles[1];
+
+            // Prepare second last candle details
+            $secondLastTimestamp = $secondLastCandle[0];
+            $secondLastDateTime = new DateTime("@$secondLastTimestamp");
+            $secondLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
+            $secondLastFormattedTime = $secondLastDateTime->format('Y-m-d H:i:s');
+            $secondLastOpen = $secondLastCandle[1];
+            $secondLastHigh = $secondLastCandle[2];
+            $secondLastLow = $secondLastCandle[3];
+            $secondLastClose = $secondLastCandle[4];
+
+            if($secondLastOpen - $secondLastClose > 0){
+                $op = 1; //RED CANDLE
+            }
+            else{
+                $op = 0;
+            }
+           
+
+            // Prepare last candle details
+            $lastcandleLastTimestamp = $lastCandle[0];
+            $lastLastDateTime = new DateTime("@$lastcandleLastTimestamp");
+            $lastLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
+            $lastLastFormattedTime = $lastLastDateTime->format('Y-m-d H:i:s');
+            $lastOpen = $lastCandle[1];
+            $lastHigh = $lastCandle[2];
+            $lastLow = $lastCandle[3];
+            $lastClose = $lastCandle[4];
+
+            if($lastOpen - $lastClose > 0){
+                $opc = 1; //RED CANDLE
+            }
+            else{
+                $opc = 0; //GREEN CANDLE
+            }
+
+            \Log::info('HISTORY DATA SAVE EPOCH ' . $secondLastTimestamp.','.$lastcandleLastTimestamp);
+            // Check if Second last data already exists
+            $existsSecondLast = DB::table('bank_historical_data_5min')
+                ->where('timeepoch', $secondLastTimestamp)
+                ->where('tred_option', $symbolstatus)
+                ->exists();
+                \Log::info('HISTORY DATA SAVE TABLE ' . $secondLastTimestamp.','.$symbolstatus);
+            if (!$existsSecondLast) {
+                \Log::info('ENTERED 1');
+                // Insert data into database
+                DB::table('bank_historical_data_5min')->insert([
+                    'stock' => $symbol,
+                    'date' => $secondLastFormattedTime,
+                    'open' => $secondLastOpen,
+                    'close' => $secondLastClose,
+                    'high' => $secondLastCandle[2],
+                    'low' => $secondLastCandle[3],
+                    'open_status' => $op,
+                    'tred_option' => $symbolstatus, // 1 => CE, 2 => PE
+                    'lastorsecondlast' => 2, // 1 for last 2 for second last
+                    'timeepoch' => $secondLastTimestamp,
+                ]);
+            }
+            else{
+                \Log::info('ENTERED 2');
+                  // Update data into database
+                  DB::table('bank_historical_data_5min')
+                  ->where('timeepoch', $secondLastTimestamp) 
+                  ->where('tred_option', $symbolstatus)
+                  ->update([
+                    'stock' => $symbol,
+                    'date' => $secondLastFormattedTime,
+                    'open' => $secondLastOpen,
+                    'close' => $secondLastClose,
+                    'high' => $secondLastCandle[2],
+                    'low' => $secondLastCandle[3],
+                    'open_status' => $op,
+                    'tred_option' => $symbolstatus, //  1 => CE, 2 => PE
+                ]);
+
+                //check if order exist in table if yes then update SL
+                $liveorder = Order::where('stock_name', $symbol)->where('status', 0)->where('stock', $symbolstatus)->first();
+                if($liveorder){
+                    
+                    if($op == 1){
+                        $sl = $secondLastClose;
+                    }
+                    else{
+                        $sl = $secondLastOpen;
+                    }
+                    Log::info("SL UPDATED BY NEW CANDLE" . $sl);
+                    DB::table('tbl_order')
+                    ->where('id', $liveorder->id) 
+                    ->update([
+                      'sl' => $sl //  1 => CE, 2 => PE
+                  ]);
+  
+
+                } // if end of order exist or not
+                else{
+                    \Log::info('SL NOT UPDATED NO ORDER RUNNING');
+                }
+
+
+            }
+
+        // Check if last data already exists
+               $existsLastData = DB::table('bank_historical_data_5min')
+               ->where('timeepoch', $lastcandleLastTimestamp)
+               ->where('tred_option', $symbolstatus)
+               ->exists();
+               \Log::info('HISTORY DATA SAVE TABLE22 ' . $lastcandleLastTimestamp.','.$symbolstatus);
+           if (!$existsLastData) {
+            \Log::info('ENTERED 3');
+               // Insert data into database
+               \Log::info('HISTORY DATA SAVE INSERTED ' . $symbol.','.$lastcandleLastTimestamp);
+               DB::table('bank_historical_data_5min')->insert([
+                    'stock' => $symbol,
+                   'date' => $lastLastFormattedTime,
+                   'open' => $lastOpen,
+                   'close' => $lastClose,
+                   'high' => $lastHigh,
+                   'low' => $lastLow,
+                   'open_status' => $opc,
+                   'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+                   'lastorsecondlast' => 1, // 1 for last 2 for second last
+                   'timeepoch' => $lastcandleLastTimestamp,
+               ]);
+           }
+           else{
+            \Log::info('ENTERED 4');
+                 // Update data into database
+                 DB::table('bank_historical_data_5min')
+                 ->where('timeepoch', $lastcandleLastTimestamp) 
+                 ->where('tred_option', $symbolstatus)
+                 ->update([
+                    'stock' => $symbol,
+                   'date' => $lastLastFormattedTime,
+                   'open' => $lastOpen,
+                   'close' => $lastClose,
+                   'high' => $lastHigh,
+                   'low' => $lastLow,
+                   'open_status' => $opc,
+                   'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+               ]);
+           }
+
+
+            return response()->json([
+                'message' => 'Candle data processed successfully',
+                'symbol' => $symbol,
+                'date' => $secondLastFormattedTime,
+                'status' => "Success",
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error processing candle data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+    //stock options
+    public function stock_historical_data()
+    {
+        $response1 = $this->stock_historical_data_option(1); // 1 => CE
+        $response2 = $this->stock_historical_data_option(2); // 2 => PE
+        return response()->json([
+            'response1' => json_decode($response1->getContent(), true),
+            'response2' => json_decode($response2->getContent(), true),
+        ]);
+    }
+
+   
+    private function stock_historical_data_option($symbolstatus)
+    {
+        try {
+            $currentDate = date('Y-m-d');
+            $startTime = config('constants.time.START_TIME');
+            $endTime = config('constants.time.END_TIME');
+            $startDateTime = $currentDate . ' ' . $startTime;
+
+            $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+            $endDateTime = $datetime->format('Y-m-d H:i:s');
+
+            $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+            $symbol = $symbolstatus == 1 ? $symbolData->stockoption_ce : $symbolData->stockoption_pe;
+
+           // print_r($symbol);
+            // exit;
+            $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,60);
+            // print_r($response);
+            // exit;
+            $data = json_decode($response, true);
+            if (!isset($data['candles']) || empty($data['candles'])) {
+                return response()->json(['message' => 'No candle data found'], 404);
+            }
+
+            $candles = $data['candles'];
+            $lastTwoCandles = array_slice($candles, -2);
+
+            // Extract second last and last candle data
+            $secondLastCandle = $lastTwoCandles[0];
+            $lastCandle = $lastTwoCandles[1];
+
+            // Prepare second last candle details
+            $secondLastTimestamp = $secondLastCandle[0];
+            $secondLastDateTime = new DateTime("@$secondLastTimestamp");
+            $secondLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
+            $secondLastFormattedTime = $secondLastDateTime->format('Y-m-d H:i:s');
+            $secondLastOpen = $secondLastCandle[1];
+            $secondLastHigh = $secondLastCandle[2];
+            $secondLastLow = $secondLastCandle[3];
+            $secondLastClose = $secondLastCandle[4];
+
+            if($secondLastOpen - $secondLastClose > 0){
+                $op = 1; //RED CANDLE
+            }
+            else{
+                $op = 0;
+            }
+           
+
+            // Prepare last candle details
+            $lastcandleLastTimestamp = $lastCandle[0];
+            $lastLastDateTime = new DateTime("@$lastcandleLastTimestamp");
+            $lastLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
+            $lastLastFormattedTime = $lastLastDateTime->format('Y-m-d H:i:s');
+            $lastOpen = $lastCandle[1];
+            $lastHigh = $lastCandle[2];
+            $lastLow = $lastCandle[3];
+            $lastClose = $lastCandle[4];
+
+            if($lastOpen - $lastClose > 0){
+                $opc = 1; //RED CANDLE
+            }
+            else{
+                $opc = 0; //GREEN CANDLE
+            }
+
+            // Check if Second last data already exists
+            $existsSecondLast = DB::table('stock_historical_data')
+                ->where('date', $secondLastFormattedTime)
+                ->where('tred_option', $symbolstatus)
+                ->exists();
+
+            if (!$existsSecondLast) {
+              
+                // Insert data into database
+                DB::table('stock_historical_data')->insert([
+                    'stock' => $symbol,
+                    'date' => $secondLastFormattedTime,
+                    'open' => $secondLastOpen,
+                    'close' => $secondLastClose,
+                    'high' => $secondLastCandle[2],
+                    'low' => $secondLastCandle[3],
+                    'open_status' => $op,
+                    'tred_option' => $symbolstatus, // 1 => CE, 2 => PE
+                ]);
+            }
+            else{
+                  // Update data into database
+                  DB::table('stock_historical_data')
+                  ->where('date', $secondLastFormattedTime) 
+                  ->where('tred_option', $symbolstatus)
+                  ->update([
+                    'stock' => $symbol,
+                    'date' => $secondLastFormattedTime,
+                    'open' => $secondLastOpen,
+                    'close' => $secondLastClose,
+                    'high' => $secondLastCandle[2],
+                    'low' => $secondLastCandle[3],
+                    'open_status' => $op,
+                    'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+                ]);
+            }
+
+        // Check if last data already exists
+               $existsLastData = DB::table('stock_historical_data')
+               ->where('date', $lastLastFormattedTime)
+               ->where('tred_option', $symbolstatus)
+               ->exists();
+
+           if (!$existsLastData) {
+               // Insert data into database
+               DB::table('stock_historical_data')->insert([
+                    'stock' => $symbol,
+                   'date' => $lastLastFormattedTime,
+                   'open' => $lastOpen,
+                   'close' => $lastClose,
+                   'high' => $lastHigh,
+                   'low' => $lastLow,
+                   'open_status' => $opc,
+                   'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+               ]);
+           }
+           else{
+                 // Update data into database
+                 DB::table('stock_historical_data')
+                 ->where('date', $lastLastFormattedTime) 
+                 ->where('tred_option', $symbolstatus)
+                 ->update([
+                    'stock' => $symbol,
+                   'date' => $lastLastFormattedTime,
+                   'open' => $lastOpen,
+                   'close' => $lastClose,
+                   'high' => $lastHigh,
+                   'low' => $lastLow,
+                   'open_status' => $opc,
+                   'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+               ]);
+           }
+
+
+            return response()->json([
+                'message' => 'Candle data processed successfully',
+                'symbol' => $symbol,
+                'date' => $secondLastFormattedTime,
+                'status' => "Success",
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error processing candle data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function stock_historical_data_5min()
+    {
+        $response1 = $this->stock_historical_data_option_5min(1); // 1 => CE
+        $response2 = $this->stock_historical_data_option_5min(2); // 2 => PE
+        return response()->json([
+            'response1' => json_decode($response1->getContent(), true),
+            'response2' => json_decode($response2->getContent(), true),
+        ]);
+    }
+
+    private function stock_historical_data_option_5min($symbolstatus)
+    {
+        try {
+            $currentDate = date('Y-m-d');
+            $startTime = config('constants.time.START_TIME');
+            $endTime = config('constants.time.END_TIME');
+            $startDateTime = $currentDate . ' ' . $startTime;
+
+            $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+            $endDateTime = $datetime->format('Y-m-d H:i:s');
+
+            $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+            $symbol = $symbolstatus == 1 ? $symbolData->stockoption_ce : $symbolData->stockoption_pe;
+
+           // print_r($symbol);
+            // exit;
+            $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,5);
+            \Log::info('HISTORY DATA SAVE ' . $symbol.','.$endDateTime);
+            // print_r($response);
+            // exit;
+            $data = json_decode($response, true);
+            if (!isset($data['candles']) || empty($data['candles'])) {
+                Log::error("No candle data found in ".$symbol);
+                return response()->json(['message' => 'No candle data found'], 404);
+            }
+
+            $candles = $data['candles'];
+            $lastTwoCandles = array_slice($candles, -2);
+
+            // Extract second last and last candle data
+            $secondLastCandle = $lastTwoCandles[0];
+            $lastCandle = $lastTwoCandles[1];
+
+            // Prepare second last candle details
+            $secondLastTimestamp = $secondLastCandle[0];
+            $secondLastDateTime = new DateTime("@$secondLastTimestamp");
+            $secondLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
+            $secondLastFormattedTime = $secondLastDateTime->format('Y-m-d H:i:s');
+            $secondLastOpen = $secondLastCandle[1];
+            $secondLastHigh = $secondLastCandle[2];
+            $secondLastLow = $secondLastCandle[3];
+            $secondLastClose = $secondLastCandle[4];
+
+            if($secondLastOpen - $secondLastClose > 0){
+                $op = 1; //RED CANDLE
+            }
+            else{
+                $op = 0;
+            }
+           
+
+            // Prepare last candle details
+            $lastcandleLastTimestamp = $lastCandle[0];
+            $lastLastDateTime = new DateTime("@$lastcandleLastTimestamp");
+            $lastLastDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
+            $lastLastFormattedTime = $lastLastDateTime->format('Y-m-d H:i:s');
+            $lastOpen = $lastCandle[1];
+            $lastHigh = $lastCandle[2];
+            $lastLow = $lastCandle[3];
+            $lastClose = $lastCandle[4];
+
+            if($lastOpen - $lastClose > 0){
+                $opc = 1; //RED CANDLE
+            }
+            else{
+                $opc = 0; //GREEN CANDLE
+            }
+
+            \Log::info('HISTORY DATA SAVE EPOCH ' . $secondLastTimestamp.','.$lastcandleLastTimestamp);
+            // Check if Second last data already exists
+            $existsSecondLast = DB::table('stock_historical_data_5min')
+                ->where('timeepoch', $secondLastTimestamp)
+                ->where('tred_option', $symbolstatus)
+                ->exists();
+                \Log::info('HISTORY DATA SAVE TABLE ' . $secondLastTimestamp.','.$symbolstatus);
+            if (!$existsSecondLast) {
+                \Log::info('ENTERED 1');
+                // Insert data into database
+                DB::table('stock_historical_data_5min')->insert([
+                    'stock' => $symbol,
+                    'date' => $secondLastFormattedTime,
+                    'open' => $secondLastOpen,
+                    'close' => $secondLastClose,
+                    'high' => $secondLastCandle[2],
+                    'low' => $secondLastCandle[3],
+                    'open_status' => $op,
+                    'tred_option' => $symbolstatus, // 1 => CE, 2 => PE
+                    'lastorsecondlast' => 2, // 1 for last 2 for second last
+                    'timeepoch' => $secondLastTimestamp,
+                ]);
+            }
+            else{
+                \Log::info('ENTERED 2');
+                  // Update data into database
+                  DB::table('stock_historical_data_5min')
+                  ->where('timeepoch', $secondLastTimestamp) 
+                  ->where('tred_option', $symbolstatus)
+                  ->update([
+                    'stock' => $symbol,
+                    'date' => $secondLastFormattedTime,
+                    'open' => $secondLastOpen,
+                    'close' => $secondLastClose,
+                    'high' => $secondLastCandle[2],
+                    'low' => $secondLastCandle[3],
+                    'open_status' => $op,
+                    'tred_option' => $symbolstatus, //  1 => CE, 2 => PE
+                ]);
+
+                //check if order exist in table if yes then update SL
+                $liveorder = Order::where('stock_name', $symbol)->where('status', 0)->where('stock', $symbolstatus)->first();
+                if($liveorder){
+                    
+                    if($op == 1){
+                        $sl = $secondLastClose;
+                    }
+                    else{
+                        $sl = $secondLastOpen;
+                    }
+                    Log::info("SL UPDATED BY NEW CANDLE" . $sl);
+                    DB::table('tbl_order')
+                    ->where('id', $liveorder->id) 
+                    ->update([
+                      'sl' => $sl //  1 => CE, 2 => PE
+                  ]);
+  
+
+                } // if end of order exist or not
+                else{
+                    \Log::info('SL NOT UPDATED NO ORDER RUNNING');
+                }
+
+
+            }
+
+        // Check if last data already exists
+               $existsLastData = DB::table('stock_historical_data_5min')
+               ->where('timeepoch', $lastcandleLastTimestamp)
+               ->where('tred_option', $symbolstatus)
+               ->exists();
+               \Log::info('HISTORY DATA SAVE TABLE22 ' . $lastcandleLastTimestamp.','.$symbolstatus);
+           if (!$existsLastData) {
+            \Log::info('ENTERED 3');
+               // Insert data into database
+               \Log::info('HISTORY DATA SAVE INSERTED ' . $symbol.','.$lastcandleLastTimestamp);
+               DB::table('stock_historical_data_5min')->insert([
+                    'stock' => $symbol,
+                   'date' => $lastLastFormattedTime,
+                   'open' => $lastOpen,
+                   'close' => $lastClose,
+                   'high' => $lastHigh,
+                   'low' => $lastLow,
+                   'open_status' => $opc,
+                   'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+                   'lastorsecondlast' => 1, // 1 for last 2 for second last
+                   'timeepoch' => $lastcandleLastTimestamp,
+               ]);
+           }
+           else{
+            \Log::info('ENTERED 4');
+                 // Update data into database
+                 DB::table('stock_historical_data_5min')
+                 ->where('timeepoch', $lastcandleLastTimestamp) 
+                 ->where('tred_option', $symbolstatus)
+                 ->update([
+                    'stock' => $symbol,
+                   'date' => $lastLastFormattedTime,
+                   'open' => $lastOpen,
+                   'close' => $lastClose,
+                   'high' => $lastHigh,
+                   'low' => $lastLow,
+                   'open_status' => $opc,
+                   'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
+               ]);
+           }
+
+
+            return response()->json([
+                'message' => 'Candle data processed successfully',
+                'symbol' => $symbol,
+                'date' => $secondLastFormattedTime,
+                'status' => "Success",
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error processing candle data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 
     private function highest_price_sameday($date1,$date2,$symbol,$time)
     {
@@ -619,11 +1365,11 @@ class FyersController extends Controller
         $currentUrl = request()->url();
         if (str_contains($currentUrl, 'view-historical-data-PE')) {
         $historicalData = DB::table('historical_data')->where('tred_option', '=', '2')->orderBy('id', 'desc')->get();
-        return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data PE ']);
+        return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data PE ', 'url'=>'view_historical_data_PE_5min']);
         }
         else {
             $historicalData = DB::table('historical_data')->where('tred_option', '=', '1')->orderBy('id', 'desc')->get();
-            return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data CE ']);
+            return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data CE ', 'url'=>'view_historical_data_CE_5min']);
             }
     }
 
@@ -632,11 +1378,64 @@ class FyersController extends Controller
         $currentUrl = request()->url();
         if (str_contains($currentUrl, 'view-historical-data-PE_5min')) {
         $historicalData = DB::table('historical_data_5min')->where('tred_option', '=', '2')->orderBy('id', 'desc')->get();
-        return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data PE 5 Min ']);
+        return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data PE 5 Min ', 'url'=>'view_historical_data_PE_5min']);
         }
         else {
             $historicalData = DB::table('historical_data_5min')->where('tred_option', '=', '1')->orderBy('id', 'desc')->get();
-            return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data CE 5 Min ']);
+            return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Historical Data CE 5 Min ', 'url'=>'view_historical_data_CE_5min']);
+            }
+    }
+
+    public function fetchbankHistoricalData()
+    {
+        $currentUrl = request()->url();
+        if (str_contains($currentUrl, 'view-bank-historical-data-PE')) {
+        $historicalData = DB::table('bank_historical_data')->where('tred_option', '=', '2')->orderBy('id', 'desc')->get();
+        return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Bank Historical Data PE ', 'url'=>'view_bank_historical_data_PE_5min']);
+        }
+        else {
+            $historicalData = DB::table('bank_historical_data')->where('tred_option', '=', '1')->orderBy('id', 'desc')->get();
+            return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Bank Historical Data CE ', 'url'=>'view_bank_historical_data_CE_5min']);
+            }
+    }
+
+    public function fetchbankHistoricalData_5min()
+    {
+        $currentUrl = request()->url();
+        if (str_contains($currentUrl, 'view-bank-historical-data-PE_5min')) {
+        $historicalData = DB::table('bank_historical_data_5min')->where('tred_option', '=', '2')->orderBy('id', 'desc')->get();
+        return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Bank Historical Data PE 5 Min ', 'url'=>'view_bank_historical_data_PE_5min']);
+        }
+        else {
+            $historicalData = DB::table('bank_historical_data_5min')->where('tred_option', '=', '1')->orderBy('id', 'desc')->get();
+            return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Bank Historical Data CE 5 Min ', 'url'=>'view_bank_historical_data_CE_5min']);
+            }
+    }
+
+
+    public function fetchstockHistoricalData()
+    {
+        $currentUrl = request()->url();
+        if (str_contains($currentUrl, 'view-stock-historical-data-PE')) {
+        $historicalData = DB::table('stock_historical_data')->where('tred_option', '=', '2')->orderBy('id', 'desc')->get();
+        return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Stock Historical Data PE ', 'url'=>'view_stock_historical_data_PE_5min']);
+        }
+        else {
+            $historicalData = DB::table('bank_historical_data')->where('tred_option', '=', '1')->orderBy('id', 'desc')->get();
+            return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Stock Historical Data CE ', 'url'=>'view_stock_historical_data_CE_5min']);
+            }
+    }
+
+    public function fetchstockHistoricalData_5min()
+    {
+        $currentUrl = request()->url();
+        if (str_contains($currentUrl, 'view-stock-historical-data-PE_5min')) {
+        $historicalData = DB::table('stock_historical_data_5min')->where('tred_option', '=', '2')->orderBy('id', 'desc')->get();
+        return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Stock Historical Data PE 5 Min ', 'url'=>'view_stock_historical_data_PE_5min']);
+        }
+        else {
+            $historicalData = DB::table('stock_historical_data_5min')->where('tred_option', '=', '1')->orderBy('id', 'desc')->get();
+            return view('admin.Fyers.view_historical_data', ['historicalData' => $historicalData, 'title'=>'Stock Historical Data CE 5 Min ', 'url'=>'view_stock_historical_data_CE_5min']);
             }
     }
 

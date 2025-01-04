@@ -1,5 +1,6 @@
 @extends('admin.base_template')
             @section('title',$title)
+ 
 @section('main')
 <!-- Start content -->
 <div class="content">
@@ -90,17 +91,17 @@
 </div>
 	   <div class="col-sm-6 my-3" style="margin-top: 23px!important">
 <div class="form-floating">
-<input id='amount' type='number' class="form-control @error('amount') is-invalid @enderror" name='amount' value="{{old('amount') ? old('amount') : $data->amount}}" placeholder="Enter Amount" required>
- <label for="Amount">Enter Amount  <span style="color:red;">*</span></label>
+<input id='lots' type='number' class="form-control @error('amount') is-invalid @enderror" name='lots' value="{{old('lots') ? old('lots') : $data->amount}}" placeholder="Enter lots" required>
+ <label for="Amount">Enter Lots  <span style="color:red;">*</span></label>
 </div>
- @error('amount')
+ @error('lots')
 <div style="color:red">{{$message}}</div>
 @enderror
 </div>
 	   <div class="col-sm-6 my-3" style="margin-top: 23px!important">
 <div class="form-floating">
 <input id='option_ce' type='text' class="form-control @error('option_ce') is-invalid @enderror" name='option_ce' value="{{old('option_ce') ? old('option_ce') : $data->option_ce}}" placeholder="Enter Option CE" required>
- <label for="Option CE">Enter Option CE  <span style="color:red;">*</span></label>
+ <label for="Option CE">Enter NIFTY CE  <span style="color:red;">*</span></label>
 </div>
 <span id="option_ce_Span"></span>
  @error('option_ce')
@@ -110,17 +111,57 @@
 	   <div class="col-sm-6 my-3" style="margin-top: 23px!important">
 <div class="form-floating">
 <input id='option_pe' type='text' class="form-control @error('option_pe') is-invalid @enderror" name='option_pe' value="{{old('option_pe') ? old('option_pe') : $data->option_pe}}" placeholder="Enter Option PE" required>
- <label for="Option PE">Enter Option PE  <span style="color:red;">*</span></label>
+ <label for="Option PE">Enter NIFTY PE  <span style="color:red;">*</span></label>
 </div>
 <span id="option_pe_Span"></span>
  @error('option_pe')
 <div style="color:red">{{$message}}</div>
 @enderror
 </div>
+<div class="col-sm-6 my-3" style="margin-top: 23px!important">
+<div class="form-floating">
+<input id='bankoption_ce' type='text' class="form-control @error('bankoption_ce') is-invalid @enderror" name='bankoption_ce' value="{{old('bankoption_ce') ? old('bankoption_ce') : $data->bankoption_ce}}" placeholder="Enter BANKNIFTY CE" required>
+ <label for="Option CE">Enter BANKNIFTY CE  <span style="color:red;">*</span></label>
+</div>
+<span id="bankoption_ce_Span"></span>
+ @error('bankoption_ce')
+<div style="color:red">{{$message}}</div>
+@enderror
+</div>
+	   <div class="col-sm-6 my-3" style="margin-top: 23px!important">
+<div class="form-floating">
+<input id='bankoption_pe' type='text' class="form-control @error('bankoption_pe') is-invalid @enderror" name='bankoption_pe' value="{{old('bankoption_pe') ? old('bankoption_pe') : $data->bankoption_pe}}" placeholder="Enter BANKNIFTY PE" required>
+ <label for="Option PE">Enter BANKNIFTY PE  <span style="color:red;">*</span></label>
+</div>
+<span id="bankoption_pe_Span"></span>
+ @error('bankoption_pe')
+<div style="color:red">{{$message}}</div>
+@enderror
+</div>
+<div class="col-sm-6 my-3" style="margin-top: 23px!important">
+<div class="form-floating">
+<input id='stockoption_ce' type='text' class="form-control @error('stockoption_ce') is-invalid @enderror" name='stockoption_ce' value="{{old('stockoption_ce') ? old('stockoption_ce') : $data->stockoption_ce}}" placeholder="Enter STOCK CE" required>
+ <label for="Option CE">Enter STOCK CE  <span style="color:red;">*</span></label>
+</div>
+<span id="stockoption_ce_Span"></span>
+ @error('stockoption_ce')
+<div style="color:red">{{$message}}</div>
+@enderror
+</div>
+	   <div class="col-sm-6 my-3" style="margin-top: 23px!important">
+<div class="form-floating">
+<input id='stockoption_pe' type='text' class="form-control @error('stockoption_pe') is-invalid @enderror" name='stockoption_pe' value="{{old('stockoption_pe') ? old('stockoption_pe') : $data->stockoption_pe}}" placeholder="Enter STOCK PE" required>
+ <label for="Option PE">Enter STOCK PE  <span style="color:red;">*</span></label>
+</div>
+<span id="stockoption_pe_Span"></span>
+ @error('stockoption_pe')
+<div style="color:red">{{$message}}</div>
+@enderror
+</div>
 	   <div class="col-sm-6 my-3">
 <div class='form-group has-float-label'>
-<label for='Trading'>Trading Type <span style='color:red'> *</span></label>
-<select id='Trading' name='Trading' required class="form-control @error('Trading') is-invalid @enderror">
+<label for='trading_type'>Trading Type <span style='color:red'> *</span></label>
+<select id='trading_type' name='trading_type' required class="form-control @error('trading_type') is-invalid @enderror">
 <option value="1">Testing</option>
 <option value="2">Live</option>
 </select>

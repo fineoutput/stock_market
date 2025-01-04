@@ -20,9 +20,13 @@
                 	 'phone',
 	                 'login_id',
 	                 'pin',
-	                 'amount',
+	                 'lots',
 	                 'option_ce',
 	                 'option_pe',
+                     'bankoption_ce',
+	                 'bankoption_pe',
+                     'stockoption_ce',
+	                 'stockoption_pe',
 	                 'trading_type',
                      'ip', 'added_by', 'is_active'
                 ];

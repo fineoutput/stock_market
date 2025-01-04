@@ -97,12 +97,29 @@ Route::get('/Order/viewOrder', [OrderController::class,'viewOrder'])->name('view
 
 //historical-data
 Route::get('/highest-price-sameday/{date1}/{date2}/{symbol}/{time}', [FyersController::class, 'highest_price_sameday']);
+
+//nifty
 Route::get('historical-data', [FyersController::class, 'historical_data']);
 Route::get('historical-data-5min', [FyersController::class, 'historical_data_5min']);
 Route::get('view-historical-data-CE', [FyersController::class, 'fetchHistoricalData'])->name('view_historical_data_CE');
 Route::get('view-historical-data-PE', [FyersController::class, 'fetchHistoricalData'])->name('view_historical_data_PE');
 Route::get('view-historical-data-CE_5min', [FyersController::class, 'fetchHistoricalData_5min'])->name('view_historical_data_CE_5min');
 Route::get('view-historical-data-PE_5min', [FyersController::class, 'fetchHistoricalData_5min'])->name('view_historical_data_PE_5min');
+//banknifty
+Route::get('bank-historical-data', [FyersController::class, 'bank_historical_data']);
+Route::get('bank-historical-data-5min', [FyersController::class, 'bank_historical_data_5min']);
+Route::get('view-bank-historical-data-CE', [FyersController::class, 'fetchbankHistoricalData'])->name('view_bank_historical_data_CE');
+Route::get('view-bank-historical-data-PE', [FyersController::class, 'fetchbankHistoricalData'])->name('view_bank_historical_data_PE');
+Route::get('view-bank-historical-data-CE_5min', [FyersController::class, 'fetchbankHistoricalData_5min'])->name('view_bank_historical_data_CE_5min');
+Route::get('view-bank-historical-data-PE_5min', [FyersController::class, 'fetchbankHistoricalData_5min'])->name('view_bank_historical_data_PE_5min');
+//stock options
+Route::get('stock-historical-data', [FyersController::class, 'stock_historical_data']);
+Route::get('stock-historical-data-5min', [FyersController::class, 'stock_historical_data_5min']);
+Route::get('view-stock-historical-data-CE', [FyersController::class, 'fetchstockHistoricalData'])->name('view_stock_historical_data_CE');
+Route::get('view-stock-historical-data-PE', [FyersController::class, 'fetchstockHistoricalData'])->name('view_stock_historical_data_PE');
+Route::get('view-stock-historical-data-CE_5min', [FyersController::class, 'fetchstockHistoricalData_5min'])->name('view_stock_historical_data_CE_5min');
+Route::get('view-stock-historical-data-PE_5min', [FyersController::class, 'fetchstockHistoricalData_5min'])->name('view_stock_historical_data_PE_5min');
+
 Route::get('continue-tred', [FyersController::class, 'continue_tred'])->name('continue-tred');
 Route::get('historical-data-1m', [FyersController::class, 'historical_data_1m']);
 
