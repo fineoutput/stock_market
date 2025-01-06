@@ -75,6 +75,8 @@ class CronJobController extends Controller
          $job5= '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/bank-historical-data';
          $job6= '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/bank-historical-data-5min';
 
+
+         
           //Stock option historic data cron job remove
         $job7= '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data';
         $job8= '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data-5min';

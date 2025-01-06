@@ -130,6 +130,8 @@ Route::get('/Order/createOrder_PE', [OrderAutoController::class,'createOrder_PE'
 Route::get('/Order/createOrder_CE_5min', [OrderAutoController::class,'createOrder_CE_5min'])->name('createOrder_CE_5min');
 Route::get('/Order/createOrder_PE_5min', [OrderAutoController::class,'createOrder_PE_5min'])->name('createOrder_PE_5min');
 
+// Route::get('/Order/nifty_current/{time}', [OrderAutoController::class,'nifty_current'])->name('nifty_current');
+
 Route::get('/CronJobController/morning_job', [CronJobController::class,'morning_job'])->name('morning_job');
 Route::get('/CronJobController/evening_job', [CronJobController::class,'evening_job'])->name('evening_job');
 

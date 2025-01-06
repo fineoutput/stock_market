@@ -988,8 +988,9 @@ public function createOrder_CE_5min()
         $endTime = config('constants.time.END_TIME');
         $startDateTime = $currentDate . ' ' . $startTime;
 
-        $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
-        $endDateTime = $datetime->format('Y-m-d H:i:s');
+        // $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+        $endDateTime = '2025-01-06 10:14:00';
+        // $endDateTime = $datetime->format('Y-m-d H:i:s');
 
         $date1 =$startDateTime;
         $date2 =$endDateTime;
@@ -999,6 +1000,8 @@ public function createOrder_CE_5min()
         $date100 = $date00->format('Y-m-d H:i:s');
         $date11 = new DateTime($date100, new DateTimeZone('Asia/Kolkata')); // Your date and timezone
         $d1 = $date11->getTimestamp();
+
+       
 
         $date0011 = new DateTime($date2); // Your original date and time
         $date0011->setTime($date0011->format('H'), $date0011->format('i'), 0); // Set seconds to 0
@@ -1011,8 +1014,10 @@ public function createOrder_CE_5min()
         $auth_code = $this->authCode();
         $res = $time;
         $date_format = 0;
-        $range_from = $d1;
-        $range_to = $d2;
+        // $range_from = $d1;
+        $range_from = 1736135100;
+        // $range_to = $d2;
+        $range_to = 1736138640;
 
         $curl = curl_init();
             curl_setopt_array($curl, array(
@@ -1038,23 +1043,28 @@ public function createOrder_CE_5min()
                     $start = new DateTime('09:15');
                     $end = new DateTime('10:15');
 
+                    $data = json_decode($response);
+                
+                    $candles = $data->candles;
+
                     // Check if the current time falls between 9:15 and 10:15
                     if ($now >= $start && $now <= $end) {
                         $offset = -1;
+                        $lastTwoCandles = $candles[0];
+                        // Extract second last and last candle data
+                        $lastOpen = $lastTwoCandles[1];
+                        $nifty_now = $nifty['lp'];
+
                     } else {
-                        $offset = -2; // Or any other value for offset
+                        $lastTwoCandles = array_slice($candles, -1);
+                        // Extract second last and last candle data
+                        $secondLastCandle = $lastTwoCandles[0];
+                        $lastCandle = $lastTwoCandles[1];
+                        $lastOpen = $lastCandle[1];
+                        $nifty_now = $nifty['lp'];
+                        \Log::info('NIFTY LAST CANDLE - '.$response);
                     }
-                $data = json_decode($response, associative: true);
-                $candles = $data['candles'];
-                $lastTwoCandles = array_slice($candles, $offset);
-    
-                // Extract second last and last candle data
-                $secondLastCandle = $lastTwoCandles[0];
-                $lastCandle = $lastTwoCandles[1];
-                $lastOpen = $lastCandle[1];
-                $nifty_now = $nifty['lp'];
-                \Log::info('NIFTY LAST CANDLE - '.$response);
-                
+              
                 // \Log::info('NIFTY LAST OPEN - '.$lastOpen);
                 
                 if($nifty_now >= $lastOpen){
