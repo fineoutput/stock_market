@@ -41,12 +41,8 @@ class FyersController extends Controller
                                            'login_id' =>'string|required',
 	                                       'pin' =>'string|required',
 	                                       'lots' =>'string|required',
-	                                       'option_ce' =>'string|required',
-	                                       'option_pe' =>'string|required',
-                                           'bankoption_ce' =>'string|required',
-	                                       'bankoption_pe' =>'string|required',
-                                           'stockoption_ce' =>'string|required',
-	                                       'stockoption_pe' =>'string|required',
+	                                       'lots2' =>'string|required',
+	                                       'lots3' =>'string|required',
                                            'trading_type' =>'string|required',
                                             ]);
         } else {
@@ -54,12 +50,8 @@ class FyersController extends Controller
 	                                      'login_id' =>'string|required',
 	                                      'pin' =>'string|required',
 	                                      'lots' =>'string|required',
-	                                      'option_ce' =>'string|required',
-	                                      'option_pe' =>'string|required',
-                                          'bankoption_ce' =>'string|required',
-                                          'bankoption_pe' =>'string|required',
-                                          'stockoption_ce' =>'string|required',
-                                          'stockoption_pe' =>'string|required',
+	                                      'lots2' =>'string|required',
+	                                      'lots3' =>'string|required',
 	                                      'trading_type' =>'string|required',
                                           ]);
                     }
@@ -74,6 +66,8 @@ class FyersController extends Controller
  	    $Fyers->login_id= $request->login_id; 
  	    $Fyers->pin= $request->pin; 
  	    $Fyers->lots= $request->lots; 
+ 	    $Fyers->lots2= $request->lots2; 
+ 	    $Fyers->lots3= $request->lots3; 
  	    $Fyers->option_ce= $request->option_ce; 
  	    $Fyers->option_pe= $request->option_pe; 
          $Fyers->bankoption_ce= $request->bankoption_ce; 

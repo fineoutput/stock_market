@@ -21,6 +21,8 @@
 	                 'login_id',
 	                 'pin',
 	                 'lots',
+	                 'lots2',
+	                 'lots3',
 	                 'option_ce',
 	                 'option_pe',
                      'bankoption_ce',

@@ -91,7 +91,7 @@
 </div>
 	   <div class="col-sm-6 my-3" style="margin-top: 23px!important">
 <div class="form-floating">
-<input id='lots' type='number' class="form-control @error('amount') is-invalid @enderror" name='lots' value="{{old('lots') ? old('lots') : $data->amount}}" placeholder="Enter lots" required>
+<input id='lots' type='number' class="form-control @error('amount') is-invalid @enderror" name='lots' value="{{old('lots') ? old('lots') : $data->lots}}" placeholder="Enter lots" required>
  <label for="Amount">Enter Lots  <span style="color:red;">*</span></label>
 </div>
  @error('lots')
@@ -100,8 +100,8 @@
 </div>
 	   <div class="col-sm-6 my-3" style="margin-top: 23px!important">
 <div class="form-floating">
-<input id='option_ce' type='text' class="form-control @error('option_ce') is-invalid @enderror" name='option_ce' value="{{old('option_ce') ? old('option_ce') : $data->option_ce}}" placeholder="Enter Option CE" required>
- <label for="Option CE">Enter NIFTY CE  <span style="color:red;">*</span></label>
+<input id='option_ce' type='text' class="form-control @error('option_ce') is-invalid @enderror" name='option_ce' value="{{old('option_ce') ? old('option_ce') : $data->option_ce}}" placeholder="Enter Option CE">
+ <label for="Option CE">Enter NIFTY CE  <span style="color:red;"></span></label>
 </div>
 <span id="option_ce_Span"></span>
  @error('option_ce')
@@ -110,8 +110,8 @@
 </div>
 	   <div class="col-sm-6 my-3" style="margin-top: 23px!important">
 <div class="form-floating">
-<input id='option_pe' type='text' class="form-control @error('option_pe') is-invalid @enderror" name='option_pe' value="{{old('option_pe') ? old('option_pe') : $data->option_pe}}" placeholder="Enter Option PE" required>
- <label for="Option PE">Enter NIFTY PE  <span style="color:red;">*</span></label>
+<input id='option_pe' type='text' class="form-control @error('option_pe') is-invalid @enderror" name='option_pe' value="{{old('option_pe') ? old('option_pe') : $data->option_pe}}" placeholder="Enter Option PE">
+ <label for="Option PE">Enter NIFTY PE  <span style="color:red;"></span></label>
 </div>
 <span id="option_pe_Span"></span>
  @error('option_pe')
@@ -120,8 +120,17 @@
 </div>
 <div class="col-sm-6 my-3" style="margin-top: 23px!important">
 <div class="form-floating">
-<input id='bankoption_ce' type='text' class="form-control @error('bankoption_ce') is-invalid @enderror" name='bankoption_ce' value="{{old('bankoption_ce') ? old('bankoption_ce') : $data->bankoption_ce}}" placeholder="Enter BANKNIFTY CE" required>
- <label for="Option CE">Enter BANKNIFTY CE  <span style="color:red;">*</span></label>
+<input id='lots2' type='number' class="form-control @error('lots2') is-invalid @enderror" name='lots2' value="{{old('lots2') ? old('lots2') : $data->lots2}}" placeholder="Enter lots2" required>
+ <label for="Amount">Enter Lots2  <span style="color:red;">*</span></label>
+</div>
+ @error('lots2')
+<div style="color:red">{{$message}}</div>
+@enderror
+</div>
+<div class="col-sm-6 my-3" style="margin-top: 23px!important">
+<div class="form-floating">
+<input id='bankoption_ce' type='text' class="form-control @error('bankoption_ce') is-invalid @enderror" name='bankoption_ce' value="{{old('bankoption_ce') ? old('bankoption_ce') : $data->bankoption_ce}}" placeholder="Enter BANKNIFTY CE">
+ <label for="Option CE">Enter BANKNIFTY CE  <span style="color:red;"></span></label>
 </div>
 <span id="bankoption_ce_Span"></span>
  @error('bankoption_ce')
@@ -130,8 +139,8 @@
 </div>
 	   <div class="col-sm-6 my-3" style="margin-top: 23px!important">
 <div class="form-floating">
-<input id='bankoption_pe' type='text' class="form-control @error('bankoption_pe') is-invalid @enderror" name='bankoption_pe' value="{{old('bankoption_pe') ? old('bankoption_pe') : $data->bankoption_pe}}" placeholder="Enter BANKNIFTY PE" required>
- <label for="Option PE">Enter BANKNIFTY PE  <span style="color:red;">*</span></label>
+<input id='bankoption_pe' type='text' class="form-control @error('bankoption_pe') is-invalid @enderror" name='bankoption_pe' value="{{old('bankoption_pe') ? old('bankoption_pe') : $data->bankoption_pe}}" placeholder="Enter BANKNIFTY PE">
+ <label for="Option PE">Enter BANKNIFTY PE  <span style="color:red;"></span></label>
 </div>
 <span id="bankoption_pe_Span"></span>
  @error('bankoption_pe')
@@ -140,8 +149,17 @@
 </div>
 <div class="col-sm-6 my-3" style="margin-top: 23px!important">
 <div class="form-floating">
-<input id='stockoption_ce' type='text' class="form-control @error('stockoption_ce') is-invalid @enderror" name='stockoption_ce' value="{{old('stockoption_ce') ? old('stockoption_ce') : $data->stockoption_ce}}" placeholder="Enter STOCK CE" required>
- <label for="Option CE">Enter STOCK CE  <span style="color:red;">*</span></label>
+<input id='lots3' type='number' class="form-control @error('lots3') is-invalid @enderror" name='lots3' value="{{old('lots3') ? old('lots3') : $data->lots3}}" placeholder="Enter lots3" required>
+ <label for="Amount">Enter Lots3  <span style="color:red;">*</span></label>
+</div>
+ @error('lots3')
+<div style="color:red">{{$message}}</div>
+@enderror
+</div>
+<div class="col-sm-6 my-3" style="margin-top: 23px!important">
+<div class="form-floating">
+<input id='stockoption_ce' type='text' class="form-control @error('stockoption_ce') is-invalid @enderror" name='stockoption_ce' value="{{old('stockoption_ce') ? old('stockoption_ce') : $data->stockoption_ce}}" placeholder="Enter STOCK CE">
+ <label for="Option CE">Enter STOCK CE  <span style="color:red;"></span></label>
 </div>
 <span id="stockoption_ce_Span"></span>
  @error('stockoption_ce')
@@ -150,8 +168,8 @@
 </div>
 	   <div class="col-sm-6 my-3" style="margin-top: 23px!important">
 <div class="form-floating">
-<input id='stockoption_pe' type='text' class="form-control @error('stockoption_pe') is-invalid @enderror" name='stockoption_pe' value="{{old('stockoption_pe') ? old('stockoption_pe') : $data->stockoption_pe}}" placeholder="Enter STOCK PE" required>
- <label for="Option PE">Enter STOCK PE  <span style="color:red;">*</span></label>
+<input id='stockoption_pe' type='text' class="form-control @error('stockoption_pe') is-invalid @enderror" name='stockoption_pe' value="{{old('stockoption_pe') ? old('stockoption_pe') : $data->stockoption_pe}}" placeholder="Enter STOCK PE">
+ <label for="Option PE">Enter STOCK PE  <span style="color:red;"></span></label>
 </div>
 <span id="stockoption_pe_Span"></span>
  @error('stockoption_pe')
