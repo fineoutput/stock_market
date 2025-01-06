@@ -563,6 +563,7 @@ public function createOrder_CE_5min()
                     \Log::info('CE(5MIN)-NIFTY CURRENTLY GREEN ');
                     $nifty_status = 1;
                     $symbol = $symbolData->option_ce;
+                    $qty = $symbolData->lots * $symbolData->lots_size;
                     // \Log::info('NIFTY TRADING GREEN _ CE SIDE');
                 }
                 else{
@@ -604,7 +605,7 @@ public function createOrder_CE_5min()
                             'status' => 0, //pending
                             'start_time' => now(),
                             'end_time' => "",
-                            'qty' => 100,
+                            'qty' => $qty,
                             'profit_loss_status' => 0,
                             'profit_loss_amt' => 0,
                             'historic_id' => $secondLast->id,
@@ -789,6 +790,7 @@ public function createOrder_CE_5min()
                     // NIFTY IS GREEN/POSITIVE
                     $nifty_status = 1;
                     $symbol = $symbolData->option_ce;
+                    
                     // \Log::info('NIFTY TRADING GREEN _ CE SIDE');
                     exit;
                 }
@@ -797,6 +799,7 @@ public function createOrder_CE_5min()
                     \Log::info('PE(5MIN)- NIFTY CURRENTLY RED - ENTRY');
                     $nifty_status = 2;
                     $symbol = $symbolData->option_pe;
+                    $qty = $symbolData->lots * $symbolData->lots_size;
                     // \Log::info('NIFTY TRADING RED _ PE SIDE');
                 }
 
@@ -830,7 +833,7 @@ public function createOrder_CE_5min()
                             'status' => 0, //pending
                             'start_time' => now(),
                             'end_time' => "",
-                            'qty' => 100,
+                            'qty' => $qty,
                             'profit_loss_status' => 0,
                             'profit_loss_amt' => 0,
                             'historic_id' => $secondLast->id,
