@@ -453,13 +453,13 @@ public function createOrder_CE_5min()
 
             if($secondLast){
                 if($secondLast->id == $runningOrder->historic_id){
-                    \Log::info('CE- SAME HISTORIC ID');
+                    \Log::info('CE(5MIN)- SAME HISTORIC ID');
                     //NO UPDATE TO BE DONE IN ORDER
                     $iterations = 18;
                     $exit_created = 0;
                     for ($i = 0; $i < $iterations; $i++) {
                         $live_price_Stock = $this->getPriceData($runningOrder->stock_name);
-                        \Log::info('CE- Live - SL ' . $live_price_Stock.','.$runningOrder->sl);
+                        \Log::info('CE(5MIN)- Live - SL ' . $live_price_Stock.','.$runningOrder->sl);
                         if($live_price_Stock < $runningOrder->sl){
                             if($exit_created == 0){
                                 //  CLOSED THE TRADE
@@ -544,7 +544,7 @@ public function createOrder_CE_5min()
 
         } //ORDER NOT RUNNING
         else{
-            \Log::info('CE-NO ORDER RUNNING');
+            \Log::info('CE(5MIN)-NO ORDER RUNNING');
             //CREATE NEW ORDER
             $entry = 0;
             // GET NIFTY VALUE IF NIFTY IS POSITIVE OR NEGATIVE
@@ -560,20 +560,24 @@ public function createOrder_CE_5min()
                 $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
                 if($nifty_current_type == 1){
                     // NIFTY IS GREEN/POSITIVE
-                    \Log::info('CE-NIFTY CURRENTLY GREEN ');
+                    \Log::info('CE(5MIN)-NIFTY CURRENTLY GREEN ');
                     $nifty_status = 1;
                     $symbol = $symbolData->option_ce;
                     // \Log::info('NIFTY TRADING GREEN _ CE SIDE');
                 }
                 else{
                     // NIFTY IS RED/NEGATIVE
-                    \Log::info('CE-NIFTY CURRENTLY RED SO EXIT');
+                    \Log::info('CE(5MIN)-NIFTY CURRENTLY RED SO EXIT');
                     $nifty_status = 2;
                     $symbol = $symbolData->option_pe;
                     exit;
                     // \Log::info('NIFTY TRADING RED _ PE SIDE');
                 }
 
+            if(empty($symbol)){
+                \Log::info('CE(5MIN)-SYMBOL NOT FOUND');
+                exit;
+            }               
             //CHECK LAST OPEN TO 
             $secondLast = Historical5min::wherenull('deleted_at')->where('tred_option', $nifty_status)->orderBy('id', 'DESC')->skip(1)
             ->take(1)->first();
@@ -585,10 +589,10 @@ public function createOrder_CE_5min()
 
                     for ($i = 0; $i < $iterations; $i++) {
                         $live_price_Stock = $this->getPriceData($symbol);
-                        \Log::info('CE- Live - Open ' . $live_price_Stock.','.$last_open);
+                        \Log::info('CE(5MIN)- Live - Open ' . $live_price_Stock.','.$last_open);
                         if($live_price_Stock > $last_open){
                             if($entry == 0){
-                           \Log::info('CE- d1 ' . $symbol);
+                           \Log::info('CE(5MIN)- d1 ' . $symbol);
                            $order = Order::create([
                             'stock_name' => $symbol,
                             'stock' => $nifty_status,
@@ -614,7 +618,7 @@ public function createOrder_CE_5min()
                             //   exit;
                         }
                         if($live_price_Stock < $last_close){
-                            \Log::info('CE- CURRENT PRICE LOWER THAN LAST CLOSE, Exit Created at ' . now());
+                            \Log::info('CE(5MIN)- CURRENT PRICE LOWER THAN LAST CLOSE, Exit Created at ' . now());
                          if($entry == 1){
                                         // Update data into database
                            $pl = $original_buy_price-$live_price_Stock;
@@ -645,12 +649,12 @@ public function createOrder_CE_5min()
                     }
             } // SECOND LAST CANDLE NOT RED
             else{
-                \Log::info('CE -SECOND LAST CANDLE NOT RED');
+                \Log::info('CE(5MIN) -SECOND LAST CANDLE NOT RED');
             }
 
             }
             else{
-                \Log::info('CE- NOT GETTING nifty_current_type');
+                \Log::info('CE(5MIN)- NOT GETTING nifty_current_type');
             }
         }
 
@@ -660,7 +664,7 @@ public function createOrder_CE_5min()
     public function createOrder_PE_5min()
     {
           // Your function logic here
-          \Log::info('Task executed at anay PE' . now());
+        //   \Log::info('Task executed at anay PE' . now());
         //   exit;
         //check if order exists or not
         $runningOrder = Order::where('status', 0)->where('stock', 2)->where('timeframe', 1)->first();
@@ -674,13 +678,13 @@ public function createOrder_CE_5min()
 
             if($secondLast){
                 if($secondLast->id == $runningOrder->historic_id){
-                    \Log::info('PE- SAME HISTORIC ID');
+                    \Log::info('PE(5MIN)- SAME HISTORIC ID');
                     //NO UPDATE TO BE DONE IN ORDER
                     $iterations = 18;
                     $exit_created = 0;
                     for ($i = 0; $i < $iterations; $i++) {
                         $live_price_Stock = $this->getPriceData($runningOrder->stock_name);
-                        \Log::info('PE- Live - SL ' . $live_price_Stock.','.$runningOrder->sl);
+                        \Log::info('PE(5MIN)- Live - SL ' . $live_price_Stock.','.$runningOrder->sl);
                         if($live_price_Stock < $runningOrder->sl){
                             if($exit_created == 0)  { 
                             //  CLOSED THE TRADE
@@ -692,7 +696,7 @@ public function createOrder_CE_5min()
                            else{
                             $profit_loss_status = 1;
                            }         
-                           \Log::info('PE TRADE EXITED' . $live_price_Stock);
+                           \Log::info('PE(5MIN) TRADE EXITED' . $live_price_Stock);
                                 DB::table('tbl_order')
                                 ->where('id', $runningOrder->id) 
                                 ->update([
@@ -766,7 +770,7 @@ public function createOrder_CE_5min()
 
         } //ORDER NOT RUNNING
         else{
-            \Log::info('PE-NO ORDER RUNNING');
+            \Log::info('PE(5MIN)-NO ORDER RUNNING');
             //CREATE NEW ORDER
             $entry = 0;
             // GET NIFTY VALUE IF NIFTY IS POSITIVE OR NEGATIVE
@@ -781,7 +785,7 @@ public function createOrder_CE_5min()
 
                 $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
                 if($nifty_current_type == 1){
-                    \Log::info('PE- NIFTY CURRENTLY GREEN SO EXIT');
+                    \Log::info('PE(5MIN)- NIFTY CURRENTLY GREEN SO EXIT');
                     // NIFTY IS GREEN/POSITIVE
                     $nifty_status = 1;
                     $symbol = $symbolData->option_ce;
@@ -790,12 +794,16 @@ public function createOrder_CE_5min()
                 }
                 else{
                     // NIFTY IS RED/NEGATIVE
-                    \Log::info('PE- NIFTY CURRENTLY RED - ENTRY');
+                    \Log::info('PE(5MIN)- NIFTY CURRENTLY RED - ENTRY');
                     $nifty_status = 2;
                     $symbol = $symbolData->option_pe;
                     // \Log::info('NIFTY TRADING RED _ PE SIDE');
                 }
 
+                if(empty($symbol)){
+                    \Log::info('PE(5MIN)-SYMBOL NOT FOUND');
+                    exit;
+                }              
             //CHECK LAST OPEN TO 
             $secondLast = Historical5min::wherenull('deleted_at')->where('tred_option', $nifty_status)->orderBy('id', 'DESC')->skip(1)
             ->take(1)->first();
@@ -807,10 +815,10 @@ public function createOrder_CE_5min()
                     $exit_created = 0;
                     for ($i = 0; $i < $iterations; $i++) {
                         $live_price_Stock = $this->getPriceData($symbol);
-                        \Log::info('PE- Live - Open ' . $live_price_Stock.','.$last_open);
+                        \Log::info('PE(5MIN)- Live - Open ' . $live_price_Stock.','.$last_open);
                         if($live_price_Stock > $last_open){
                             if($entry == 0){
-                           \Log::info('PE- d1 ' . $symbol);
+                           \Log::info('PE(5MIN)- d1 ' . $symbol);
                            $order = Order::create([
                             'stock_name' => $symbol,
                             'stock' => $nifty_status,
@@ -836,7 +844,7 @@ public function createOrder_CE_5min()
                             //   exit;
                         }
                         if($live_price_Stock < $last_close){
-                            \Log::info('PE- CURRENT PRICE LOWER THAN LAST CLOSE, Exit Created at ' . now());
+                            \Log::info('PE(5MIN)- CURRENT PRICE LOWER THAN LAST CLOSE, Exit Created at ' . now());
                          if($entry == 1 && $exit_created == 0){
                                         // Update data into database
                            $pl = $original_buy_price-$live_price_Stock;
@@ -868,12 +876,12 @@ public function createOrder_CE_5min()
                     }
             } // SECOND LAST CANDLE NOT RED
             else{
-                \Log::info('PE- SECOND LAST CANDLE NOT RED');
+                \Log::info('PE(5MIN)- SECOND LAST CANDLE NOT RED');
             }
 
             }
             else{
-                \Log::info('PE- NOT GETTING nifty_current_type');
+                \Log::info('PE(5MIN)- NOT GETTING nifty_current_type');
             }
         }
 

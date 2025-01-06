@@ -585,8 +585,9 @@ class FyersController extends Controller
             $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
             $symbol = $symbolstatus == 1 ? $symbolData->bankoption_ce : $symbolData->bankoption_pe;
 
-           // print_r($symbol);
-            // exit;
+            if(empty($symbol)){
+                exit;
+            }    
             $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,60);
             // print_r($response);
             // exit;
@@ -749,8 +750,9 @@ class FyersController extends Controller
             $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
             $symbol = $symbolstatus == 1 ? $symbolData->bankoption_ce : $symbolData->bankoption_pe;
 
-           // print_r($symbol);
-            // exit;
+            if(empty($symbol)){
+                exit;
+            }    
             $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,5);
             \Log::info('HISTORY DATA SAVE ' . $symbol.','.$endDateTime);
             // print_r($response);
@@ -952,8 +954,9 @@ class FyersController extends Controller
             $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
             $symbol = $symbolstatus == 1 ? $symbolData->stockoption_ce : $symbolData->stockoption_pe;
 
-           // print_r($symbol);
-            // exit;
+            if(empty($symbol)){
+                exit;
+            }    
             $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,60);
             // print_r($response);
             // exit;
@@ -1116,8 +1119,9 @@ class FyersController extends Controller
             $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
             $symbol = $symbolstatus == 1 ? $symbolData->stockoption_ce : $symbolData->stockoption_pe;
 
-           // print_r($symbol);
-            // exit;
+            if(empty($symbol)){
+                exit;
+            }    
             $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,5);
             \Log::info('HISTORY DATA SAVE ' . $symbol.','.$endDateTime);
             // print_r($response);
