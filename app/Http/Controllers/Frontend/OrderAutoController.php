@@ -999,9 +999,9 @@ public function createOrder_CE_5min()
         $endTime = config('constants.time.END_TIME');
         $startDateTime = $currentDate . ' ' . $startTime;
 
-        // $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
-        $endDateTime = '2025-01-06 10:14:00';
-        // $endDateTime = $datetime->format('Y-m-d H:i:s');
+        $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+        // $endDateTime = '2025-01-06 10:14:00';
+        $endDateTime = $datetime->format('Y-m-d H:i:s');
 
         $date1 =$startDateTime;
         $date2 =$endDateTime;
@@ -1025,10 +1025,10 @@ public function createOrder_CE_5min()
         $auth_code = $this->authCode();
         $res = $time;
         $date_format = 0;
-        // $range_from = $d1;
-        $range_from = 1736135100;
-        // $range_to = $d2;
-        $range_to = 1736138640;
+        $range_from = $d1;
+        // $range_from = 1736135100;
+        $range_to = $d2;
+        // $range_to = 1736138640;
 
         $curl = curl_init();
             curl_setopt_array($curl, array(
@@ -1073,7 +1073,7 @@ public function createOrder_CE_5min()
                         $lastCandle = $lastTwoCandles[1];
                         $lastOpen = $lastCandle[1];
                         $nifty_now = $nifty['lp'];
-                        \Log::info('NIFTY LAST CANDLE - '.$response);
+                        // \Log::info('NIFTY LAST CANDLE - '.$response);
                     }
               
                 // \Log::info('NIFTY LAST OPEN - '.$lastOpen);
