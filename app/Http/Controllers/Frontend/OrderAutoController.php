@@ -548,15 +548,10 @@ public function createOrder_CE_5min()
             //CREATE NEW ORDER
             $entry = 0;
             // GET NIFTY VALUE IF NIFTY IS POSITIVE OR NEGATIVE
-            $nifty = $this->getPriceData('nifty');
+            // $nifty = $this->getPriceData('nifty');
             $nifty_current_type = $this->nifty_current(60);
            
             if($nifty_current_type){
-                $nifty_current = $nifty['lp'];
-                $nifty_open = $nifty['open_price'];
-                
-                // print_r($nifty_open);
-
                 $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
                 if($nifty_current_type == 1){
                     // NIFTY IS GREEN/POSITIVE
@@ -775,15 +770,11 @@ public function createOrder_CE_5min()
             //CREATE NEW ORDER
             $entry = 0;
             // GET NIFTY VALUE IF NIFTY IS POSITIVE OR NEGATIVE
-            $nifty = $this->getPriceData('nifty');
+            // $nifty = $this->getPriceData('nifty');
             $nifty_current_type = $this->nifty_current(60);
            
             if($nifty_current_type){
-                $nifty_current = $nifty['lp'];
-                $nifty_open = $nifty['open_price'];
               
-                // print_r($nifty_open);
-
                 $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
                 if($nifty_current_type == 1){
                     \Log::info('PE(5MIN)- NIFTY CURRENTLY GREEN SO EXIT');
@@ -924,6 +915,7 @@ public function createOrder_CE_5min()
 
     public function getPrice(Request $request)
     {
+        \Log::channel('custom')->info('CALLED_GET_PRICE');
         $isl = $request->input('isl');
         $nifty = $request->input('nifty');
         $authCode = $this->authCode(); 
@@ -959,7 +951,17 @@ public function createOrder_CE_5min()
                 
         // Check for errors in the response
         if (isset($data->s) && $data->s == "error") {
-            return "err"; // Return error if API response indicates an error
+            sleep(2);
+            $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $isl;
+            // Make the GET request
+            $response = Http::withHeaders(['Authorization' => 'TB70PSUQ00-100:' . $authCode,])->get($url);
+                    
+            // Decode the JSON response
+            $data = json_decode($response->getBody()->getContents());
+            if(isset($data->s) && $data->s == "error"){
+                return "err"; // Return error if API response indicates an error
+            }
+          
         }
                 
         // Process the response
@@ -993,6 +995,7 @@ public function createOrder_CE_5min()
 
     private function nifty_current($time)
     {
+        \Log::channel('custom')->info('CALLED-NIFTY_CURRENT');
         $symbol = "NSE:NIFTY50-INDEX";
         $currentDate = date('Y-m-d');
         $startTime = config('constants.time.START_TIME');
