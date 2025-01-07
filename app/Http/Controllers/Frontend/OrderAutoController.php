@@ -1067,7 +1067,7 @@ public function createOrder_CE_5min()
                         $nifty_now = $nifty['lp'];
 
                     } else {
-                        $lastTwoCandles = array_slice($candles, -1);
+                        $lastTwoCandles = array_slice($candles, -2);
                         // Extract second last and last candle data
                         $secondLastCandle = $lastTwoCandles[0];
                         $lastCandle = $lastTwoCandles[1];
