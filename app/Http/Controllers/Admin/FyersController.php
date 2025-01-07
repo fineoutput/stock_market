@@ -226,7 +226,8 @@ class FyersController extends Controller
             // exit;
             $data = json_decode($response, true);
             if (!isset($data['candles']) || empty($data['candles'])) {
-                return response()->json(['message' => 'No candle data found'], 404);
+                Log::error("No candle data found response 1hr- ".$response);
+                return response()->json(['message' => 'No candle data found in '.$symbol], 404);
             }
 
             $candles = $data['candles'];
@@ -392,6 +393,7 @@ class FyersController extends Controller
             $data = json_decode($response, true);
             if (!isset($data['candles']) || empty($data['candles'])) {
                 Log::error("No candle data found in ".$symbol);
+                Log::error("No candle data found response 5min- ".$response);
                 return response()->json(['message' => 'No candle data found'], 404);
             }
 
