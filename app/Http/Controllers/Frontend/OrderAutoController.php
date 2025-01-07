@@ -1055,9 +1055,12 @@ public function createOrder_CE_5min()
                     $end = new DateTime('10:15');
 
                     $data = json_decode($response);
-                
+                if(isset($data->candles)){
                     $candles = $data->candles;
-
+                }
+                else{
+                    \Log::info('ERROR - '.$response);
+                }
                     // Check if the current time falls between 9:15 and 10:15
                     if ($now >= $start && $now <= $end) {
                         $offset = -1;
