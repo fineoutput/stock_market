@@ -26,22 +26,22 @@ class CronJobController extends Controller
 				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                 //nifty historic data cron job
-                $cron_command = '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data';
-				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+                // $cron_command = '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data';
+				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                 $cron_command = '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data-5min';
 				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                  //Bank nifty historic data cron job
-                $cron_command = '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/bank-historical-data';
-				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+                // $cron_command = '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/bank-historical-data';
+				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                 $cron_command = '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/bank-historical-data-5min';
 				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                 //stock historic data cron job
-                $cron_command = '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data';
-				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+                // $cron_command = '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data';
+				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                 $cron_command = '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data-5min';
 				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
@@ -68,26 +68,26 @@ class CronJobController extends Controller
         $job2= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE_5min';
 
         //nifty historic data cron job remove
-        $job3= '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data';
+        // $job3= '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data';
         $job4= '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data-5min';
 
          //bank nifty historic data cron job remove
-         $job5= '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/bank-historical-data';
+        //  $job5= '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/bank-historical-data';
          $job6= '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/bank-historical-data-5min';
 
 
          
           //Stock option historic data cron job remove
-        $job7= '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data';
+        // $job7= '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data';
         $job8= '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data-5min';
 
         $this->deleteCronJob($job1);    
         $this->deleteCronJob($job2);    
-        $this->deleteCronJob($job3);    
+        // $this->deleteCronJob($job3);    
         $this->deleteCronJob($job4);    
-        $this->deleteCronJob($job5);    
+        // $this->deleteCronJob($job5);    
         $this->deleteCronJob($job6);    
-        $this->deleteCronJob($job7);    
+        // $this->deleteCronJob($job7);    
         $this->deleteCronJob($job8);    
 
       

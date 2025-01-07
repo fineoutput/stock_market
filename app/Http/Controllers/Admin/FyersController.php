@@ -564,6 +564,7 @@ class FyersController extends Controller
     //bank nifty
     public function bank_historical_data()
     {
+        sleep(3);
         $response1 = $this->bank_historical_data_option(1); // 1 => CE
         $response2 = $this->bank_historical_data_option(2); // 2 => PE
         return response()->json([
@@ -933,6 +934,7 @@ class FyersController extends Controller
     //stock options
     public function stock_historical_data()
     {
+        sleep(6);
         $response1 = $this->stock_historical_data_option(1); // 1 => CE
         $response2 = $this->stock_historical_data_option(2); // 2 => PE
         return response()->json([
