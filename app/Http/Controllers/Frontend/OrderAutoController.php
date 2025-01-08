@@ -505,7 +505,7 @@ public function createOrder_CE_5min()
                         'historic_id' => $secondLast->id,
                         'sl' => $sl,
                     ]);
-
+                    \Log::info('CE(5MIN)- SL UPDATED FROM ORDERS');
                     //CHECK CURRENT PRICE AND EXIT THE TRADE
                     $iterations = 18;
                     $exit_created = 0;
@@ -730,6 +730,7 @@ public function createOrder_CE_5min()
                         'sl' => $sl,
                     ]);
 
+                    \Log::info('PE(5MIN)- SL UPDATED FROM ORDERS');
                     //CHECK CURRENT PRICE AND EXIT THE TRADE
                     $iterations = 18;
                     $exit_created = 0;
@@ -952,6 +953,7 @@ public function createOrder_CE_5min()
                         'sl' => $sl,
                     ]);
 
+                    \Log::info('BANKCE(5MIN)- SL UPDATED FROM ORDERS');    
                     //CHECK CURRENT PRICE AND EXIT THE TRADE
                     $iterations = 18;
                     $exit_created = 0;
@@ -1175,7 +1177,7 @@ public function createOrder_CE_5min()
                         'historic_id' => $secondLast->id,
                         'sl' => $sl,
                     ]);
-
+                    \Log::info('BANKPE(5MIN)- SL UPDATED FROM ORDERS');
                     //CHECK CURRENT PRICE AND EXIT THE TRADE
                     $iterations = 18;
                     $exit_created = 0;
@@ -1912,6 +1914,9 @@ public function createOrder_CE_5min()
             
             // Handle NIFTY case
             if ($isl == 'NIFTY') {
+                return $v->cmd->c; // Return command c for NIFTY
+            }
+            if ($isl == 'BANKNIFTY') {
                 return $v->cmd->c; // Return command c for NIFTY
             }
                 
