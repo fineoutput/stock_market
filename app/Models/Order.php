@@ -12,6 +12,7 @@ class Order extends Model
     protected $fillable = [
         'stock_name',
         'stock',
+        'type',
         'timeframe',
         'buy_price',
         'order_price',
