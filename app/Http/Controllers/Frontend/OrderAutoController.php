@@ -997,7 +997,7 @@ public function createOrder_CE_5min()
             $entry = 0;
             // GET NIFTY VALUE IF NIFTY IS POSITIVE OR NEGATIVE
             // $nifty = $this->getPriceData('nifty');
-            $nifty_current_type = $this->nifty_current(60);
+            $nifty_current_type = $this->banknifty_current(60);
            
             if($nifty_current_type){
                 $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
@@ -1221,7 +1221,7 @@ public function createOrder_CE_5min()
             $entry = 0;
             // GET NIFTY VALUE IF NIFTY IS POSITIVE OR NEGATIVE
             // $nifty = $this->getPriceData('nifty');
-            $nifty_current_type = $this->nifty_current(60);
+            $nifty_current_type = $this->banknifty_current(60);
            
             if($nifty_current_type){
               
@@ -1802,6 +1802,21 @@ public function createOrder_CE_5min()
             return $priceData;
         }
         }
+        elseif($symbol == "banknifty"){
+                $request->merge([$inputName => $symbol]);
+                $price = $this->getPrice($request);
+                if ($price instanceof \Illuminate\Http\JsonResponse) {
+                    $priceData = json_decode($price->getContent(), true);
+                    if (is_array($priceData)) {
+                        return $priceData;
+                    }
+                }
+                $priceData = json_decode($price, true);
+                if (is_array($priceData)) {
+                    return $priceData;
+                }
+               
+        }
         else{
              $request->merge(['isl' => $symbol]);
               $price = $this->getPrice($request);
@@ -1819,9 +1834,31 @@ public function createOrder_CE_5min()
         \Log::channel('custom')->info('CALLED_GET_PRICE');
         $isl = $request->input('isl');
         $nifty = $request->input('nifty');
+        $banknifty = $request->input('banknifty');
         $authCode = $this->authCode(); 
         if($nifty){
             $nifty= "NSE:NIFTY50-INDEX";
+            // print_r('jbuh');
+            // exit;
+            $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $nifty;
+            $response = Http::withHeaders(['Authorization' => 'TB70PSUQ00-100:' . $authCode,])->get($url);
+            $data = json_decode($response->getBody()->getContents());
+            $quoteData = $data->d[0] ?? null; 
+            if ($quoteData) {
+                $v = $quoteData->v; 
+                
+                if ($v) {
+                    return response()->json([
+                        'lp' => $v->lp ?? 'N/A',
+                        'open_price' => $v->open_price ?? 'N/A',
+                        'bid' => $v->bid ?? 'N/A'
+                    ]);
+                }
+                
+        }
+        }
+        if($banknifty){
+            $nifty= "NSE:NIFTYBANK-INDEX";
             // print_r('jbuh');
             // exit;
             $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $nifty;
@@ -1925,6 +1962,107 @@ public function createOrder_CE_5min()
         $d2 = $date22->getTimestamp();
 
         $nifty = $this->getPriceData('nifty');
+
+        $auth_code = $this->authCode();
+        $res = $time;
+        $date_format = 0;
+        $range_from = $d1;
+        // $range_from = 1736135100;
+        $range_to = $d2;
+        // $range_to = 1736138640;
+
+        $curl = curl_init();
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api-t1.fyers.in/data/history?symbol='.$symbol.'&resolution='.$res.'&date_format='.$date_format.'&range_from='.$range_from.'&range_to='.$range_to.'&cont_flag=',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+            'Authorization: TB70PSUQ00-100:'.$auth_code
+            ),
+            ));
+
+            $response = curl_exec($curl);
+
+            curl_close($curl);
+            
+            if($response){
+                                    $now = new DateTime(); // Current time
+                    $start = new DateTime('09:15');
+                    $end = new DateTime('10:15');
+
+                    $data = json_decode($response);
+                if(isset($data->candles)){
+                    $candles = $data->candles;
+                }
+                else{
+                    \Log::info('ERROR - '.$response);
+                }
+                    // Check if the current time falls between 9:15 and 10:15
+                    if ($now >= $start && $now <= $end) {
+                        $offset = -1;
+                        $lastTwoCandles = $candles[0];
+                        // Extract second last and last candle data
+                        $lastOpen = $lastTwoCandles[1];
+                        $nifty_now = $nifty['lp'];
+
+                    } else {
+                        $lastTwoCandles = array_slice($candles, -2);
+                        // Extract second last and last candle data
+                        $secondLastCandle = $lastTwoCandles[0];
+                        $lastCandle = $lastTwoCandles[1];
+                        $lastOpen = $lastCandle[1];
+                        $nifty_now = $nifty['lp'];
+                        // \Log::info('NIFTY LAST CANDLE - '.$response);
+                    }
+              
+                // \Log::info('NIFTY LAST OPEN - '.$lastOpen);
+                
+                if($nifty_now >= $lastOpen){
+                    return 1;
+                }
+                else{
+                    return 2;
+                }
+            }
+           
+    }
+
+    private function banknifty_current($time)
+    {
+        \Log::channel('custom')->info('CALLED-BANKNIFTY_CURRENT');
+        $symbol = "NSE:NIFTYBANK-INDEX";
+        $currentDate = date('Y-m-d');
+        $startTime = config('constants.time.START_TIME');
+        $endTime = config('constants.time.END_TIME');
+        $startDateTime = $currentDate . ' ' . $startTime;
+
+        $datetime = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+        // $endDateTime = '2025-01-06 10:14:00';
+        $endDateTime = $datetime->format('Y-m-d H:i:s');
+
+        $date1 =$startDateTime;
+        $date2 =$endDateTime;
+
+        $date00 = new DateTime($date1); // Your original date and time
+        $date00->setTime($date00->format('H'), $date00->format('i'), 0); // Set seconds to 0
+        $date100 = $date00->format('Y-m-d H:i:s');
+        $date11 = new DateTime($date100, new DateTimeZone('Asia/Kolkata')); // Your date and timezone
+        $d1 = $date11->getTimestamp();
+
+       
+
+        $date0011 = new DateTime($date2); // Your original date and time
+        $date0011->setTime($date0011->format('H'), $date0011->format('i'), 0); // Set seconds to 0
+        $date200 = $date0011->format('Y-m-d H:i:s');
+        $date22 = new DateTime($date200, new DateTimeZone('Asia/Kolkata')); // Your date and timezone
+        $d2 = $date22->getTimestamp();
+
+        $nifty = $this->getPriceData('banknifty');
 
         $auth_code = $this->authCode();
         $res = $time;

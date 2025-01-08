@@ -43,14 +43,20 @@ class CronJobController extends Controller
                 // $cron_command = '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data';
 				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
-                $cron_command = '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data-5min';
-				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+                // $cron_command = '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data-5min';
+				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                  //order placing and checking cron job
                 $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_CE_5min';
 				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                 $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE_5min';
+				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+
+                $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_bank_CE_5min';
+				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+
+                $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_bank_PE_5min';
 				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                
@@ -79,7 +85,10 @@ class CronJobController extends Controller
          
           //Stock option historic data cron job remove
         // $job7= '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data';
-        $job8= '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data-5min';
+        // $job8= '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/stock-historical-data-5min';
+
+        $job9= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_bank_CE_5min';
+        $job10= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_bank_PE_5min';
 
         $this->deleteCronJob($job1);    
         $this->deleteCronJob($job2);    
@@ -88,7 +97,9 @@ class CronJobController extends Controller
         // $this->deleteCronJob($job5);    
         $this->deleteCronJob($job6);    
         // $this->deleteCronJob($job7);    
-        $this->deleteCronJob($job8);    
+        // $this->deleteCronJob($job8);    
+           $this->deleteCronJob($job9);    
+        $this->deleteCronJob($job10); 
 
       
 
