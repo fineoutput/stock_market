@@ -489,7 +489,7 @@ class FyersController extends Controller
                     else{
                         $sl = $secondLastOpen;
                     }
-                    Log::info("SL UPDATED BY NEW CANDLE" . $sl);
+                    Log::info("SL UPDATED BY NEW CANDLE " .$symbol." -SL- ". $sl." order_id-". $liveorder->id);
                     DB::table('tbl_order')
                     ->where('id', $liveorder->id) 
                     ->update([
@@ -757,7 +757,7 @@ class FyersController extends Controller
                 exit;
             }    
             $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,5);
-            \Log::info('HISTORY DATA SAVE ' . $symbol.','.$endDateTime);
+            // \Log::info('HISTORY DATA SAVE ' . $symbol.','.$endDateTime);
             // print_r($response);
             // exit;
             $data = json_decode($response, true);
@@ -808,7 +808,7 @@ class FyersController extends Controller
                 $opc = 0; //GREEN CANDLE
             }
 
-            \Log::info('HISTORY DATA SAVE EPOCH ' . $secondLastTimestamp.','.$lastcandleLastTimestamp);
+            // \Log::info('HISTORY DATA SAVE EPOCH ' . $secondLastTimestamp.','.$lastcandleLastTimestamp);
             // Check if Second last data already exists
             $existsSecondLast = DB::table('bank_historical_data_5min')
                 ->where('timeepoch', $secondLastTimestamp)
@@ -858,7 +858,7 @@ class FyersController extends Controller
                     else{
                         $sl = $secondLastOpen;
                     }
-                    Log::info("SL UPDATED BY NEW CANDLE" . $sl);
+                    Log::info("SL UPDATED BY NEW CANDLE " .$symbol."-". $sl." order_id-". $liveorder->id);
                     DB::table('tbl_order')
                     ->where('id', $liveorder->id) 
                     ->update([
@@ -879,11 +879,11 @@ class FyersController extends Controller
                ->where('timeepoch', $lastcandleLastTimestamp)
                ->where('tred_option', $symbolstatus)
                ->exists();
-               \Log::info('HISTORY DATA SAVE TABLE22 ' . $lastcandleLastTimestamp.','.$symbolstatus);
+            //    \Log::info('HISTORY DATA SAVE TABLE22 ' . $lastcandleLastTimestamp.','.$symbolstatus);
            if (!$existsLastData) {
             \Log::info('ENTERED 3');
                // Insert data into database
-               \Log::info('HISTORY DATA SAVE INSERTED ' . $symbol.','.$lastcandleLastTimestamp);
+            //    \Log::info('HISTORY DATA SAVE INSERTED ' . $symbol.','.$lastcandleLastTimestamp);
                DB::table('bank_historical_data_5min')->insert([
                     'stock' => $symbol,
                    'date' => $lastLastFormattedTime,
