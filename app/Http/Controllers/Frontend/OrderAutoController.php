@@ -1794,7 +1794,7 @@ public function createOrder_CE_5min()
     private function getPriceData($symbol, $inputName = 'nifty')
     {
         $request = new \Illuminate\Http\Request();
-        if($symbol == "nifty"){
+        if($symbol == "NSE:NIFTY50-INDEX"){
         $request->merge([$inputName => $symbol]);
         $price = $this->getPrice($request);
         if ($price instanceof \Illuminate\Http\JsonResponse) {
@@ -1808,7 +1808,7 @@ public function createOrder_CE_5min()
             return $priceData;
         }
         }
-        elseif($symbol == "banknifty"){
+        elseif($symbol == "NSE:NIFTYBANK-INDEX"){
                 $request->merge([$inputName => $symbol]);
                 $price = $this->getPrice($request);
                 if ($price instanceof \Illuminate\Http\JsonResponse) {
@@ -1839,8 +1839,8 @@ public function createOrder_CE_5min()
     {
         \Log::channel('custom')->info('CALLED_GET_PRICE');
         $isl = $request->input('isl');
-        $nifty = $request->input('nifty');
-        $banknifty = $request->input('banknifty');
+        $nifty = $request->input('NSE:NIFTY50-INDEX');
+        $banknifty = $request->input('NSE:NIFTYBANK-INDEX');
         $authCode = $this->authCode(); 
         if($nifty){
             $nifty= "NSE:NIFTY50-INDEX";
@@ -1940,10 +1940,11 @@ public function createOrder_CE_5min()
         return $result ? $result->auth_code : null;
     }
 
-    private function nifty_current($time)
+    public function nifty_current($time)
     {
         \Log::channel('custom')->info('CALLED-NIFTY_CURRENT');
-        $symbol = "NSE:NIFTY50-INDEX";
+        $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+        $symbol = $symbolData->index_name;
         $currentDate = date('Y-m-d');
         $startTime = config('constants.time.START_TIME');
         $endTime = config('constants.time.END_TIME');
@@ -1970,7 +1971,7 @@ public function createOrder_CE_5min()
         $date22 = new DateTime($date200, new DateTimeZone('Asia/Kolkata')); // Your date and timezone
         $d2 = $date22->getTimestamp();
 
-        $nifty = $this->getPriceData('nifty');
+        $nifty = $this->getPriceData($symbol);
 
         $auth_code = $this->authCode();
         $res = $time;
