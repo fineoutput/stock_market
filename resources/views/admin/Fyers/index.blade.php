@@ -62,6 +62,7 @@
                                                 <th>Lots</th> 
                                                 <th>NIFTY Option CE</th> 
                                                 <th>NIFTY Option PE</th> 
+                                                <th>INDEX</th> 
                                                 <th>Trading</th> 
 
                                             <th>Status</th>
@@ -81,6 +82,7 @@
  	 <td>{{$data->lots }} </td> 
  	 <td>{{$data->option_ce }} </td> 
  	 <td>{{$data->option_pe }} </td>
+      <td>{{$data->index_name }} </td>
       @if($data->trading_type == "1")
       <td>
           <p class="label  status-inactive">Testing</p>
