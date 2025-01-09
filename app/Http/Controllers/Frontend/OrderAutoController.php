@@ -1940,7 +1940,7 @@ public function createOrder_CE_5min()
         return $result ? $result->auth_code : null;
     }
 
-    public function nifty_current($time)
+    private function nifty_current($time)
     {
         \Log::channel('custom')->info('CALLED-NIFTY_CURRENT');
         $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
