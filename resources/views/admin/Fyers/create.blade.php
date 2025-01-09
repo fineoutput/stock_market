@@ -219,20 +219,18 @@
                                     </div> 
                                     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
                                     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+                                    
 <script>
     $(document).ready(function(){
-
   	$("#option_ce").change(function(){
 		var vf=$(this).val();
 		if(vf==""){
 			return false;
-
 		}else{
       // Clear the span text
       $('#option_ce_Span').text('');
 			$.ajax({
-				url:"{{ url('getPrice') }}?isl=" + vf;
+				url:"{{ url('getPrice') }}?isl="+vf,
 				data : '',
 				type: "get",
 				success : function(html){
@@ -259,9 +257,9 @@
 
 <script>
     $(document).ready(function(){
-
   	$("#option_pe").change(function(){
 		var vf=$(this).val();
+    // alert(vf);
 		if(vf==""){
 			return false;
 
@@ -269,7 +267,7 @@
       // Clear the span text
       $('#option_pe_Span').text('');
 			$.ajax({
-				url:"{{ url('getPrice') }}?isl=" + vf;
+				url:"{{ url('getPrice') }}?isl="+vf,
 				data : '',
 				type: "get",
 				success : function(html){
