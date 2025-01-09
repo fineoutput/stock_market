@@ -62,12 +62,6 @@
                                                 <th>Lots</th> 
                                                 <th>NIFTY Option CE</th> 
                                                 <th>NIFTY Option PE</th> 
-                                                <th>Lots2</th> 
-                                                <th>BANKNIFTYNIFTY Option CE</th> 
-                                                <th>BANKNIFTYNIFTY Option PE</th> 
-                                                <th>Lots3</th> 
-                                                <th>STOCK Option CE</th> 
-                                                <th>STOCK Option PE</th> 
                                                 <th>Trading</th> 
 
                                             <th>Status</th>
@@ -87,12 +81,6 @@
  	 <td>{{$data->lots }} </td> 
  	 <td>{{$data->option_ce }} </td> 
  	 <td>{{$data->option_pe }} </td>
-      <td>{{$data->lots2 }} </td> 
-      <td>{{$data->bankoption_ce }} </td> 
- 	 <td>{{$data->bankoption_pe }} </td>
-      <td>{{$data->lots3 }} </td> 
-      <td>{{$data->stockoption_ce }} </td> 
- 	 <td>{{$data->stockoption_pe }} </td>
       @if($data->trading_type == "1")
       <td>
           <p class="label  status-inactive">Testing</p>

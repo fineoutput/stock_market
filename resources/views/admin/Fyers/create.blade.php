@@ -120,6 +120,17 @@
 </div>
 <div class="col-sm-6 my-3" style="margin-top: 23px!important">
 <div class="form-floating">
+<input id='index_name' type='text' class="form-control @error('index_name') is-invalid @enderror" name='index_name' value="{{old('index_name') ? old('index_name') : $data->index_name}}" placeholder="Enter INDEX">
+ <label for="index">Enter INDEX  <span style="color:red;"></span></label>
+</div>
+<span id="index_name_Span"></span>
+ @error('index_name')
+<div style="color:red">{{$message}}</div>
+@enderror
+</div>
+
+<!-- <div class="col-sm-6 my-3" style="margin-top: 23px!important">
+<div class="form-floating">
 <input id='lots2' type='number' class="form-control @error('lots2') is-invalid @enderror" name='lots2' value="{{old('lots2') ? old('lots2') : $data->lots2}}" placeholder="Enter lots2" required>
  <label for="Amount">Enter Lots2  <span style="color:red;">*</span></label>
 </div>
@@ -175,7 +186,7 @@
  @error('stockoption_pe')
 <div style="color:red">{{$message}}</div>
 @enderror
-</div>
+</div> -->
 	   <div class="col-sm-6 my-3">
 <div class='form-group has-float-label'>
 <label for='trading_type'>Trading Type <span style='color:red'> *</span></label>

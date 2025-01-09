@@ -493,6 +493,7 @@ public function createOrder_CE_5min()
                 }
                 else{
                     //UPDATE SL AS HISTORIC ID IS CHANGED
+                    \Log::info('CE(5MIN)- UPDATE SL AND HISTORIC ID AS HISTORIC ID IS CHANGED');
                     if($secondLast->open_status == 1){
                         $sl = $secondLast->close;
                     }
@@ -716,6 +717,7 @@ public function createOrder_CE_5min()
 
                 }
                 else{
+                    \Log::info('PE(5MIN)- UPDATE SL AND HISTORIC ID AS HISTORIC ID IS CHANGED');
                     //UPDATE SL AS HISTORIC ID IS CHANGED
                     if($secondLast->open_status == 1){
                         $sl = $secondLast->close;
@@ -939,6 +941,7 @@ public function createOrder_CE_5min()
 
                 }
                 else{
+                    \Log::info('BANKCE(5MIN)- UPDATE SL AND HISTORIC ID AS HISTORIC ID IS CHANGED');
                     //UPDATE SL AS HISTORIC ID IS CHANGED
                     if($secondLast->open_status == 1){
                         $sl = $secondLast->close;
@@ -1164,6 +1167,7 @@ public function createOrder_CE_5min()
 
                 }
                 else{
+                    \Log::info('BANKPE(5MIN)- UPDATE SL AND HISTORIC ID AS HISTORIC ID IS CHANGED');
                     //UPDATE SL AS HISTORIC ID IS CHANGED
                     if($secondLast->open_status == 1){
                         $sl = $secondLast->close;

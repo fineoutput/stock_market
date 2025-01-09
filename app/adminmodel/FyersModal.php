@@ -21,14 +21,7 @@
 	                 'login_id',
 	                 'pin',
 	                 'lots',
-	                 'lots2',
-	                 'lots3',
-	                 'option_ce',
-	                 'option_pe',
-                     'bankoption_ce',
-	                 'bankoption_pe',
-                     'stockoption_ce',
-	                 'stockoption_pe',
+                     'index_name',
 	                 'trading_type',
                      'ip', 'added_by', 'is_active'
                 ];

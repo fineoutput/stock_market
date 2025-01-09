@@ -41,8 +41,6 @@ class FyersController extends Controller
                                            'login_id' =>'string|required',
 	                                       'pin' =>'string|required',
 	                                       'lots' =>'string|required',
-	                                       'lots2' =>'string|required',
-	                                       'lots3' =>'string|required',
                                            'trading_type' =>'string|required',
                                             ]);
         } else {
@@ -50,8 +48,6 @@ class FyersController extends Controller
 	                                      'login_id' =>'string|required',
 	                                      'pin' =>'string|required',
 	                                      'lots' =>'string|required',
-	                                      'lots2' =>'string|required',
-	                                      'lots3' =>'string|required',
 	                                      'trading_type' =>'string|required',
                                           ]);
                     }
@@ -66,14 +62,17 @@ class FyersController extends Controller
  	    $Fyers->login_id= $request->login_id; 
  	    $Fyers->pin= $request->pin; 
  	    $Fyers->lots= $request->lots; 
- 	    $Fyers->lots2= $request->lots2; 
- 	    $Fyers->lots3= $request->lots3; 
+
+ 	    // $Fyers->lots2= $request->lots2; 
+ 	    // $Fyers->lots3= $request->lots3; 
  	    $Fyers->option_ce= $request->option_ce; 
  	    $Fyers->option_pe= $request->option_pe; 
-         $Fyers->bankoption_ce= $request->bankoption_ce; 
- 	    $Fyers->bankoption_pe= $request->bankoption_pe; 
-         $Fyers->stockoption_ce= $request->stockoption_ce; 
- 	    $Fyers->stockoption_pe= $request->stockoption_pe; 
+ 	    $Fyers->index_name= $request->index_name; 
+
+        //  $Fyers->bankoption_ce= $request->bankoption_ce; 
+ 	    // $Fyers->bankoption_pe= $request->bankoption_pe; 
+        //  $Fyers->stockoption_ce= $request->stockoption_ce; 
+ 	    // $Fyers->stockoption_pe= $request->stockoption_pe; 
  	    $Fyers->trading_type= $request->trading_type; 
 
         $Fyers->ip = $request->ip();
@@ -363,6 +362,7 @@ class FyersController extends Controller
     public function historical_data_5min()
     {
         $response1 = $this->historical_data_option_5min(1); // 1 => CE
+        sleep(2);
         $response2 = $this->historical_data_option_5min(2); // 2 => PE
         return response()->json([
             'response1' => json_decode($response1->getContent(), true),
@@ -566,6 +566,7 @@ class FyersController extends Controller
     {
         sleep(3);
         $response1 = $this->bank_historical_data_option(1); // 1 => CE
+        sleep(2);
         $response2 = $this->bank_historical_data_option(2); // 2 => PE
         return response()->json([
             'response1' => json_decode($response1->getContent(), true),
