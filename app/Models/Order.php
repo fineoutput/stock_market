@@ -24,5 +24,10 @@ class Order extends Model
         'qty',
         'profit_loss_status',
         'profit_loss_amt',
+        'tradedprice',
+        'tradedstarttime',
+        'tradedendtime',
+        'order_id',
+        'tradedsellprice'
     ];
 }

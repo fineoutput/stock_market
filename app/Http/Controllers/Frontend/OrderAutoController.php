@@ -472,7 +472,11 @@ public function createOrder_CE_5min()
                            }
                            else{
                             $profit_loss_status = 1;
-                           }         
+                           }
+                           $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+                           if($symbolData->trading_type == 2){         
+                           $this->close_positions($runningOrder->stock_name);
+                           }
                                 DB::table('tbl_order')
                                 ->where('id', $runningOrder->id) 
                                 ->update([
@@ -591,6 +595,30 @@ public function createOrder_CE_5min()
                         \Log::info('CE(5MIN)- Live - Open ' . $live_price_Stock.','.$last_open);
                         if($live_price_Stock > $last_open){
                             if($entry == 0){
+                                $tradedTime = '';
+                                $tradedPrice = '';
+                                $order_ID = '';
+                           if($symbolData->trading_type == 2){
+                               //place order on live
+                               $order_placed = $this->place_order($symbol,$qty);
+                                  // Decode the JSON response
+                                $order_placed2 = json_decode($order_placed->getContent(), true);
+
+                                    // Access specific fields
+                                    $status = $order_placed2['status'];
+                                    if($status == 200){
+                                        $message = $order_placed2['message'];
+                                        $tradedTime = $order_placed2['tradedTime'];
+                                        $tradedPrice = $order_placed2['tradedPrice'];
+                                        $order_ID = $order_placed2['orderID'];
+                                    }
+                                    else{
+                                        $tradedTime = '';
+                                        $tradedPrice = '';
+                                        $order_ID = '';
+                                    }
+                                   
+                           }     
                            \Log::info('CE(5MIN)- d1 ' . $symbol);
                            $order = Order::create([
                             'stock_name' => $symbol,
@@ -608,6 +636,9 @@ public function createOrder_CE_5min()
                             'profit_loss_status' => 0,
                             'profit_loss_amt' => 0,
                             'historic_id' => $secondLast->id,
+                            'tradedprice' => $tradedPrice,
+                            'tradedstarttime'=> $tradedTime,
+                            'order_id'=> $order_ID,
                             'created_at' => now()
                         ]);
                         $OrderId = $order->id; // Retrieve the insert ID
@@ -628,7 +659,8 @@ public function createOrder_CE_5min()
                            }
                            else{
                             $profit_loss_status = 1;
-                           }         
+                           } 
+                               
                                 DB::table('tbl_order')
                                 ->where('id', $OrderId) 
                                 ->update([
@@ -819,6 +851,30 @@ public function createOrder_CE_5min()
                         \Log::info('PE(5MIN)- Live - Open ' . $live_price_Stock.','.$last_open);
                         if($live_price_Stock > $last_open){
                             if($entry == 0){
+                                $tradedTime = '';
+                                $tradedPrice = '';
+                                $order_ID = '';
+                           if($symbolData->trading_type == 2){
+                               //place order on live
+                               $order_placed = $this->place_order($symbol,$qty);
+                                  // Decode the JSON response
+                                $order_placed2 = json_decode($order_placed->getContent(), true);
+
+                                    // Access specific fields
+                                    $status = $order_placed2['status'];
+                                    if($status == 200){
+                                        $message = $order_placed2['message'];
+                                        $tradedTime = $order_placed2['tradedTime'];
+                                        $tradedPrice = $order_placed2['tradedPrice'];
+                                        $order_ID = $order_placed2['orderID'];
+                                    }
+                                    else{
+                                        $tradedTime = '';
+                                        $tradedPrice = '';
+                                        $order_ID = '';
+                                    }
+                                   
+                           }     
                            \Log::info('PE(5MIN)- d1 ' . $symbol);
                            $order = Order::create([
                             'stock_name' => $symbol,
@@ -836,6 +892,9 @@ public function createOrder_CE_5min()
                             'profit_loss_status' => 0,
                             'profit_loss_amt' => 0,
                             'historic_id' => $secondLast->id,
+                            'tradedprice' => $tradedPrice,
+                            'tradedstarttime'=> $tradedTime,
+                            'order_id'=> $order_ID,
                             'created_at' => now()
                         ]);
                         $OrderId = $order->id; // Retrieve the insert ID
@@ -1839,11 +1898,10 @@ public function createOrder_CE_5min()
     {
         \Log::channel('custom')->info('CALLED_GET_PRICE');
         $isl = $request->input('isl');
-        $nifty = $request->input('NSE:NIFTY50-INDEX');
-        $banknifty = $request->input('NSE:NIFTYBANK-INDEX');
+        $nifty = $request->input('nifty');
         $authCode = $this->authCode(); 
         if($nifty){
-            $nifty= "NSE:NIFTY50-INDEX";
+            // $nifty= "NSE:NIFTY50-INDEX";
             // print_r('jbuh');
             // exit;
             $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $nifty;
@@ -1863,27 +1921,7 @@ public function createOrder_CE_5min()
                 
         }
         }
-        if($banknifty){
-            $nifty= "NSE:NIFTYBANK-INDEX";
-            // print_r('jbuh');
-            // exit;
-            $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $nifty;
-            $response = Http::withHeaders(['Authorization' => 'TB70PSUQ00-100:' . $authCode,])->get($url);
-            $data = json_decode($response->getBody()->getContents());
-            $quoteData = $data->d[0] ?? null; 
-            if ($quoteData) {
-                $v = $quoteData->v; 
-                
-                if ($v) {
-                    return response()->json([
-                        'lp' => $v->lp ?? 'N/A',
-                        'open_price' => $v->open_price ?? 'N/A',
-                        'bid' => $v->bid ?? 'N/A'
-                    ]);
-                }
-                
-        }
-        }
+   
         // Get the authorization code (implement this method as needed)
         // Prepare the API endpoint
         $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $isl;
@@ -1915,6 +1953,7 @@ public function createOrder_CE_5min()
             $v = $quoteData->v; // Access the nested 'v' object
             $ask = $v->ask ?? null; // Get the ask price
             $bid = $v->bid ?? null; // Get the bid price
+            $lp = $v->lp ?? null; // Get the bid price
             
             // Handle NIFTY case
             if ($isl == 'NIFTY') {
@@ -1925,7 +1964,7 @@ public function createOrder_CE_5min()
             }
                 
                 // Return ask price or bid price if ask is 0
-                return $ask == 0 ? "Price - ₹".$bid :$ask;
+                return $lp;
             }
                 
             return null; // Return null if no data found
@@ -2142,5 +2181,204 @@ public function createOrder_CE_5min()
             }
            
     }
+
+private function place_order($stockname,$qty){
+    //ORDER PLACING CODE HERE
+    $auth_code = $this->authCode();
+
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => 'https://api.fyers.in/api/v2/orders',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS =>'{
+    "symbol":"'.$stockname.'",
+    "qty":'.$qty.',
+    "type":2,
+    "side":1,
+    "productType":"INTRADAY",
+    "limitPrice":0,
+    "stopPrice":0,
+    "validity":"IOC",
+    "disclosedQty":0,
+    "offlineOrder":"False",
+    "stopLoss":0,
+    "takeProfit":0
+    }',
+    CURLOPT_HTTPHEADER => array(
+    'Content-Type: application/json',
+    'Authorization: TB70PSUQ00-100:'.$auth_code,
+
+    ),
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    $r= json_decode($response);
+
+//ORDER PLACING CODE ENDS HERE
+// CHECKING ORDER PLACED AND ITS AMOUNT
+
+if($r->s == "ok"){
+
+$curl2 = curl_init();
+
+curl_setopt_array($curl2, array(
+  CURLOPT_URL => 'https://api.fyers.in/api/v2/orders?id='.$r->id,
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'GET',
+  CURLOPT_HTTPHEADER => array(
+    'Authorization: TB70PSUQ00-100:'.$auth_code
+  ),
+));
+
+$response2 = curl_exec($curl2);
+// log_message('error', "CASE 5 - order get details response - ".$response2);
+
+curl_close($curl2);
+
+$r2 = json_decode($response2);
+
+    $status = $r2->s;
+
+    if($status == "ok"){
+      $book = $r2->orderBook;
+      $time = $book[0]->orderDateTime;
+      $t_price = $book[0]->tradedPrice;
+
+      return response()->json([
+        'status' => 200,
+        'message' => 'success',
+        'orderID' => $r->id,
+        'tradedTime' => $time,
+        'tradedPrice' => $t_price
+            ]);
+        
+    } //if status ok
+    else{
+        return response()->json([
+            'status' => 202,
+            'message' => 'not ok',
+            'tradedTime' => '',
+            'tradedPrice' => ''
+                ]);
+    }
+
+    } // if above api status ok
+    else{
+        return response()->json([
+            'status' => 201,
+            'message' => 'not ok',
+            'tradedTime' => '',
+            'tradedPrice' => ''
+                ]);
+    }
     
+}// function close
+
+private function exit_order_create($stockname,$qty,$price){
+    //ORDER PLACING CODE HERE
+    $auth_code = $this->authCode();
+
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => 'https://api.fyers.in/api/v2/orders',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS =>'{
+    "symbol":"'.$stockname.'",
+    "qty":'.$qty.',
+    "type":4,
+    "side":-1,
+    "productType":"INTRADAY",
+    "limitPrice":0,
+    "stopPrice":'.$price.',
+    "validity":"IOC",
+    "disclosedQty":0,
+    "offlineOrder":"False",
+    "stopLoss":0,
+    "takeProfit":0
+    }',
+    CURLOPT_HTTPHEADER => array(
+    'Content-Type: application/json',
+    'Authorization: TB70PSUQ00-100:'.$auth_code,
+
+    ),
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    $r= json_decode($response);
+
+//ORDER PLACING CODE ENDS HERE
+// CHECKING ORDER PLACED AND ITS AMOUNT
+
+if($r->s == "ok"){
+
+    return response()->json([
+        'status' => 200,
+        'message' => 'ok',
+        'tradedTime' => '',
+        'tradedPrice' => ''
+            ]);
+
+    } // if above api status ok
+    else{
+        return response()->json([
+            'status' => 201,
+            'message' => 'not ok',
+            'tradedTime' => '',
+            'tradedPrice' => ''
+                ]);
+    }
+    
+}// function close
+
+private function close_positions($symbol){
+
+    $auth_code = $this->auth_code();
+
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://api.fyers.in/api/v2/positions',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'DELETE',
+      CURLOPT_POSTFIELDS =>'{"id":"'.$symbol.'"}',
+      CURLOPT_HTTPHEADER => array(
+        'Content-Type: application/json',
+        'Authorization: TB70PSUQ00-100:'.$auth_code,
+      ),
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    return $response;
+
+
+       }
+
 }
