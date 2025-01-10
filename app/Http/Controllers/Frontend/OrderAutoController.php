@@ -2373,7 +2373,7 @@ if($r->s == "ok"){
 
 private function close_positions($symbol){
 
-    $auth_code = $this->auth_code();
+    $auth_code = $this->authCode();
 
     $curl = curl_init();
 
