@@ -362,7 +362,6 @@ class FyersController extends Controller
     public function historical_data_5min()
     {
         $response1 = $this->historical_data_option_5min(1); // 1 => CE
-        sleep(2);
         $response2 = $this->historical_data_option_5min(2); // 2 => PE
         return response()->json([
             'response1' => json_decode($response1->getContent(), true),
