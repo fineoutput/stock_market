@@ -527,6 +527,10 @@ public function createOrder_CE_5min()
                            else{
                             $profit_loss_status = 1;
                            }         
+                           $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+                           if($symbolData->trading_type == 2){         
+                           $this->close_positions($runningOrder->stock_name);
+                           }
                                 DB::table('tbl_order')
                                 ->where('id', $runningOrder->id) 
                                 ->update([
@@ -660,7 +664,10 @@ public function createOrder_CE_5min()
                            else{
                             $profit_loss_status = 1;
                            } 
-                               
+                           $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+                           if($symbolData->trading_type == 2){         
+                           $this->close_positions($runningOrder->stock_name);
+                           }
                                 DB::table('tbl_order')
                                 ->where('id', $OrderId) 
                                 ->update([
@@ -728,6 +735,10 @@ public function createOrder_CE_5min()
                            }
                            else{
                             $profit_loss_status = 1;
+                           }
+                           $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+                           if($symbolData->trading_type == 2){         
+                           $this->close_positions($runningOrder->stock_name);
                            }         
                            \Log::info('PE(5MIN) TRADE EXITED' . $live_price_Stock);
                                 DB::table('tbl_order')
@@ -780,6 +791,10 @@ public function createOrder_CE_5min()
                            }
                            else{
                             $profit_loss_status = 1;
+                           }
+                           $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+                           if($symbolData->trading_type == 2){         
+                           $this->close_positions($runningOrder->stock_name);
                            }         
                                 DB::table('tbl_order')
                                 ->where('id', $runningOrder->id) 
@@ -916,6 +931,10 @@ public function createOrder_CE_5min()
                            else{
                             $profit_loss_status = 1;
                            }         
+                           $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+                           if($symbolData->trading_type == 2){         
+                           $this->close_positions($runningOrder->stock_name);
+                           }
                                 DB::table('tbl_order')
                                 ->where('id', $OrderId) 
                                 ->update([
@@ -2218,7 +2237,7 @@ private function place_order($stockname,$qty){
     ));
 
     $response = curl_exec($curl);
-
+    \Log::info('PLACEORDER - '.$response);
     curl_close($curl);
     $r= json_decode($response);
 
@@ -2244,6 +2263,7 @@ curl_setopt_array($curl2, array(
 ));
 
 $response2 = curl_exec($curl2);
+\Log::info('PLACEORDER2 - '.$response2);
 // log_message('error', "CASE 5 - order get details response - ".$response2);
 
 curl_close($curl2);
@@ -2323,7 +2343,7 @@ private function exit_order_create($stockname,$qty,$price){
     ));
 
     $response = curl_exec($curl);
-
+    \Log::info('EXITORDER - '.$response);
     curl_close($curl);
     $r= json_decode($response);
 
@@ -2374,7 +2394,7 @@ private function close_positions($symbol){
     ));
 
     $response = curl_exec($curl);
-
+    \Log::info('CLOSEPOSITION - '.$response);
     curl_close($curl);
     return $response;
 
