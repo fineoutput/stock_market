@@ -141,7 +141,7 @@
                                             <td ><small>{{ date('d/m/y,h:i:s A', strtotime($data1->end_time)) }}</small></td>
                                             <td >₹{{ $data1->tradedprice }}</td>
                                             <td >₹{{ $data1->tradedsellprice }}</td>
-                                            <td ><small>{{ date('h:i:s A', strtotime($data1->tradedstarttime)) }}</small>-<small>{{ date('h:i:s A', strtotime($data1->tradedendtime)) }}</small></td>
+                                            <td ><? if(!empty($data1->tradedstarttime)) { ?><small>{{ date('h:i:s A', strtotime($data1->tradedstarttime)) }} </small>-<small>{{ date('h:i:s A', strtotime($data1->tradedendtime)) }}</small><? } ?></td>
                                             <td >{{ $data1->order_id }}</td>
                                             <td >{{ $data1->exit_order_id }}</td>
                                             <td>
