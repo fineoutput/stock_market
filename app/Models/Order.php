@@ -28,6 +28,7 @@ class Order extends Model
         'tradedstarttime',
         'tradedendtime',
         'order_id',
+        'exit_order_id',
         'tradedsellprice'
     ];
 }
