@@ -116,6 +116,11 @@
                                         <th>Exit Price</th>
                                         <th>Start Time</th>
                                         <th>End Time</th>
+                                        <th>Traded Buy Price</th>
+                                        <th>Traded Exit Price</th>
+                                        <th>Traded Time</th>
+                                        <th>OrderId</th>
+                                        <th>Exit Order Id</th>
                                         <th>Status</th>
                                         <th>P/L Status</th>
                                         <th>Qty</th>
@@ -134,6 +139,11 @@
                                             <td >₹{{ $data1->exit_price }}</td>
                                             <td ><small>{{ date('d/m/y,h:i:s A', strtotime($data1->start_time)) }}</small></td>
                                             <td ><small>{{ date('d/m/y,h:i:s A', strtotime($data1->end_time)) }}</small></td>
+                                            <td >₹{{ $data1->tradedprice }}</td>
+                                            <td >₹{{ $data1->tradedsellprice }}</td>
+                                            <td ><small>{{ date('h:i:s A', strtotime($data1->tradedstarttime)) }}</small>-<small>{{ date('h:i:s A', strtotime($data1->tradedendtime)) }}</small></td>
+                                            <td >{{ $data1->order_id }}</td>
+                                            <td >{{ $data1->exit_order_id }}</td>
                                             <td>
                                                 {{ $data1->status == 1 ? 'Completed' : 'In Process' }}
                                             </td>
