@@ -2181,7 +2181,7 @@ private function place_order($stockname,$qty){
     ));
 
     $response = curl_exec($curl);
-    \Log::info('PLACEORDER - '.$response);
+    \Log::info('PLACEORDER - '.$response.' stock-'.$stockname.' qty-'.$qty);
     curl_close($curl);
     $r= json_decode($response);
 
