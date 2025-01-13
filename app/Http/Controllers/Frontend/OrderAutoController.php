@@ -2348,7 +2348,7 @@ private function modify_order($orderID,$price,$qty){
     ));
     
     $response = curl_exec($curl);
-    \Log::info('MODIFYORDER - '.$response);
+    \Log::info('MODIFYORDER - '.$response.' SL-'.$price);
     curl_close($curl);
     $r= json_decode($response);
 
