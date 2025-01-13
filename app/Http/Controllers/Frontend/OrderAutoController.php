@@ -2151,7 +2151,7 @@ private function place_order($stockname,$qty){
 
     $curl = curl_init();
     curl_setopt_array($curl, array(
-    CURLOPT_URL => 'https://api.fyers.in/api/v2/orders',
+    CURLOPT_URL => 'https://api-t1.fyers.in/api/v3/orders/sync',
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => '',
     CURLOPT_MAXREDIRS => 10,
