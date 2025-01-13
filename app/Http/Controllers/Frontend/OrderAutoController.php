@@ -2169,7 +2169,7 @@ private function place_order($stockname,$qty){
     "stopPrice":0,
     "validity":"IOC",
     "disclosedQty":0,
-    "offlineOrder":"False",
+    "offlineOrder":false,
     "stopLoss":0,
     "takeProfit":0
     }',
