@@ -905,7 +905,7 @@ public function createOrder_CE_5min()
                                 $tradedTime = '';
                                 $tradedPrice = '';
                                 $order_ID = '';
-                                $$exit_order_ID = '';
+                                $exit_order_ID = '';
                            if($symbolData->trading_type == 2){
                                //place order on live
                                $order_placed = $this->place_order($symbol,$qty);
