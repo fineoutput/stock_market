@@ -2380,7 +2380,7 @@ private function modify_order($orderID,$price,$qty){
 private function close_positions($symbol){
 
     $auth_code = $this->authCode();
-    $symbol2 = $symbol.'-INTRADAY'.
+    $symbol2 = $symbol.'-INTRADAY';
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
