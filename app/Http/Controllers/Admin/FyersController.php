@@ -391,8 +391,8 @@ class FyersController extends Controller
             // exit;
             $data = json_decode($response, true);
             if (!isset($data['candles']) || empty($data['candles'])) {
-                Log::error("No candle data found in ".$symbol);
-                Log::error("No candle data found response 5min- ".$response);
+                Log::error("HISTORIC No candle data found in ".$symbol);
+                Log::error("HISTORIC No candle data found response 5min- ".$response);
                 return response()->json(['message' => 'No candle data found'], 404);
             }
 
@@ -446,7 +446,7 @@ class FyersController extends Controller
                 ->exists();
                 // \Log::info('HISTORY DATA SAVE TABLE ' . $secondLastTimestamp.','.$symbolstatus);
             if (!$existsSecondLast) {
-                \Log::info('ENTERED 1 '.$symbol);
+                \Log::info('HISTORIC ENTERED 1 '.$symbol);
                 // Insert data into database
                 DB::table('historical_data_5min')->insert([
                     'stock' => $symbol,
@@ -462,7 +462,7 @@ class FyersController extends Controller
                 ]);
             }
             else{
-                \Log::info('ENTERED 2 '.$symbol);
+                \Log::info('HISTORIC ENTERED 2 '.$symbol);
                   // Update data into database
                   DB::table('historical_data_5min')
                   ->where('timeepoch', $secondLastTimestamp) 
@@ -498,7 +498,7 @@ class FyersController extends Controller
                         $fyer_new_Order_id = $modify_fyer2['orderID'];
                     }
                     }
-                    Log::info("SL UPDATED BY NEW CANDLE " .$symbol." -SL- ". $sl." order_id-". $liveorder->id);
+                    Log::info("HISTORIC SL UPDATED BY NEW CANDLE " .$symbol." -SL- ". $sl." order_id-". $liveorder->id);
                     DB::table('tbl_order')
                     ->where('id', $liveorder->id) 
                     ->update([
@@ -509,7 +509,7 @@ class FyersController extends Controller
 
                 } // if end of order exist or not
                 else{
-                    \Log::info('SL NOT UPDATED NO ORDER RUNNING');
+                    \Log::info('HISTORIC SL NOT UPDATED NO ORDER RUNNING');
                 }
 
 
@@ -522,7 +522,7 @@ class FyersController extends Controller
                ->exists();
             //    \Log::info('HISTORY DATA SAVE TABLE22 ' . $lastcandleLastTimestamp.','.$symbolstatus);
            if (!$existsLastData) {
-            \Log::info('ENTERED 3 '.$symbol);
+            \Log::info('HISTORIC ENTERED 3 '.$symbol);
                // Insert data into database
             //    \Log::info('HISTORY DATA SAVE INSERTED ' . $symbol.','.$lastcandleLastTimestamp);
                DB::table('historical_data_5min')->insert([
@@ -539,7 +539,7 @@ class FyersController extends Controller
                ]);
            }
            else{
-            \Log::info('ENTERED 4 '.$symbol);
+            \Log::info('HISTORIC ENTERED 4 '.$symbol);
                  // Update data into database
                  DB::table('historical_data_5min')
                  ->where('timeepoch', $lastcandleLastTimestamp) 
