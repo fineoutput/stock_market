@@ -691,7 +691,7 @@ public function createOrder_CE_5min()
                            } 
                            $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
                            if($symbolData->trading_type == 2){         
-                           $this->close_positions($runningOrder->stock_name);
+                           $this->close_positions($symbol);
                            }
                                 DB::table('tbl_order')
                                 ->where('id', $OrderId) 
@@ -978,7 +978,7 @@ public function createOrder_CE_5min()
                            }         
                            $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
                            if($symbolData->trading_type == 2){         
-                           $this->close_positions($runningOrder->stock_name);
+                           $this->close_positions($symbol);
                            }
                                 DB::table('tbl_order')
                                 ->where('id', $OrderId) 

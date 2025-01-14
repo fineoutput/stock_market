@@ -1567,6 +1567,64 @@ class FyersController extends Controller
         ];
     }
 
+    private function modify_order($orderID,$price,$qty){
+
+        $auth_code = $this->authCode();
+        $new_price = $price-2;
+        $curl = curl_init();
+    
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => 'https://api-t1.fyers.in/api/v3/orders/sync',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'PATCH',
+          CURLOPT_POSTFIELDS =>'{
+          "id": "'.$orderID.'",
+          "qty": '.$qty.',
+          "type": 4,
+          "side": -1,
+          "limitPrice":'.$new_price.',
+          "stopPrice":'.$price.'
+        }',
+          CURLOPT_HTTPHEADER => array(
+           'Authorization: TB70PSUQ00-100:'.$auth_code
+          ),
+        ));
+        
+        $response = curl_exec($curl);
+        \Log::info('MODIFYORDER - '.$response.' SL-'.$price);
+        curl_close($curl);
+        $r= json_decode($response);
+    
+        //ORDER PLACING CODE ENDS HERE
+        // CHECKING ORDER PLACED AND ITS AMOUNT
+        
+        if($r->s == "ok"){
+        
+            return response()->json([
+                'status' => 200,
+                'message' => 'ok',
+                'tradedTime' => '',
+                'tradedPrice' => '',
+                'orderID' => $r->id
+                    ]);
+        
+            } // if above api status ok
+            else{
+                return response()->json([
+                    'status' => 201,
+                    'message' => 'not ok',
+                    'tradedTime' => '',
+                    'tradedPrice' => ''
+                        ]);
+            }
+    
+    }
+
 }
 
         
