@@ -636,6 +636,7 @@ public function createOrder_CE_5min()
                                        $exit_order_fyer2 = json_decode($exit_order_fyer->getContent(), true);
                                        $exis_status = $exit_order_fyer2['status'];
                                        if($exis_status == 200){
+                                        \Log::info('CE(5MIN)- EXIT_ORDER_ID' . $exit_order_fyer2['orderID']);
                                         $exit_order_ID = $exit_order_fyer2['orderID'];
                                        }
 
@@ -924,6 +925,7 @@ public function createOrder_CE_5min()
                                         $exit_order_fyer2 = json_decode($exit_order_fyer->getContent(), true);
                                         $exis_status = $exit_order_fyer2['status'];
                                         if($exis_status == 200){
+                                            \Log::info('PE(5MIN)- EXIT_ORDER_ID' . $exit_order_fyer2['orderID']);
                                          $exit_order_ID = $exit_order_fyer2['orderID'];
                                         }
                                     }
