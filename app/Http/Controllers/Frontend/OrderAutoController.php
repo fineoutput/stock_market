@@ -1948,6 +1948,21 @@ public function createOrder_CE_5min()
                 }
                
         }
+        elseif($symbol == "BSE:SENSEX-INDEX"){
+            $request->merge([$inputName => $symbol]);
+            $price = $this->getPrice($request);
+            if ($price instanceof \Illuminate\Http\JsonResponse) {
+                $priceData = json_decode($price->getContent(), true);
+                if (is_array($priceData)) {
+                    return $priceData;
+                }
+            }
+            $priceData = json_decode($price, true);
+            if (is_array($priceData)) {
+                return $priceData;
+            }
+           
+    }
         else{
              $request->merge(['isl' => $symbol]);
               $price = $this->getPrice($request);

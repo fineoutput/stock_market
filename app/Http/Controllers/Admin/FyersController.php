@@ -502,7 +502,7 @@ class FyersController extends Controller
                     DB::table('tbl_order')
                     ->where('id', $liveorder->id) 
                     ->update([
-                      'sl' => $sl, //  1 => CE, 2 => PE.
+                      'sl' => $sl,
                       'exit_order_id'=> $fyer_new_Order_id
                   ]);
   

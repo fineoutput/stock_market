@@ -90,6 +90,7 @@ Route::delete('/Fyers/destroy/{id}', [FyersController::class,'destroy'])->name('
 //---Orders ----
 // Route::resource('Order', OrderController::class);
 Route::get('/Order/viewOrder', [OrderController::class,'viewOrder'])->name('viewOrder');
+Route::get('/Order/deleteOrder/{id}', [OrderController::class, 'deleteOrder'])->name('deleteOrder');
 // Route::get('/Order/createOrder', [OrderController::class,'createOrder'])->name('createOrder');
 // Route::get('/Order/getPriceData/{id}', [OrderController::class,'getPriceData'])->name('getPriceData');
 // Route::delete('/Fyers/destroy/{id}', [FyersController::class,'destroy'])->name('Fyers.destroy');
@@ -137,6 +138,7 @@ Route::get('/Order/createOrder_stock_CE_5min', [OrderAutoController::class,'crea
 Route::get('/Order/createOrder_stock_PE_5min', [OrderAutoController::class,'createOrder_stock_PE_5min'])->name('createOrder_stock_PE_5min');
 
 // Route::get('/Order/nifty_current/{time}', [OrderAutoController::class,'nifty_current'])->name('nifty_current');
+// Route::get('/Order/exit_order_create/{time}', [OrderAutoController::class,'nifty_current'])->name('nifty_current');
 
 Route::get('/CronJobController/morning_job', [CronJobController::class,'morning_job'])->name('morning_job');
 Route::get('/CronJobController/evening_job', [CronJobController::class,'evening_job'])->name('evening_job');

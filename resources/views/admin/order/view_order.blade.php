@@ -125,6 +125,7 @@
                                         <th>P/L Status</th>
                                         <th>Qty</th>
                                         <th>Amount</th>
+                                        <th>Action</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -152,7 +153,16 @@
                                             </td>
                                             <td >{{ $data1->qty }}</td>
                                             <td >₹{{ $data1->profit_loss_amt }}</td>
-                                          
+                                            <td>
+                          <div class="btn-group" id="btns<?php echo $a ?>">
+                            <a href="javascript:();" class="dCnf" mydata="<?php echo $a ?>" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash danger-icon"></i></a>
+                          </div>
+                          <div style="display:none" id="cnfbox<?php echo $a ?>">
+                            <p> Are you sure delete this </p>
+                            <a href="{{route('deleteOrder',base64_encode($data1->id))}}" class="btn btn-danger">Yes</a>
+                            <a href="javascript:();" class="cans btn btn-default" mydatas="<?php echo $a ?>">No</a>
+                          </div>
+                        </td>
                                            
                                             </tr>  
                                          @endforeach
