@@ -209,7 +209,7 @@ $count['profitOrLoss'] = $p_amount > 0 ? 'Profit' : ($p_amount < 0 ? 'Loss' : 'N
     public function deleteOrder($idd, Request $req)
     {
         $id = base64_decode($idd);
-        $OrderData = Order::wherenull('deleted_at')->where('id', $id)->first();
+        $OrderData = Order::where('id', $id)->first();
         if (!empty($OrderData)) {
             $OrderData->delete();
             // if (!empty($img)) {
