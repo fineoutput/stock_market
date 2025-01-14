@@ -129,7 +129,9 @@
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    @php $a = 0; @endphp
                                         @foreach($data  as $data1)
+                                        @php $a++; @endphp
                                         <tr <? if($data1->status == 1){ if($data1->profit_loss_status == 1){ echo "style='background-color:green;--bs-table-striped-color:white;color:white;'";} else{ echo "style='background-color:red;color:white;--bs-table-striped-color:white;'";} }  ?>>
                                            
                                             <td >{{ $loop->index+1 }}</td>                                            
