@@ -215,9 +215,9 @@ $count['profitOrLoss'] = $p_amount > 0 ? 'Profit' : ($p_amount < 0 ? 'Loss' : 'N
             // if (!empty($img)) {
             // 	unlink($img);
             // }
-            return Redirect('/viewOrder')->with('success', 'Order Deleted Successfully.');
+            return Redirect('/Order/viewOrder')->with('success', 'Order Deleted Successfully.');
         } else {
-            return Redirect('/viewOrder')->with('error', 'Some Error Occurred.');
+            return Redirect('/Order/viewOrder')->with('error', 'Some Error Occurred.');
         }
 
     }   
