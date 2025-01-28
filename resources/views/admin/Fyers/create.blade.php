@@ -98,6 +98,15 @@
 <div style="color:red">{{$message}}</div>
 @enderror
 </div>
+<div class="col-sm-6 my-3" style="margin-top: 23px!important">
+<div class="form-floating">
+<input id='lots_size' type='number' class="form-control @error('lots_size') is-invalid @enderror" name='lots_size' value="{{old('lots_size') ? old('lots_size') : $data->lots_size}}" placeholder="Enter lots size" required>
+ <label for="Amount">Enter Lots size  <span style="color:red;">*</span></label>
+</div>
+ @error('lots_size')
+<div style="color:red">{{$message}}</div>
+@enderror
+</div>
 	   <div class="col-sm-6 my-3" style="margin-top: 23px!important">
 <div class="form-floating">
 <input id='option_ce' type='text' class="form-control @error('option_ce') is-invalid @enderror" name='option_ce' value="{{old('option_ce') ? old('option_ce') : $data->option_ce}}" placeholder="Enter Option CE">

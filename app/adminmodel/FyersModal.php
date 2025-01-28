@@ -21,6 +21,7 @@
 	                 'login_id',
 	                 'pin',
 	                 'lots',
+	                 'lots_size',
                      'index_name',
 	                 'trading_type',
                      'ip', 'added_by', 'is_active'

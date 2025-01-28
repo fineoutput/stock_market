@@ -62,6 +62,7 @@ class FyersController extends Controller
  	    $Fyers->login_id= $request->login_id; 
  	    $Fyers->pin= $request->pin; 
  	    $Fyers->lots= $request->lots; 
+ 	    $Fyers->lots_size= $request->lots_size; 
 
  	    // $Fyers->lots2= $request->lots2; 
  	    // $Fyers->lots3= $request->lots3; 

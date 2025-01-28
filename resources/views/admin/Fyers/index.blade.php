@@ -60,6 +60,7 @@
                                                 <th>Login Id</th> 
                                                 <th>Pin</th> 
                                                 <th>Lots</th> 
+                                                <th>Lots Size</th> 
                                                 <th>NIFTY Option CE</th> 
                                                 <th>NIFTY Option PE</th> 
                                                 <th>INDEX</th> 
@@ -80,6 +81,7 @@
  	 <td>{{$data->login_id }} </td> 
  	 <td>{{$data->pin }} </td> 
  	 <td>{{$data->lots }} </td> 
+      <td>{{$data->lots_size }} </td> 
  	 <td>{{$data->option_ce }} </td> 
  	 <td>{{$data->option_pe }} </td>
       <td>{{$data->index_name }} </td>
