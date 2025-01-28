@@ -392,8 +392,8 @@ class FyersController extends Controller
             // exit;
             $data = json_decode($response, true);
             if (!isset($data['candles']) || empty($data['candles'])) {
-                Log::error("No candle data found in ".$symbol);
-                Log::error("No candle data found response 5min- ".$response);
+                Log::error("HISTORIC No candle data found in ".$symbol);
+                Log::error("HISTORIC No candle data found response 5min- ".$response);
                 return response()->json(['message' => 'No candle data found'], 404);
             }
 
@@ -447,7 +447,7 @@ class FyersController extends Controller
                 ->exists();
                 // \Log::info('HISTORY DATA SAVE TABLE ' . $secondLastTimestamp.','.$symbolstatus);
             if (!$existsSecondLast) {
-                // \Log::info('ENTERED 1');
+                \Log::info('HISTORIC ENTERED 1 '.$symbol);
                 // Insert data into database
                 DB::table('historical_data_5min')->insert([
                     'stock' => $symbol,
@@ -463,7 +463,7 @@ class FyersController extends Controller
                 ]);
             }
             else{
-                // \Log::info('ENTERED 2');
+                \Log::info('HISTORIC ENTERED 2 '.$symbol);
                   // Update data into database
                   DB::table('historical_data_5min')
                   ->where('timeepoch', $secondLastTimestamp) 
@@ -499,18 +499,18 @@ class FyersController extends Controller
                         $fyer_new_Order_id = $modify_fyer2['orderID'];
                     }
                     }
-                    Log::info("SL UPDATED BY NEW CANDLE " .$symbol." -SL- ". $sl." order_id-". $liveorder->id);
+                    Log::info("HISTORIC SL UPDATED BY NEW CANDLE " .$symbol." -SL- ". $sl." order_id-". $liveorder->id);
                     DB::table('tbl_order')
                     ->where('id', $liveorder->id) 
                     ->update([
-                      'sl' => $sl, //  1 => CE, 2 => PE.
+                      'sl' => $sl,
                       'exit_order_id'=> $fyer_new_Order_id
                   ]);
   
 
                 } // if end of order exist or not
                 else{
-                    \Log::info('SL NOT UPDATED NO ORDER RUNNING');
+                    \Log::info('HISTORIC SL NOT UPDATED NO ORDER RUNNING');
                 }
 
 
@@ -523,7 +523,7 @@ class FyersController extends Controller
                ->exists();
             //    \Log::info('HISTORY DATA SAVE TABLE22 ' . $lastcandleLastTimestamp.','.$symbolstatus);
            if (!$existsLastData) {
-            // \Log::info('ENTERED 3');
+            \Log::info('HISTORIC ENTERED 3 '.$symbol);
                // Insert data into database
             //    \Log::info('HISTORY DATA SAVE INSERTED ' . $symbol.','.$lastcandleLastTimestamp);
                DB::table('historical_data_5min')->insert([
@@ -540,7 +540,7 @@ class FyersController extends Controller
                ]);
            }
            else{
-            // \Log::info('ENTERED 4');
+            \Log::info('HISTORIC ENTERED 4 '.$symbol);
                  // Update data into database
                  DB::table('historical_data_5min')
                  ->where('timeepoch', $lastcandleLastTimestamp) 
@@ -1566,6 +1566,64 @@ class FyersController extends Controller
         return [
             'error' => 'Unexpected response format or invalid data.',
         ];
+    }
+
+    private function modify_order($orderID,$price,$qty){
+
+        $auth_code = $this->authCode();
+        $new_price = $price-2;
+        $curl = curl_init();
+    
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => 'https://api-t1.fyers.in/api/v3/orders/sync',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'PATCH',
+          CURLOPT_POSTFIELDS =>'{
+          "id": "'.$orderID.'",
+          "qty": '.$qty.',
+          "type": 4,
+          "side": -1,
+          "limitPrice":'.$new_price.',
+          "stopPrice":'.$price.'
+        }',
+          CURLOPT_HTTPHEADER => array(
+           'Authorization: TB70PSUQ00-100:'.$auth_code
+          ),
+        ));
+        
+        $response = curl_exec($curl);
+        \Log::info('MODIFYORDER - '.$response.' SL-'.$price);
+        curl_close($curl);
+        $r= json_decode($response);
+    
+        //ORDER PLACING CODE ENDS HERE
+        // CHECKING ORDER PLACED AND ITS AMOUNT
+        
+        if($r->s == "ok"){
+        
+            return response()->json([
+                'status' => 200,
+                'message' => 'ok',
+                'tradedTime' => '',
+                'tradedPrice' => '',
+                'orderID' => $r->id
+                    ]);
+        
+            } // if above api status ok
+            else{
+                return response()->json([
+                    'status' => 201,
+                    'message' => 'not ok',
+                    'tradedTime' => '',
+                    'tradedPrice' => ''
+                        ]);
+            }
+    
     }
 
 }

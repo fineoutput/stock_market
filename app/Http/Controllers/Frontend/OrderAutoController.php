@@ -636,6 +636,7 @@ public function createOrder_CE_5min()
                                        $exit_order_fyer2 = json_decode($exit_order_fyer->getContent(), true);
                                        $exis_status = $exit_order_fyer2['status'];
                                        if($exis_status == 200){
+                                        \Log::info('CE(5MIN)- EXIT_ORDER_ID' . $exit_order_fyer2['orderID']);
                                         $exit_order_ID = $exit_order_fyer2['orderID'];
                                        }
 
@@ -691,7 +692,7 @@ public function createOrder_CE_5min()
                            } 
                            $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
                            if($symbolData->trading_type == 2){         
-                           $this->close_positions($runningOrder->stock_name);
+                           $this->close_positions($symbol);
                            }
                                 DB::table('tbl_order')
                                 ->where('id', $OrderId) 
@@ -905,7 +906,7 @@ public function createOrder_CE_5min()
                                 $tradedTime = '';
                                 $tradedPrice = '';
                                 $order_ID = '';
-                                $$exit_order_ID = '';
+                                $exit_order_ID = '';
                            if($symbolData->trading_type == 2){
                                //place order on live
                                $order_placed = $this->place_order($symbol,$qty);
@@ -924,6 +925,7 @@ public function createOrder_CE_5min()
                                         $exit_order_fyer2 = json_decode($exit_order_fyer->getContent(), true);
                                         $exis_status = $exit_order_fyer2['status'];
                                         if($exis_status == 200){
+                                            \Log::info('PE(5MIN)- EXIT_ORDER_ID' . $exit_order_fyer2['orderID']);
                                          $exit_order_ID = $exit_order_fyer2['orderID'];
                                         }
                                     }
@@ -978,7 +980,7 @@ public function createOrder_CE_5min()
                            }         
                            $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
                            if($symbolData->trading_type == 2){         
-                           $this->close_positions($runningOrder->stock_name);
+                           $this->close_positions($symbol);
                            }
                                 DB::table('tbl_order')
                                 ->where('id', $OrderId) 
@@ -1946,6 +1948,21 @@ public function createOrder_CE_5min()
                 }
                
         }
+        elseif($symbol == "BSE:SENSEX-INDEX"){
+            $request->merge([$inputName => $symbol]);
+            $price = $this->getPrice($request);
+            if ($price instanceof \Illuminate\Http\JsonResponse) {
+                $priceData = json_decode($price->getContent(), true);
+                if (is_array($priceData)) {
+                    return $priceData;
+                }
+            }
+            $priceData = json_decode($price, true);
+            if (is_array($priceData)) {
+                return $priceData;
+            }
+           
+    }
         else{
              $request->merge(['isl' => $symbol]);
               $price = $this->getPrice($request);
@@ -2151,7 +2168,7 @@ private function place_order($stockname,$qty){
 
     $curl = curl_init();
     curl_setopt_array($curl, array(
-    CURLOPT_URL => 'https://api.fyers.in/api/v2/orders',
+    CURLOPT_URL => 'https://api-t1.fyers.in/api/v3/orders/sync',
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => '',
     CURLOPT_MAXREDIRS => 10,
@@ -2169,7 +2186,7 @@ private function place_order($stockname,$qty){
     "stopPrice":0,
     "validity":"IOC",
     "disclosedQty":0,
-    "offlineOrder":"False",
+    "offlineOrder":false,
     "stopLoss":0,
     "takeProfit":0
     }',
@@ -2181,7 +2198,7 @@ private function place_order($stockname,$qty){
     ));
 
     $response = curl_exec($curl);
-    \Log::info('PLACEORDER - '.$response);
+    \Log::info('PLACEORDER - '.$response.' stock-'.$stockname.' qty-'.$qty);
     curl_close($curl);
     $r= json_decode($response);
 
@@ -2348,7 +2365,7 @@ private function modify_order($orderID,$price,$qty){
     ));
     
     $response = curl_exec($curl);
-    \Log::info('MODIFYORDER - '.$response);
+    \Log::info('MODIFYORDER - '.$response.' SL-'.$price);
     curl_close($curl);
     $r= json_decode($response);
 
@@ -2380,7 +2397,7 @@ private function modify_order($orderID,$price,$qty){
 private function close_positions($symbol){
 
     $auth_code = $this->authCode();
-
+    $symbol2 = $symbol.'-INTRADAY';
     $curl = curl_init();
 
     curl_setopt_array($curl, array(

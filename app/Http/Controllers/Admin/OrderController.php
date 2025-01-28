@@ -206,6 +206,21 @@ $count['profitOrLoss'] = $p_amount > 0 ? 'Profit' : ($p_amount < 0 ? 'Loss' : 'N
             return null; // Return null if no data found
                     
     }
+    public function deleteOrder($idd, Request $req)
+    {
+        $id = base64_decode($idd);
+        $OrderData = Order::where('id', $id)->first();
+        if (!empty($OrderData)) {
+            $OrderData->delete();
+            // if (!empty($img)) {
+            // 	unlink($img);
+            // }
+            return Redirect('/Order/viewOrder')->with('success', 'Order Deleted Successfully.');
+        } else {
+            return Redirect('/Order/viewOrder')->with('error', 'Some Error Occurred.');
+        }
+
+    }   
 
     public function authCode()
     {
