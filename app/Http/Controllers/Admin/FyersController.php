@@ -221,12 +221,13 @@ class FyersController extends Controller
 
            // print_r($symbol);
             // exit;
-            $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,60);
+            $response = $this->highest_price_sameday($startDateTime, $endDateTime, $symbol,30);
             // print_r($response);
             // exit;
             $data = json_decode($response, true);
             if (!isset($data['candles']) || empty($data['candles'])) {
-                Log::error("No candle data found response 1hr- ".$response);
+                Log::error("HISTORIC No candle data found in ".$symbol);
+                Log::error("HISTORIC No candle data found response 5min- ".$response);
                 return response()->json(['message' => 'No candle data found in '.$symbol], 404);
             }
 
@@ -279,7 +280,7 @@ class FyersController extends Controller
                 ->exists();
 
             if (!$existsSecondLast) {
-              
+                \Log::info('HISTORIC ENTERED 1 '.$symbol);
                 // Insert data into database
                 DB::table('historical_data')->insert([
                     'stock' => $symbol,
@@ -293,6 +294,7 @@ class FyersController extends Controller
                 ]);
             }
             else{
+                \Log::info('HISTORIC ENTERED 2 '.$symbol);
                   // Update data into database
                   DB::table('historical_data')
                   ->where('date', $secondLastFormattedTime) 
@@ -307,6 +309,40 @@ class FyersController extends Controller
                     'open_status' => $op,
                     'tred_option' => $symbolstatus, // 1 => PE, 2 => CE
                 ]);
+
+                    //check if order exist in table if yes then update SL
+                    $liveorder = Order::where('stock_name', $symbol)->where('status', 0)->where('stock', $symbolstatus)->first();
+                    if($liveorder){
+                        $fyer_new_Order_id = '';
+                        $status_modify ='';
+                        if($op == 1){
+                            $sl = $secondLastClose;
+                        }
+                        else{
+                            $sl = $secondLastOpen;
+                        }
+                        $symbolData = DB::table('fyers')->orderBy('id', 'desc')->first();
+                        if($symbolData->trading_type == 2){ 
+                        $modify_fyer = $this->modify_order($liveorder->exit_order_id,$sl,$liveorder->qty);
+                        $modify_fyer2 = json_decode($modify_fyer->getContent(), true);
+                        $status_modify = $modify_fyer2['status'];
+                        if($status_modify == 200){
+                            $fyer_new_Order_id = $modify_fyer2['orderID'];
+                        }
+                        }
+                        Log::info("HISTORIC SL UPDATED BY NEW CANDLE " .$symbol." -SL- ". $sl." order_id-". $liveorder->id);
+                        DB::table('tbl_order')
+                        ->where('id', $liveorder->id) 
+                        ->update([
+                          'sl' => $sl,
+                          'exit_order_id'=> $fyer_new_Order_id
+                      ]);
+      
+    
+                    } // if end of order exist or not
+                    else{
+                        \Log::info('HISTORIC SL NOT UPDATED NO ORDER RUNNING');
+                    }
             }
 
         // Check if last data already exists
@@ -316,6 +352,7 @@ class FyersController extends Controller
                ->exists();
 
            if (!$existsLastData) {
+            \Log::info('HISTORIC ENTERED 3 '.$symbol);
                // Insert data into database
                DB::table('historical_data')->insert([
                     'stock' => $symbol,
@@ -329,6 +366,7 @@ class FyersController extends Controller
                ]);
            }
            else{
+            \Log::info('HISTORIC ENTERED 4 '.$symbol);
                  // Update data into database
                  DB::table('historical_data')
                  ->where('date', $lastLastFormattedTime) 

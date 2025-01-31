@@ -19,18 +19,18 @@ class CronJobController extends Controller
 
     public function morning_job()
     {
-	            // $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_CE';
-				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+	            $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_CE';
+				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
-                // $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE';
-				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+                $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE';
+				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                 //nifty historic data cron job
-                // $cron_command = '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data';
-				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
-
-                $cron_command = '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data-5min';
+                $cron_command = '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data';
 				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+
+                // $cron_command = '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data-5min';
+				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                  //Bank nifty historic data cron job
                 // $cron_command = '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/bank-historical-data';
@@ -47,11 +47,11 @@ class CronJobController extends Controller
 				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                  //order placing and checking cron job
-                $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_CE_5min';
-				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+                // $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_CE_5min';
+				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
-                $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE_5min';
-				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
+                // $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE_5min';
+				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                 // $cron_command = '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_bank_CE_5min';
 				// shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
@@ -67,15 +67,15 @@ class CronJobController extends Controller
 
     public function evening_job()
     {
-        // $job1= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_CE';
-        // $job2= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE';
+        $job1= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_CE';
+        $job2= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE';
 
-        $job1= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_CE_5min';
-        $job2= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE_5min';
+        // $job1= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_CE_5min';
+        // $job2= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE_5min';
 
         //nifty historic data cron job remove
-        // $job3= '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data';
-        $job4= '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data-5min';
+        $job3= '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data';
+        // $job4= '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data-5min';
 
          //bank nifty historic data cron job remove
         //  $job5= '0 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/bank-historical-data';
@@ -92,8 +92,8 @@ class CronJobController extends Controller
 
         $this->deleteCronJob($job1);    
         $this->deleteCronJob($job2);    
-        // $this->deleteCronJob($job3);    
-        $this->deleteCronJob($job4);    
+        $this->deleteCronJob($job3);    
+        // $this->deleteCronJob($job4);    
         // $this->deleteCronJob($job5);    
         // $this->deleteCronJob($job6);    
         // $this->deleteCronJob($job7);    
