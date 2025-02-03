@@ -135,7 +135,7 @@ class FyersController extends Controller
             // print_r('jbuh');
             // exit;
             $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $nifty;
-            $response = Http::withHeaders(['Authorization' => 'TB70PSUQ00-100:' . $authCode,])->get($url);
+            $response = Http::withHeaders(['Authorization' => ''.config('constants.USER_ID').':' . $authCode,])->get($url);
             $data = json_decode($response->getBody()->getContents());
             $quoteData = $data->d[0] ?? null; 
             if ($quoteData) {
@@ -155,7 +155,7 @@ class FyersController extends Controller
         // Prepare the API endpoint
         $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $isl;
         // Make the GET request
-        $response = Http::withHeaders(['Authorization' => 'TB70PSUQ00-100:' . $authCode,])->get($url);
+        $response = Http::withHeaders(['Authorization' => ''.config('constants.USER_ID').':' . $authCode,])->get($url);
                 
         // Decode the JSON response
         $data = json_decode($response->getBody()->getContents());
@@ -1383,7 +1383,7 @@ class FyersController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-            'Authorization: TB70PSUQ00-100:'.$auth_code
+            'Authorization: '.config('constants.USER_ID').':'.$auth_code
             ),
             ));
 
@@ -1630,7 +1630,7 @@ class FyersController extends Controller
           "stopPrice":'.$price.'
         }',
           CURLOPT_HTTPHEADER => array(
-           'Authorization: TB70PSUQ00-100:'.$auth_code
+           'Authorization: '.config('constants.USER_ID').':'.$auth_code
           ),
         ));
         

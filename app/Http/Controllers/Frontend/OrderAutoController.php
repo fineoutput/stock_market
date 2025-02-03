@@ -2151,7 +2151,7 @@ public function createOrder_CE_5min()
             // print_r('jbuh');
             // exit;
             $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $nifty;
-            $response = Http::withHeaders(['Authorization' => 'TB70PSUQ00-100:' . $authCode,])->get($url);
+            $response = Http::withHeaders(['Authorization' => ''.config('constants.USER_ID').':' . $authCode,])->get($url);
             $data = json_decode($response->getBody()->getContents());
             $quoteData = $data->d[0] ?? null; 
             if ($quoteData) {
@@ -2172,7 +2172,7 @@ public function createOrder_CE_5min()
         // Prepare the API endpoint
         $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $isl;
         // Make the GET request
-        $response = Http::withHeaders(['Authorization' => 'TB70PSUQ00-100:' . $authCode,])->get($url);
+        $response = Http::withHeaders(['Authorization' => ''.config('constants.USER_ID').':' . $authCode,])->get($url);
                 
         // Decode the JSON response
         $data = json_decode($response->getBody()->getContents());
@@ -2182,7 +2182,7 @@ public function createOrder_CE_5min()
             sleep(2);
             $url = 'https://api-t1.fyers.in/data/quotes?symbols=' . $isl;
             // Make the GET request
-            $response = Http::withHeaders(['Authorization' => 'TB70PSUQ00-100:' . $authCode,])->get($url);
+            $response = Http::withHeaders(['Authorization' => ''.config('constants.USER_ID').':' . $authCode,])->get($url);
                     
             // Decode the JSON response
             $data = json_decode($response->getBody()->getContents());
@@ -2277,7 +2277,7 @@ public function createOrder_CE_5min()
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-            'Authorization: TB70PSUQ00-100:'.$auth_code
+            'Authorization: '.config('constants.USER_ID').':'.$auth_code
             ),
             ));
 
@@ -2357,7 +2357,7 @@ private function place_order($stockname,$qty){
     }',
     CURLOPT_HTTPHEADER => array(
     'Content-Type: application/json',
-    'Authorization: TB70PSUQ00-100:'.$auth_code,
+    'Authorization: '.config('constants.USER_ID').':'.$auth_code,
 
     ),
     ));
@@ -2384,7 +2384,7 @@ curl_setopt_array($curl2, array(
   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
   CURLOPT_CUSTOMREQUEST => 'GET',
   CURLOPT_HTTPHEADER => array(
-    'Authorization: TB70PSUQ00-100:'.$auth_code
+    'Authorization: '.config('constants.USER_ID').':'.$auth_code
   ),
 ));
 
@@ -2465,7 +2465,7 @@ private function exit_order_create($stockname,$qty,$price,$sleep){
       "orderTag":"tag1"
     }',
       CURLOPT_HTTPHEADER => array(
-        'Authorization: TB70PSUQ00-100:'.$auth_code
+        'Authorization: '.config('constants.USER_ID').':'.$auth_code
       ),
     ));
     
@@ -2525,7 +2525,7 @@ private function modify_order($orderID,$price,$qty){
       "stopPrice":'.$price.'
     }',
       CURLOPT_HTTPHEADER => array(
-       'Authorization: TB70PSUQ00-100:'.$auth_code
+       'Authorization: '.config('constants.USER_ID').':'.$auth_code
       ),
     ));
     
@@ -2577,7 +2577,7 @@ private function close_positions($symbol){
       CURLOPT_POSTFIELDS =>'{"id":"'.$symbol.'"}',
       CURLOPT_HTTPHEADER => array(
         'Content-Type: application/json',
-        'Authorization: TB70PSUQ00-100:'.$auth_code,
+        'Authorization: '.config('constants.USER_ID').':'.$auth_code,
       ),
     ));
 
