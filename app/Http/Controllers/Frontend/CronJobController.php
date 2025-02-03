@@ -26,7 +26,7 @@ class CronJobController extends Controller
 				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                 //nifty historic data cron job
-                $cron_command = '0,30 * * * 1-5 /usr/bin/curl --silent --compressed '.config('constants.BASE_URL').'/historical-data';
+                $cron_command = '15,45 * * * 1-5 /usr/bin/curl --silent --compressed '.config('constants.BASE_URL').'/historical-data';
 				shell_exec('(crontab -l ; echo "'.$cron_command.'") | crontab -');
 
                 // $cron_command = '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data-5min';
@@ -74,7 +74,7 @@ class CronJobController extends Controller
         // $job2= '*/1 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/Order/createOrder_PE_5min';
 
         //nifty historic data cron job remove
-        $job3= '0,30 * * * 1-5 /usr/bin/curl --silent --compressed '.config('constants.BASE_URL').'/historical-data';
+        $job3= '15,45 * * * 1-5 /usr/bin/curl --silent --compressed '.config('constants.BASE_URL').'/historical-data';
         // $job4= '*/5 * * * 1-5 /usr/bin/curl --silent --compressed https://fineoutput.co.in/stock_market/public/historical-data-5min';
 
          //bank nifty historic data cron job remove
