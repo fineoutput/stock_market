@@ -110,16 +110,26 @@ class CronJobController extends Controller
         // Get current crontab
         $current_crontab = shell_exec('crontab -l 2>/dev/null');
         
+        // Check if crontab is empty
+        if (!$current_crontab) {
+            return; // No cron jobs to delete
+        }
+    
         // Split into lines and filter out the job to delete
-        $lines = explode("\n", $current_crontab);
+        $lines = explode("\n", trim($current_crontab));
         $filtered_lines = array_filter($lines, function ($line) use ($jobToDelete) {
             return trim($line) !== trim($jobToDelete);
         });
-        
-        // Join filtered lines and update crontab
-        $updated_crontab = implode("\n", $filtered_lines);
-        shell_exec('echo "' . trim($updated_crontab) . '" | crontab -');
+    
+        // If all lines are removed, clear the crontab
+        if (empty($filtered_lines)) {
+            shell_exec('crontab -r'); // Removes all cron jobs safely
+        } else {
+            $updated_crontab = implode("\n", $filtered_lines) . "\n"; // Ensure newline at end
+            shell_exec('echo "' . addslashes($updated_crontab) . '" | crontab -');
+        }
     }
+    
 
 
 
